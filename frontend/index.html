@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
     <title>FindBack</title>
 </head>
+
 <body class="bg-slate-50 font-sans">
     <header class="absolute top-0 left-0 z-50 pt-3 w-full">
         <div
@@ -59,8 +61,8 @@
         </div>
     </header>
     <section class="bg-[#0B1220] min-h-[650px]">
-        <div class="flex items-center max-w-7xl px-7 w-full mx-auto min-h-[650px]">
-            <div class="w-1/2">
+        <div class="flex items-center max-w-7xl px-7 w-full mx-auto min-h-[650px] pt-12">
+            <div class="w-1/2 p1-8">
                 <p
                     class="text-xs font-medium uppercase tracking-wider text-blue-400 mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-400/50 bg-blue-500/10">
                     AI-POWERED LOST & FOUND
@@ -90,7 +92,8 @@
             </div>
             <div class="w-1/2">
                 <div class="relative">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5">
+                    <div
+                        class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 shadow-2xl shadow-black/20">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2 text-sm text-white">
                                 <i class="fa-solid fa-wand-magic-sparkles text-blue-400"></i>
@@ -105,10 +108,93 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="mt-5 flex items-center gap-4">
+                            <div class="w-24 h-24 rounded-xl overflow-hidden bg-slate-800 shrink-0">
+                                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Found item"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <p class="text-white font-medium"> Red Nike shoe</p>
+                                <p class="text-sm text-slate-400 mt-1">
+                                    <i class="fa-solid fa-location-dot mr-1"></i>
+                                    Found near Library
+                                </p>
+                                <p class="text-sm text-slate-400 mt-1">
+                                    <i class="fa-regular fa-clock mr-1"></i>
+                                    Found 2 Hours ago
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-white/10">
+                            <p class="text-xs text-slate-400">
+                                AI found strong similarties in
+                                <span class="text-slate-200">image,location, and item description.</span>
+                            </p>
+
+                        </div>
+                        <div class="mt-4">
+                            <a href=""
+                                class="inline-flex items-center gap-2 text-sm font-medium text-blue-300 transition-colors">View
+                                Match
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    <section class="bg-white py-24">
+        <div class="max-w-7xl mx-auto px-7">
+            <div class="text-center max-w-2xl mx-auto">
+                <p class="text-sm font-medium uppercase tracking-wider text-blue-600">
+                    HOW FINDBACK WORKS
+                </p>
+                <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mt-3">From lost to found in
+                    three simple steps.
+                </h2>
+                <p class="text-slate-500 leading-relaxed mt-4">Report your item, let AI analyze potential matches and
+                    connect with right person to recver it.
+                </p>
+            </div>
+            <div class="grid grid-cols-3 gap-8 mt-14">
+                <div class="border border-slate-200 rounded-2xl p-8 hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+                    <span class="text-sm font-semibold text-blue-600">01</span>
+                    <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
+                        <i class="fa-solid fa-flag text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mt-6">Report your item</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Tell us what you lost or found with a photo, description, and location.
+                    </p>
+                </div>
+                <div class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+                    <span class="text-sm font-semibold text-blue-600">02</span>
+                    <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mt-6">
+                        Let AI find matches
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Our AI compares images, descriptions, location, and time to find potential matches.
+                    </p>
+                </div>
+                <div class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+                    <span class="text-sm font-semibold text-blue-600">03</span>
+                    <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
+                        <i class="fa-solid fa-handshake text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mt-6">
+                        Recover your item
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Connect with the right person, verify the match, and safely get your belongings back.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>
