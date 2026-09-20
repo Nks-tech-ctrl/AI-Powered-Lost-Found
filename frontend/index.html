@@ -157,8 +157,10 @@
                     connect with right person to recver it.
                 </p>
             </div>
-            <div class="grid grid-cols-3 gap-8 mt-14">
-                <div class="border border-slate-200 rounded-2xl p-8 hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+            <div class="grid grid-cols-[1fr_auto_1fr_auto_1fr] gap-6 mt-14 relative">
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-8 hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
                     <span class="text-sm font-semibold text-blue-600">01</span>
                     <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
                         <i class="fa-solid fa-flag text-blue-600"></i>
@@ -168,7 +170,11 @@
                         Tell us what you lost or found with a photo, description, and location.
                     </p>
                 </div>
-                <div class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+                <div class="flex items-center justify-center text-blue-400">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div
+                    class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
                     <span class="text-sm font-semibold text-blue-600">02</span>
                     <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
                         <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
@@ -180,7 +186,11 @@
                         Our AI compares images, descriptions, location, and time to find potential matches.
                     </p>
                 </div>
-                <div class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
+                <div class="flex items-center justify-center text-blue-400">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div
+                    class="border border-slate-200 rounded-2xl p-8  hover:border-blue-200 hover:shadow-slate-200/50 transition-all">
                     <span class="text-sm font-semibold text-blue-600">03</span>
                     <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center mt-5">
                         <i class="fa-solid fa-handshake text-blue-600"></i>
@@ -195,6 +205,366 @@
             </div>
         </div>
     </section>
+    <section class="bg-slate-50 py-24">
+        <div class="max-w-7xl mx-auto px-7">
+            <div class="max-w-2xl">
+                <p class="text-sm font-medium uppercase tracking-wider text-blue-600">AI MATCHING</p>
+                <h2 class="text-4xl font-bold tracking-tight text-slate-900 mt-3">
+                    See how FindBack connects the dots.
+                </h2>
+                <p class="text-slate-500 leading-relaxed mt-4 max-w-xl">FindBack Looks beyond simple keywords by
+                    combining visuals and similarity, descriptions, location, and time to identify potential matches.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-12 mt-16">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-slate-400">
+                                LOST ITEM
+                            </p>
+                            <h3 class="text-lg font-semibold text-slate-900 mt-1">
+                                Reported Item
+                            </h3>
+                        </div>
+
+
+                        <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                            AI Analyzing
+                        </span>
+                    </div>
+                    <div class="mt-6 h-64 rounded-xl overflow-hidden bg-slate-100">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9" alt="Lost smartphone"
+                            class="w-full h-full object-cover">
+
+                    </div>
+                    <div class="mt-5">
+                        <h4 class="font-semibold text-slate-900">Black iPhone 15</h4>
+                        <p class="text-sm text-slate-500 mt-1">
+                            Smartphone · Central Library · Reported 2 hours ago
+                        </p>
+                    </div>
+
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-slate-400">
+                                AI MATCH ANALYSIS
+                            </p>
+
+                            <h3 class="text-lg font-semibold text-slate-900 mt-1">
+                                Potential Match
+                            </h3>
+                        </div>
+
+                        <span class="text-lg font-bold text-blue-600">
+                            94%
+                        </span>
+                    </div>
+                    <div class="mt-6 space-y-4">
+
+                        <div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-600">Image similarity</span>
+                                <span class="font-medium text-slate-900">96%</span>
+                            </div>
+
+                            <div class="h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full w-[96%]"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-600">Description similarity</span>
+                                <span class="font-medium text-slate-900">91%</span>
+                            </div>
+
+                            <div class="h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full w-[91%]"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-600">Location match</span>
+                                <span class="font-medium text-slate-900">88%</span>
+                            </div>
+
+                            <div class="h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full w-[88%]"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-600">Time match</span>
+                                <span class="font-medium text-slate-900">94%</span>
+                            </div>
+
+                            <div class="h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full w-[94%]"></div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-5 border-t border-slate-100">
+                            <p class="text-xs font-medium uppercase tracking-wider text-slate-400">
+                                WHY THIS MATCH
+                            </p>
+
+                            <p class="text-sm text-slate-600 leading-relaxed mt-2">
+                                Strong visual similarity and matching location suggest this could be
+                                the same item reported as lost.
+                            </p>
+                            <div class="mt-5 flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <i class="fa-solid fa-shield-halved text-blue-500 mt-0.5"></i>
+
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    AI scores are used to identify potential matches. Final ownership
+                                    is verified by the users before an item is returned.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section id="features" class="bg-white py-24">
+        <div class="max-w-7xl mx-auto px-7">
+
+            <div class="max-w-2xl">
+                <p class="text-sm font-medium uppercase tracking-wider text-blue-600">
+                    FEATURES
+                </p>
+
+                <h2 class="text-4xl font-bold tracking-tight text-slate-900 mt-3">
+                    Everything you need to recover what matters.
+                </h2>
+
+                <p class="text-slate-500 leading-relaxed mt-4">
+                    FindBack combines intelligent matching with a simple recovery process designed to make lost and
+                    found easier.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mt-14">
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-camera text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Image-Based Matching
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Upload an image and let AI compare visual features with reported items to discover potential
+                        matches.
+                    </p>
+                </div>
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-location-dot text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Location Intelligence
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Location information helps narrow down potential matches based on where an item was lost or
+                        found.
+                    </p>
+                </div>
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-file-lines text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Smart Descriptions
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Item descriptions provide additional context that helps FindBack identify relevant potential
+                        matches.
+                    </p>
+                </div>
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-clock text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Time-Based Matching
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Report dates and discovery times help the system understand whether two reports could be
+                        connected.
+                    </p>
+                </div>
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Human Verification
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        AI suggests potential matches while users remain responsible for confirming ownership before
+                        recovery.
+                    </p>
+                </div>
+
+                <div
+                    class="border border-slate-200 rounded-2xl p-7 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-blue-600 text-lg"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-900 mt-6">
+                        Faster Discovery
+                    </h3>
+
+                    <p class="text-sm text-slate-500 leading-relaxed mt-3">
+                        Instead of manually searching through reports, FindBack helps surface relevant potential matches
+                        faster.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section class="bg-[#0B1220] py-24">
+        <div class="max-w-4xl mx-auto px-7 text-center">
+
+            <p class="text-sm font-medium uppercase tracking-wider text-blue-400">
+                FIND WHAT YOU LOST
+            </p>
+
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mt-4">
+                Your lost item might be closer than you think.
+            </h2>
+
+            <p class="text-slate-400 leading-relaxed max-w-2xl mx-auto mt-5">
+                Report a lost or found item and let FindBack help identify potential matches using AI.
+            </p>
+
+            <div class="flex items-center justify-center gap-4 mt-8">
+                <a href="pages/report-lost.html"
+                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-xl transition-colors">
+                    Report Lost Item
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                </a>
+
+                <a href="pages/report-found.html"
+                    class="inline-flex items-center gap-2 border border-slate-700 hover:border-slate-500 text-slate-200 font-medium px-6 py-3 rounded-xl transition-colors">
+                    Report Found Item
+                </a>
+            </div>
+
+        </div>
+    </section>
+    <footer class="bg-[#0B1220] border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-7 py-12">
+
+            <div class="flex items-start justify-between">
+
+                <div class="max-w-sm">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+                            <i class="fa-solid fa-magnifying-glass text-white"></i>
+                        </div>
+
+                        <span class="text-lg font-semibold text-white">
+                            FindBack
+                        </span>
+                    </a>
+
+                    <p class="text-sm text-slate-400 leading-relaxed mt-4">
+                        AI-powered lost and found that helps people reconnect with their belongings.
+                    </p>
+                </div>
+
+                <div class="flex gap-20">
+
+                    <div>
+                        <h4 class="text-sm font-semibold text-white">
+                            Product
+                        </h4>
+
+                        <div class="flex flex-col gap-3 mt-4">
+                            <a href="#features" class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Features
+                            </a>
+
+                            <a href="#how-it-works" class="text-sm text-slate-400 hover:text-white transition-colors">
+                                How It Works
+                            </a>
+
+                            <a href="pages/search.html"
+                                class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Search Items
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-semibold text-white">
+                            Account
+                        </h4>
+
+                        <div class="flex flex-col gap-3 mt-4">
+                            <a href="pages/login.html"
+                                class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Login
+                            </a>
+
+                            <a href="pages/register.html"
+                                class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Create Account
+                            </a>
+
+                            <a href="pages/profile.html"
+                                class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Profile
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="border-t border-slate-800 mt-10 pt-6 flex items-center justify-between">
+                <p class="text-xs text-slate-500">
+                    © 2026 FindBack. All rights reserved.
+                </p>
+
+                <p class="text-xs text-slate-500">
+                    AI-assisted lost & found platform
+                </p>
+            </div>
+
+        </div>
+    </footer>
 </body>
 
 </html>
