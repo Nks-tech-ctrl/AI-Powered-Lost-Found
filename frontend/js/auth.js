@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./api.js";
+import { apiGet, apiPost, apiPut } from "./api.js";
 
 // Backend teammate: configure these after agreeing the authentication/session contract.
 // Keep paths empty until the contract is provided; no endpoint is assumed by the frontend.
@@ -7,6 +7,7 @@ export const AUTH_ENDPOINTS = {
   register: "",
   logout: "",
   currentUser: "",
+  updateCurrentUser: "",
 };
 
 function requireEndpoint(name) {
@@ -47,4 +48,11 @@ export async function getCurrentUser() {
     avatarUrl: user?.avatarUrl ?? user?.avatar_url ?? user?.avatar ?? "",
     statistics,
   };
+}
+
+export async function updateCurrentUser(profile) {
+  // TODO: Align the payload with the backend's agreed profile-update contract.
+  return apiPut(requireEndpoint("updateCurrentUser"), JSON.stringify(profile), {
+    headers: { "Content-Type": "application/json" },
+  });
 }
