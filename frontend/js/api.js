@@ -1,13 +1,15 @@
 // Configure this value when the backend service is available.
 export const API_BASE_URL = "";
+// Session-based backends commonly use cookies. Adjust this when the API contract is known.
+export const API_REQUEST_OPTIONS = { credentials: "include" };
 
 async function request(path, options = {}) {
-  // TODO: Connect requests to the backend endpoint and add auth handling.
+  // TODO: Set API_BASE_URL when the backend service is available.
   if (!API_BASE_URL) {
     throw new Error("API_BASE_URL has not been configured.");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
+  const response = await fetch(`${API_BASE_URL}${path}`, { ...API_REQUEST_OPTIONS, ...options });
   if (!response.ok) throw new Error(`Request failed: ${response.status}`);
   const contentType = response.headers.get("content-type") || "";
   return contentType.includes("application/json") ? response.json() : response.text();
