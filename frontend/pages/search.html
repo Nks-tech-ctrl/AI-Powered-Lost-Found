@@ -1,2 +1,141 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/output.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"><title>Search Items · FindBack</title></head>
-<body class="bg-slate-50 font-sans text-slate-900"><header class="border-b border-slate-200 bg-white"><div class="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-5 px-5 sm:px-8"><a href="dashboard.html" class="flex items-center gap-2"><span class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i class="fa-solid fa-magnifying-glass"></i></span><span class="text-lg font-bold">FindBack</span></a><nav class="hidden gap-5 text-sm font-medium text-slate-600 md:flex"><a href="dashboard.html" class="hover:text-blue-600">Dashboard</a><a href="matches.html" class="hover:text-blue-600">Matches</a><a href="claims.html" class="hover:text-blue-600">Claims</a></nav><a href="report-lost.html" class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"><i class="fa-solid fa-plus mr-1"></i>Report item</a></div></header><main class="mx-auto max-w-7xl px-5 py-9 sm:px-8"><div class="max-w-2xl"><p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Item directory</p><h1 class="mt-2 text-3xl font-bold tracking-tight">Find an Item</h1><p class="mt-3 text-sm text-slate-500">Browse current reports or search by the words and details you remember.</p></div><form data-search-form class="mt-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex flex-col gap-3 sm:flex-row"><label class="sr-only" for="item-search">Search by item name or description</label><div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="item-search" name="query" placeholder="Search by item name or description" class="w-full rounded-xl border border-slate-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"></div><button class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Search</button></div><div class="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2 lg:grid-cols-5"><select aria-label="Item type" class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm"><option>Lost &amp; Found</option><option>Lost only</option><option>Found only</option></select><select aria-label="Category" class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm"><option>All categories</option><option>Electronics</option><option>Personal items</option><option>Clothing</option></select><input aria-label="Location" placeholder="Any location" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><input aria-label="Date" type="date" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><select aria-label="Sort results" class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm"><option>Most recent</option><option>Best match</option><option>Oldest first</option></select></div></form><div data-results class="mt-8"><div class="mb-4 flex items-center justify-between"><p class="text-sm text-slate-500">Showing <span class="font-semibold text-slate-900">12</span> reports</p><button class="text-sm font-medium text-slate-600"><i class="fa-solid fa-sliders mr-1"></i>Filters</button></div><section class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"><article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img class="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=700&q=80" alt="Black smartphone on a surface"><div class="p-5"><div class="flex items-center justify-between"><span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">LOST</span><span class="text-xs text-slate-400">Sep 19</span></div><h2 class="mt-4 font-bold">Black iPhone 15</h2><p class="mt-2 text-sm leading-relaxed text-slate-500">Black phone with a clear case, last seen near the library.</p><p class="mt-4 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Central Library</p><a href="item-details.html" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details <i class="fa-solid fa-arrow-right text-xs"></i></a></div></article><article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img class="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80" alt="Red athletic shoe"><div class="p-5"><div class="flex items-center justify-between"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span class="text-xs text-slate-400">Sep 20</span></div><h2 class="mt-4 font-bold">Red running shoe</h2><p class="mt-2 text-sm leading-relaxed text-slate-500">Single red athletic shoe found by the sports complex entrance.</p><p class="mt-4 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Sports Complex</p><a href="item-details.html" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details <i class="fa-solid fa-arrow-right text-xs"></i></a></div></article><article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img class="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80" alt="Canvas tote bag"><div class="p-5"><div class="flex items-center justify-between"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span class="text-xs text-slate-400">Sep 18</span></div><h2 class="mt-4 font-bold">Canvas tote bag</h2><p class="mt-2 text-sm leading-relaxed text-slate-500">Natural canvas bag, held safely after being found near the gate.</p><p class="mt-4 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-blue-600"></i>North Gate</p><a href="item-details.html" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details <i class="fa-solid fa-arrow-right text-xs"></i></a></div></article></section></div><section data-empty-state class="hidden py-16 text-center"><span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-xl text-blue-600"><i class="fa-solid fa-magnifying-glass"></i></span><h2 class="mt-5 text-xl font-bold">No reports found</h2><p class="mx-auto mt-2 max-w-sm text-sm text-slate-500">Try a different search term or clear a filter to see more items.</p></section></main><script type="module" src="../js/search.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+    <title>Search Items · FindBack</title>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-900">
+    <header class="border-b border-slate-200 bg-white">
+        <div class="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-5 px-5 sm:px-8"><a
+                href="dashboard.html" class="flex items-center gap-2"><span
+                    class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
+                        class="fa-solid fa-magnifying-glass"></i></span><span
+                    class="text-lg font-bold">FindBack</span></a>
+            <nav class="hidden gap-5 text-sm font-medium text-slate-600 md:flex"><a href="dashboard.html"
+                    class="hover:text-blue-600">Dashboard</a><a href="matches.html"
+                    class="hover:text-blue-600">Matches</a><a href="claims.html" class="hover:text-blue-600">Claims</a>
+            </nav><a href="report-lost.html"
+                class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"><i
+                    class="fa-solid fa-plus mr-1"></i>Report item</a>
+        </div>
+    </header>
+    <main class="mx-auto max-w-7xl px-5 py-9 sm:px-8">
+        <div class="max-w-2xl">
+            <p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Item directory</p>
+            <h1 class="mt-2 text-3xl font-bold tracking-tight">Find an Item</h1>
+            <p class="mt-3 text-sm text-slate-500">Browse current reports or search by the words and details you
+                remember.</p>
+        </div>
+        <form data-search-form class="mt-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex flex-col gap-3 sm:flex-row"><label class="sr-only" for="item-search">Search by item name or
+                    description</label>
+                <div class="relative flex-1"><i
+                        class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input
+                        id="item-search" name="query" placeholder="Search by item name or description"
+                        class="w-full rounded-xl border border-slate-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                </div><button
+                    class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Search</button>
+            </div>
+            <div class="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2 lg:grid-cols-5"><select
+                    aria-label="Item type" class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
+                    <option>Lost &amp; Found</option>
+                    <option>Lost only</option>
+                    <option>Found only</option>
+                </select><select aria-label="Category"
+                    class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
+                    <option>All categories</option>
+                    <option>Electronics</option>
+                    <option>Personal items</option>
+                    <option>Clothing</option>
+                </select><input aria-label="Location" placeholder="Any location"
+                    class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><input aria-label="Date" type="date"
+                    class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><select aria-label="Sort results"
+                    class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
+                    <option>Most recent</option>
+                    <option>Best match</option>
+                    <option>Oldest first</option>
+                </select></div>
+        </form>
+        <div data-results class="mt-8">
+            <div class="mb-4 flex items-center justify-between">
+                <p class="text-sm text-slate-500">Showing <span class="font-semibold text-slate-900">12</span> reports
+                </p><button class="text-sm font-medium text-slate-600"><i
+                        class="fa-solid fa-sliders mr-1"></i>Filters</button>
+            </div>
+            <section class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
+                        class="h-44 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=700&q=80"
+                        alt="Black smartphone on a surface">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between"><span
+                                class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">LOST</span><span
+                                class="text-xs text-slate-400">Sep 19</span></div>
+                        <h2 class="mt-4 font-bold">Black iPhone 15</h2>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Black phone with a clear case, last seen
+                            near the library.</p>
+                        <p class="mt-4 text-sm text-slate-500"><i
+                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Central Library</p><a
+                            href="item-details.html"
+                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
+                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                    </div>
+                </article>
+                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
+                        class="h-44 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80"
+                        alt="Red athletic shoe">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between"><span
+                                class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span
+                                class="text-xs text-slate-400">Sep 20</span></div>
+                        <h2 class="mt-4 font-bold">Red running shoe</h2>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Single red athletic shoe found by the
+                            sports complex entrance.</p>
+                        <p class="mt-4 text-sm text-slate-500"><i
+                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Sports Complex</p><a
+                            href="item-details.html"
+                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
+                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                    </div>
+                </article>
+                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
+                        class="h-44 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80"
+                        alt="Canvas tote bag">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between"><span
+                                class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span
+                                class="text-xs text-slate-400">Sep 18</span></div>
+                        <h2 class="mt-4 font-bold">Canvas tote bag</h2>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Natural canvas bag, held safely after
+                            being found near the gate.</p>
+                        <p class="mt-4 text-sm text-slate-500"><i
+                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>North Gate</p><a
+                            href="item-details.html"
+                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
+                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                    </div>
+                </article>
+            </section>
+        </div>
+        <section data-empty-state class="hidden py-16 text-center"><span
+                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-xl text-blue-600"><i
+                    class="fa-solid fa-magnifying-glass"></i></span>
+            <h2 class="mt-5 text-xl font-bold">No reports found</h2>
+            <p class="mx-auto mt-2 max-w-sm text-sm text-slate-500">Try a different search term or clear a filter to see
+                more items.</p>
+        </section>
+    </main>
+    <script type="module" src="../js/search.js"></script>
+</body>
+
+</html>
