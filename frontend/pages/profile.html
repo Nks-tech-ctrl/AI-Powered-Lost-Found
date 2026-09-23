@@ -1,132 +1,318 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-    <title>Profile · FindBack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile & Settings — FindBack</title>
+  <meta name="description" content="Manage your FindBack profile, privacy preferences, notification channels, and security credentials.">
+  <meta name="theme-color" content="#2563EB">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB',
+            'primary-dark': '#1D4ED8',
+            'primary-light': '#3B82F6',
+            navy: '#0F172A',
+            indigo: '#4F46E5',
+            cyan: '#06B6D4',
+            'soft-blue': '#EFF6FF',
+            'bg-main': '#F8FAFC',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            'border-light': '#E2E8F0',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+            'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+  </style>
 </head>
+<body class="font-sans antialiased bg-bg-main text-navy selection:bg-primary selection:text-white min-h-screen flex flex-col lg:flex-row">
 
-<body class="bg-slate-50 font-sans text-slate-900">
-    <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex min-h-18 max-w-7xl items-center justify-between px-5 sm:px-8"><a href="dashboard.html"
-                class="flex items-center gap-2"><span
-                    class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
-                        class="fa-solid fa-magnifying-glass"></i></span><span
-                    class="text-lg font-bold">FindBack</span></a>
-            <nav class="hidden gap-5 text-sm font-medium text-slate-600 md:flex"><a href="dashboard.html"
-                    class="hover:text-blue-600">Dashboard</a><a href="search.html" class="hover:text-blue-600">Search
-                    items</a><a href="matches.html" class="hover:text-blue-600">Matches</a><a href="claims.html"
-                    class="hover:text-blue-600">Claims</a></nav><a href="../index.html"
-                class="text-sm font-semibold text-blue-600">Sign out</a>
+  <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-30 shrink-0 select-none">
+    
+    <div class="h-20 px-6 flex items-center border-b border-slate-100">
+      <a href="../index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-satellite-dish text-sm"></i>
         </div>
-    </header>
-    <main class="mx-auto max-w-6xl px-5 py-9 sm:px-8">
-        <p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Account</p>
-        <h1 class="mt-2 text-3xl font-bold tracking-tight">Profile &amp; settings</h1>
-        <p class="mt-3 text-sm text-slate-500">Keep your contact information and account preferences up to date.</p>
-        <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <form data-profile-form action="#" method="post" class="space-y-6">
-                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <div class="flex flex-wrap items-center gap-5"><span data-user-avatar
-                            class="grid h-18 w-18 place-items-center overflow-hidden rounded-full bg-sky-100 text-xl font-bold text-blue-700"><img data-user-avatar-image class="hidden h-full w-full object-cover" alt=""><span data-user-avatar-fallback></span></span>
-                        <div>
-                            <h2 class="text-lg font-bold">Your profile</h2>
-                            <p class="mt-1 text-sm text-slate-500">This information supports safe communication about
-                                reports and claims.</p>
-                        </div><button type="button"
-                            class="ml-auto rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Change
-                            avatar</button>
-                    </div>
-                    <div class="mt-7 grid gap-5 sm:grid-cols-2">
-                        <div><label for="profile-first" class="text-sm font-medium">First name</label><input data-user-field="firstName"
-                                id="profile-first" name="firstName" autocomplete="given-name"
-                                class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                        </div>
-                        <div><label for="profile-last" class="text-sm font-medium">Last name</label><input data-user-field="lastName"
-                                id="profile-last" name="lastName" autocomplete="family-name"
-                                class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                        </div>
-                        <div><label for="profile-email" class="text-sm font-medium">Email address</label><input data-user-field="email"
-                                id="profile-email" name="email" type="email"
-                                autocomplete="email"
-                                class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                        </div>
-                        <div><label for="profile-phone" class="text-sm font-medium">Phone number</label><input data-user-field="phone"
-                                id="profile-phone" name="phone" type="tel" autocomplete="tel"
-                                class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                        </div>
-                    </div>
-                </section>
-                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-lg font-bold">Account settings</h2>
-                            <p class="mt-1 text-sm text-slate-500">Manage security and notification preferences.</p>
-                        </div><button type="button"
-                            class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Change
-                            password</button>
-                    </div>
-                    <fieldset class="mt-6 border-t border-slate-100 pt-6">
-                        <legend class="font-semibold">Notification preferences</legend>
-                        <div class="mt-4 space-y-4"><label class="flex items-start justify-between gap-4"><span><span
-                                        class="block text-sm font-medium">Potential matches</span><span
-                                        class="mt-1 block text-sm text-slate-500">Alert me when a new match is suggested
-                                        for my report.</span></span><input type="checkbox" checked
-                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"></label><label
-                                class="flex items-start justify-between gap-4"><span><span
-                                        class="block text-sm font-medium">Claim updates</span><span
-                                        class="mt-1 block text-sm text-slate-500">Send updates when a claim moves
-                                        through verification.</span></span><input type="checkbox" checked
-                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"></label><label
-                                class="flex items-start justify-between gap-4"><span><span
-                                        class="block text-sm font-medium">Product updates</span><span
-                                        class="mt-1 block text-sm text-slate-500">Occasional tips for using FindBack
-                                        effectively.</span></span><input type="checkbox"
-                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"></label>
-                        </div>
-                    </fieldset>
-                </section>
-                <div class="flex flex-col items-end gap-2"><button type="submit"
-                        class="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Save
-                        Changes</button><p data-profile-save-status class="text-sm text-slate-500" aria-live="polite"></p></div>
-            </form>
-            <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="font-bold">Activity summary</h2>
-                <p class="mt-1 text-sm text-slate-500">Your FindBack activity at a glance.</p>
-                <dl class="mt-6 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                        <dt class="text-sm text-slate-600"><i
-                                class="fa-solid fa-circle-minus mr-2 text-rose-500"></i>Lost reports</dt>
-                        <dd data-user-stat="lostReports" class="text-lg font-bold">—</dd>
-                    </div>
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                        <dt class="text-sm text-slate-600"><i
-                                class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i>Found reports</dt>
-                        <dd data-user-stat="foundReports" class="text-lg font-bold">—</dd>
-                    </div>
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                        <dt class="text-sm text-slate-600"><i
-                                class="fa-solid fa-wand-magic-sparkles mr-2 text-blue-500"></i>Matches</dt>
-                        <dd data-user-stat="matches" class="text-lg font-bold">—</dd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <dt class="text-sm text-slate-600"><i
-                                class="fa-solid fa-shield-halved mr-2 text-amber-500"></i>Claims</dt>
-                        <dd data-user-stat="claims" class="text-lg font-bold">—</dd>
-                    </div>
-                </dl><a href="claims.html" class="mt-6 inline-block text-sm font-semibold text-blue-600">Review claims
-                    <i class="fa-solid fa-arrow-right text-xs"></i></a>
-            </aside>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+          </div>
+          <span class="text-[9px] font-semibold text-primary uppercase tracking-wider">Recovery Platform</span>
         </div>
-        <p data-current-user-state class="mt-6 text-sm text-slate-500" aria-live="polite"></p>
-    </main>
-    <script type="module" src="../js/profile.js"></script>
+      </a>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto" aria-label="Sidebar Navigation">
+      <a href="dashboard.html" data-sidebar-link="dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-chart-pie text-slate-400 w-4 text-center"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="report-lost.html" data-sidebar-link="report-lost" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 w-4 text-center"></i>
+          <span>Report Lost</span>
+        </div>
+      </a>
+
+      <a href="report-found.html" data-sidebar-link="report-found" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-hand-holding-heart text-emerald-500 w-4 text-center"></i>
+          <span>Report Found</span>
+        </div>
+      </a>
+
+      <a href="search.html" data-sidebar-link="search" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 w-4 text-center"></i>
+        <span>Search Items</span>
+      </a>
+
+      <a href="matches.html" data-sidebar-link="matches" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-bolt text-amber-500 w-4 text-center"></i>
+          <span>Potential Matches</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
+      </a>
+
+      <a href="claims.html" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-cyan-600 w-4 text-center"></i>
+          <span>My Claims</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+      </a>
+
+      <a href="profile.html" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-primary bg-blue-50/90 border border-blue-200/80 shadow-xs transition-colors">
+        <i class="fa-regular fa-user text-primary w-4 text-center"></i>
+        <span>Profile & Settings</span>
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-slate-100">
+      <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+            AS
+          </div>
+          <div class="min-w-0">
+            <span class="text-xs font-bold text-navy truncate block">Abhishek Sharma</span>
+            <span class="text-[10px] text-slate-500 truncate block">abhishek@example.com</span>
+          </div>
+        </div>
+        <a href="login.html" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
+
+    <div class="pb-2 border-b border-slate-200/80">
+      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Profile & Settings</h1>
+      <p class="text-xs sm:text-sm text-text-secondary mt-1">Manage your identity credentials, safety privacy controls, and recovery notifications.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
+      <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+        
+        <div class="relative group">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl flex items-center justify-center shadow-md">
+            AS
+          </div>
+          <button type="button" id="change-avatar-btn" class="absolute -bottom-1.5 -right-1.5 p-1.5 bg-white border border-slate-200 text-slate-600 hover:text-primary rounded-lg shadow-xs" title="Change photo">
+            <i class="fa-solid fa-camera text-xs"></i>
+          </button>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-center sm:justify-start gap-2">
+            <h2 class="text-xl font-bold font-heading text-navy">Abhishek Sharma</h2>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+              <i class="fa-solid fa-shield-halved text-[9px] mr-1"></i> Verified User
+            </span>
+          </div>
+          <span class="text-xs text-text-secondary block mt-0.5">abhishek@example.com</span>
+          <div class="flex items-center justify-center sm:justify-start gap-3 text-[11px] text-slate-400 mt-2">
+            <span><i class="fa-regular fa-calendar mr-1"></i> Member since March 2026</span>
+            <span>•</span>
+            <span><i class="fa-solid fa-location-dot mr-1"></i> Central Metro Corridor</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="edit-profile-btn" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors shadow-xs">
+        <i class="fa-regular fa-pen-to-square mr-1.5"></i> Edit Details
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+        <span class="text-2xl font-extrabold font-heading text-navy block">6</span>
+        <span class="text-xs font-semibold text-text-secondary">Reports Submitted</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+        <span class="text-2xl font-extrabold font-heading text-amber-600 block">3</span>
+        <span class="text-xs font-semibold text-text-secondary">Potential Matches</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+        <span class="text-2xl font-extrabold font-heading text-cyan-600 block">2</span>
+        <span class="text-xs font-semibold text-text-secondary">Active Claims</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+        <span class="text-2xl font-extrabold font-heading text-emerald-600 block">1</span>
+        <span class="text-xs font-semibold text-text-secondary">Items Reunited</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-6">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="text-base font-bold font-heading text-navy">Personal Information</h3>
+          <p class="text-xs text-text-secondary mt-0.5">Your official name and verified contact channels.</p>
+        </div>
+
+        <form id="profile-form" data-profile-form class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="prof-name" class="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
+              <input type="text" id="prof-name" value="Abhishek Sharma" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+            </div>
+
+            <div>
+              <label for="prof-email" class="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
+              <input type="email" id="prof-email" value="abhishek@example.com" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+            </div>
+
+            <div>
+              <label for="prof-phone" class="block text-xs font-bold text-slate-700 mb-1.5">Emergency Dispatch Phone</label>
+              <input type="tel" id="prof-phone" value="+1 (555) 234-8890" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+              <span class="text-[10px] text-slate-400 mt-1 block">Shielded from public view; used only for physical handover SMS.</span>
+            </div>
+
+            <div>
+              <label for="prof-loc" class="block text-xs font-bold text-slate-700 mb-1.5">Primary Area / Transit Zone</label>
+              <input type="text" id="prof-loc" value="Central Metro & Downtown Corridor" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex justify-end">
+            <button type="submit" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lg:col-span-5 space-y-6">
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h3 class="text-sm font-bold font-heading text-navy">Notifications Preferences</h3>
+            <p class="text-xs text-text-secondary">Control real-time recovery alert channels.</p>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <span class="font-bold text-navy block">Potential Match Alerts</span>
+                <span class="text-[11px] text-slate-500">Instant ping when AI detects &gt;85% match</span>
+              </div>
+              <input type="checkbox" checked class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
+            </label>
+
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <span class="font-bold text-navy block">Claim Status Updates</span>
+                <span class="text-[11px] text-slate-500">Milestone alerts during verification review</span>
+              </div>
+              <input type="checkbox" checked class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
+            </label>
+
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <span class="font-bold text-navy block">Community Broadcasts</span>
+                <span class="text-[11px] text-slate-500">Weekly recovery metrics & hub announcements</span>
+              </div>
+              <input type="checkbox" class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h3 class="text-sm font-bold font-heading text-navy">Privacy & Account Security</h3>
+            <p class="text-xs text-text-secondary">Shield personal info across the network.</p>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
+                <span class="font-bold text-navy block">Anonymous Proxy Relay</span>
+                <span class="text-[10px] text-slate-500">Phone and email hidden from other users</span>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Active</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
+                <span class="font-bold text-navy block">Two-Factor Authentication</span>
+                <span class="text-[10px] text-slate-500">Enabled via Authenticator App</span>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Enabled</span>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between gap-2">
+              <button type="button" id="change-password-btn" class="w-1/2 py-2 px-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition-colors shadow-xs">
+                Change Password
+              </button>
+              <button type="button" id="signout-devices-btn" class="w-1/2 py-2 px-3 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs font-bold text-rose-600 transition-colors">
+                Sign Out Devices
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script src="../js/profile.js"></script>
+
 </body>
-
 </html>

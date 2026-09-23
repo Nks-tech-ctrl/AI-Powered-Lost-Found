@@ -1,71 +1,297 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-    <title>Create account · FindBack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — FindBack</title>
+  <meta name="description" content="Register for a FindBack account to report lost items, register found belongings, and receive AI match alerts.">
+  <meta name="theme-color" content="#2563EB">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB',
+            'primary-dark': '#1D4ED8',
+            'primary-light': '#3B82F6',
+            navy: '#0F172A',
+            indigo: '#4F46E5',
+            cyan: '#06B6D4',
+            'soft-blue': '#EFF6FF',
+            'bg-main': '#F8FAFC',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            'border-light': '#E2E8F0',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+            'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+            'glow-blue': '0 0 25px -3px rgba(37, 99, 235, 0.35)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      min-height: 100vh;
+    }
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+    }
+  </style>
 </head>
+<body class="font-sans antialiased bg-bg-main text-navy selection:bg-primary selection:text-white min-h-screen flex flex-col justify-between">
 
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900">
-    <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex h-18 max-w-6xl items-center justify-between px-6"><a href="../index.html"
-                class="flex items-center gap-2"><span
-                    class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
-                        class="fa-solid fa-magnifying-glass"></i></span><span
-                    class="text-lg font-bold">FindBack</span></a>
-            <p class="text-sm text-slate-600">Already a member? <a href="login.html"
-                    class="font-semibold text-blue-600">Log in</a></p>
+  <header class="w-full bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="../index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-satellite-dish text-sm"></i>
         </div>
-    </header>
-    <main class="mx-auto max-w-xl px-6 py-12 sm:py-16">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-9">
-            <p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Join FindBack</p>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight">Create your account</h1>
-            <p class="mt-3 text-sm leading-relaxed text-slate-500">Start reporting items and reviewing potential matches
-                in one secure place.</p>
-            <form data-auth-form="register" class="mt-8 space-y-5" action="#" method="post">
-                <div class="grid gap-5 sm:grid-cols-2">
-                    <div><label for="first-name" class="text-sm font-medium">First name</label><input id="first-name"
-                            name="firstName" autocomplete="given-name" required
-                            class="input mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                    </div>
-                    <div><label for="last-name" class="text-sm font-medium">Last name</label><input id="last-name"
-                            name="lastName" autocomplete="family-name" required
-                            class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                    </div>
-                </div>
-                <div><label for="register-email" class="text-sm font-medium">Email address</label><input
-                        id="register-email" name="email" type="email" autocomplete="email" required
-                        placeholder="you@example.com"
-                        class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                </div>
-                <div><label for="new-password" class="text-sm font-medium">Password</label><input id="new-password"
-                        name="password" type="password" autocomplete="new-password" required minlength="8"
-                        aria-describedby="password-help"
-                        class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                    <p id="password-help" class="mt-2 text-xs text-slate-500">Use at least 8 characters.</p>
-                </div>
-                <div><label for="confirm-password" class="text-sm font-medium">Confirm password</label><input
-                        id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password"
-                        required
-                        class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                </div><label class="flex gap-3 text-sm leading-relaxed text-slate-600"><input type="checkbox" required
-                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500">I
-                    agree to the <a href="#" class="font-medium text-blue-600">Terms of Service</a> and <a href="#"
-                        class="font-medium text-blue-600">Privacy Policy</a>.</label><button type="submit"
-                    class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">Create
-                    account</button>
-                <p data-auth-status class="text-center text-sm text-slate-500" aria-live="polite"></p>
-            </form>
+        <div class="flex items-center gap-1.5">
+          <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
         </div>
-    </main>
-    <script type="module" src="../js/auth-page.js"></script>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-text-secondary hidden sm:inline">Already have an account?</span>
+        <a href="login.html" class="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+          Sign In
+        </a>
+        <a href="../index.html" class="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1 ml-2">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Home</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 flex items-stretch max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full items-center">
+
+      <div class="lg:col-span-6 flex flex-col justify-center space-y-6 pr-0 lg:pr-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-primary text-xs font-bold mb-4">
+            <i class="fa-solid fa-user-plus text-xs"></i>
+            Join the FindBack Network
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-navy tracking-tight leading-tight">
+            Reconnecting people with <br>
+            <span class="bg-gradient-to-r from-primary to-indigo bg-clip-text text-transparent">what matters most.</span>
+          </h1>
+          <p class="text-sm sm:text-base text-text-secondary mt-3 leading-relaxed max-w-lg">
+            Create your free account to submit encrypted reports, receive instant AI match notifications, and participate in a verified community of recovery.
+          </p>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0 mt-0.5">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-navy">Secure & Verified Ownership</h3>
+              <p class="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                Claims require strict ownership validation challenges. Contact details remain fully shielded until ownership is verified.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center text-lg shrink-0 mt-0.5">
+              <i class="fa-solid fa-microchip"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-navy">Multimodal AI Vector Matching</h3>
+              <p class="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                Our neural models compare product geometry, color palettes, and descriptions across thousands of active reports automatically.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-indigo/10 text-indigo flex items-center justify-center text-lg shrink-0 mt-0.5">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-navy">Community & Partner Hubs</h3>
+              <p class="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                Partnered with universities, transit authorities, and municipal desks for safe, verified item handovers.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 pt-2 border-t border-slate-200 text-xs text-slate-600">
+          <div>
+            <span class="text-base font-extrabold text-navy font-heading">10,480+</span>
+            <span class="block text-[11px] text-slate-400">Reports Processed</span>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div>
+            <span class="text-base font-extrabold text-emerald-600 font-heading">6,820+</span>
+            <span class="block text-[11px] text-slate-400">Items Reunited</span>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div>
+            <span class="text-base font-extrabold text-primary font-heading">94%</span>
+            <span class="block text-[11px] text-slate-400">Match Accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6 flex justify-center">
+        <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 relative">
+          
+          <div class="mb-5">
+            <h2 class="text-2xl font-bold font-heading text-navy">Create account</h2>
+            <p class="text-xs sm:text-sm text-text-secondary mt-1">Get started with your free FindBack account.</p>
+          </div>
+
+          <button type="button" id="google-signup-btn" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-3 transition-colors shadow-xs mb-4">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Sign up with Google</span>
+          </button>
+
+          <div class="relative flex items-center justify-center mb-4">
+            <div class="border-t border-slate-200 w-full"></div>
+            <span class="bg-white px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">or register with email</span>
+          </div>
+
+          <form id="register-form" data-auth-form="register" class="space-y-3.5" novalidate>
+            
+            <div>
+              <label for="fullname" class="block text-xs font-bold text-slate-700 mb-1">Full name</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-user text-xs"></i>
+                </div>
+                <input type="text" id="fullname" name="fullname" required placeholder="Abhishek Sharma" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+              </div>
+              <span id="name-error" class="text-[11px] text-rose-500 hidden mt-0.5">Please enter your full name.</span>
+            </div>
+
+            <div>
+              <label for="email" class="block text-xs font-bold text-slate-700 mb-1">Email address</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-envelope text-xs"></i>
+                </div>
+                <input type="email" id="email" name="email" required placeholder="abhishek@example.com" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+              </div>
+              <span id="email-error" class="text-[11px] text-rose-500 hidden mt-0.5">Please enter a valid email address.</span>
+            </div>
+
+            <div>
+              <label for="location" class="block text-xs font-bold text-slate-700 mb-1">
+                Preferred Area / Campus <span class="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-location-dot text-xs"></i>
+                </div>
+                <input type="text" id="location" name="location" placeholder="e.g. Central Metro / City Campus" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+              </div>
+            </div>
+
+            <div>
+              <label for="password" class="block text-xs font-bold text-slate-700 mb-1">Create Password</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-lock text-xs"></i>
+                </div>
+                <input type="password" id="password" name="password" required placeholder="At least 8 characters" class="w-full pl-9 pr-10 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+                <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="Toggle password visibility">
+                  <i class="fa-regular fa-eye text-xs"></i>
+                </button>
+              </div>
+
+              <div class="mt-2 space-y-1">
+                <div class="flex items-center justify-between text-[10px] text-slate-500">
+                  <span>Password strength:</span>
+                  <span id="strength-text" class="font-bold text-slate-400">None</span>
+                </div>
+                <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex gap-1">
+                  <div id="bar-1" class="h-full w-1/3 bg-slate-200 transition-colors"></div>
+                  <div id="bar-2" class="h-full w-1/3 bg-slate-200 transition-colors"></div>
+                  <div id="bar-3" class="h-full w-1/3 bg-slate-200 transition-colors"></div>
+                </div>
+              </div>
+              <span id="password-error" class="text-[11px] text-rose-500 hidden mt-0.5">Password must be at least 8 characters.</span>
+            </div>
+
+            <div class="pt-1">
+              <label class="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" id="terms-agree" required class="w-4 h-4 mt-0.5 text-primary rounded border-slate-300 focus:ring-primary/20">
+                <span class="text-xs text-slate-600 leading-tight">
+                  I agree to FindBack's 
+                  <a href="../index.html#safety" class="text-primary hover:underline font-semibold">Terms of Service</a> 
+                  and 
+                  <a href="../index.html#safety" class="text-primary hover:underline font-semibold">Privacy Policy</a>.
+                </span>
+              </label>
+              <span id="terms-error" class="text-[11px] text-rose-500 hidden mt-0.5 block">You must agree to continue.</span>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-98 transition-all font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 mt-2">
+              <span id="btn-text">Create Account</span>
+              <i id="btn-spinner" class="fa-solid fa-circle-notch fa-spin text-xs hidden"></i>
+            </button>
+          </form>
+
+          <div class="mt-5 pt-4 border-t border-slate-100 text-center">
+            <p class="text-xs text-text-secondary">
+              Already have an account? 
+              <a href="login.html" class="font-bold text-primary hover:underline ml-1">Sign in</a>
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="w-full border-t border-slate-200 py-6 bg-white/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+      <p>© 2026 FindBack Technologies Inc. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <a href="../index.html#safety" class="hover:text-primary transition-colors">Privacy Policy</a>
+        <a href="../index.html#safety" class="hover:text-primary transition-colors">Terms of Service</a>
+        <a href="../index.html" class="hover:text-primary transition-colors">FindBack Home</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script src="../js/auth-page.js"></script>
 </body>
-
 </html>

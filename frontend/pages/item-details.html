@@ -1,141 +1,374 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-    <title>Black iPhone 15 · FindBack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Details — FindBack</title>
+  <meta name="description" content="View verified item report details, review AI match confidence scores, and initiate safe ownership claims.">
+  <meta name="theme-color" content="#2563EB">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB',
+            'primary-dark': '#1D4ED8',
+            'primary-light': '#3B82F6',
+            navy: '#0F172A',
+            indigo: '#4F46E5',
+            cyan: '#06B6D4',
+            'soft-blue': '#EFF6FF',
+            'bg-main': '#F8FAFC',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            'border-light': '#E2E8F0',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+            'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+  </style>
 </head>
+<body class="font-sans antialiased bg-bg-main text-navy selection:bg-primary selection:text-white min-h-screen flex flex-col lg:flex-row">
 
-<body class="bg-slate-50 font-sans text-slate-900">
-    <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex min-h-18 max-w-7xl items-center justify-between px-5 sm:px-8"><a href="dashboard.html"
-                class="flex items-center gap-2"><span
-                    class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
-                        class="fa-solid fa-magnifying-glass"></i></span><span
-                    class="text-lg font-bold">FindBack</span></a>
-            <nav class="hidden gap-5 text-sm font-medium text-slate-600 md:flex"><a href="dashboard.html"
-                    class="hover:text-blue-600">Dashboard</a><a href="search.html" class="hover:text-blue-600">Search
-                    items</a><a href="matches.html" class="hover:text-blue-600">Matches</a></nav><a href="search.html"
-                class="text-sm font-semibold text-blue-600"><i class="fa-solid fa-arrow-left mr-1"></i>Back to
-                search</a>
+  <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-30 shrink-0 select-none">
+    
+    <div class="h-20 px-6 flex items-center border-b border-slate-100">
+      <a href="../index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-satellite-dish text-sm"></i>
         </div>
-    </header>
-    <main class="mx-auto max-w-7xl px-5 py-8 sm:px-8"><a href="search.html"
-            class="text-sm font-medium text-slate-500 hover:text-blue-600"><i
-                class="fa-solid fa-arrow-left mr-2"></i>All items</a>
-        <div class="mt-5 grid gap-8 lg:grid-cols-2">
-            <section>
-                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
-                        class="aspect-square w-full object-cover"
-                        src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1100&q=85"
-                        alt="Black smartphone reported lost"></div>
-                <div class="mt-4 flex gap-3"><button aria-label="View main item photo"
-                        class="h-18 w-18 overflow-hidden rounded-xl border-2 border-blue-600"><img
-                            class="h-full w-full object-cover"
-                            src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=160&q=80"
-                            alt="Black smartphone thumbnail"></button>
-                    <div
-                        class="grid h-18 w-18 place-items-center rounded-xl border border-slate-200 bg-white text-slate-400">
-                        <i class="fa-solid fa-image"></i></div>
-                </div>
-            </section>
-            <section>
-                <div class="flex flex-wrap items-center gap-3"><span
-                        class="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700">LOST</span><span
-                        class="text-sm text-slate-500">Report #FB-2026-0184</span></div>
-                <h1 class="mt-5 text-3xl font-bold tracking-tight">Black iPhone 15</h1>
-                <p class="mt-2 text-sm text-slate-500">Category: Electronics</p>
-                <div class="mt-6 border-y border-slate-200 py-6">
-                    <h2 class="font-bold">Description</h2>
-                    <p class="mt-3 text-sm leading-relaxed text-slate-600">Black iPhone 15 with a clear case and a small
-                        blue sticker inside the case. It was last seen while studying at the library.</p>
-                    <dl class="mt-6 grid gap-5 sm:grid-cols-2">
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Location</dt>
-                            <dd class="mt-1 text-sm font-medium"><i
-                                    class="fa-solid fa-location-dot mr-2 text-blue-600"></i>Central Library</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Date reported</dt>
-                            <dd class="mt-1 text-sm font-medium"><i
-                                    class="fa-regular fa-calendar mr-2 text-blue-600"></i>September 19, 2026</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Reported by</dt>
-                            <dd class="mt-1 text-sm font-medium">Aarav M.</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Status</dt>
-                            <dd class="mt-1 text-sm font-medium text-amber-700">Potential match found</dd>
-                        </div>
-                    </dl>
-                </div>
-                <div class="mt-6 grid gap-3 sm:grid-cols-3"><button
-                        class="rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">I'm
-                        the owner</button><button
-                        class="rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">I
-                        found this item</button><button
-                        class="rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"><i
-                            class="fa-regular fa-message mr-1"></i>Contact reporter</button></div>
-                <p class="mt-4 text-xs leading-relaxed text-slate-500">Claims and conversations are subject to the
-                    platform’s verification process.</p>
-            </section>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+          </div>
+          <span class="text-[9px] font-semibold text-primary uppercase tracking-wider">Recovery Platform</span>
         </div>
-        <section class="mt-9 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <div class="flex items-start gap-3"><span
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600"><i
-                        class="fa-solid fa-wand-magic-sparkles"></i></span>
-                <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-blue-600">AI Match Information</p>
-                    <h2 class="mt-1 text-xl font-bold">Potential match nearby</h2>
-                    <p class="mt-1 text-sm text-slate-500">This information is a suggestion, not proof of ownership.</p>
-                </div>
+      </a>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto" aria-label="Sidebar Navigation">
+      <a href="dashboard.html" data-sidebar-link="dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-chart-pie text-slate-400 w-4 text-center"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="report-lost.html" data-sidebar-link="report-lost" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 w-4 text-center"></i>
+          <span>Report Lost</span>
+        </div>
+      </a>
+
+      <a href="report-found.html" data-sidebar-link="report-found" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-hand-holding-heart text-emerald-500 w-4 text-center"></i>
+          <span>Report Found</span>
+        </div>
+      </a>
+
+      <a href="search.html" data-sidebar-link="search" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 w-4 text-center"></i>
+        <span>Search Items</span>
+      </a>
+
+      <a href="matches.html" data-sidebar-link="matches" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-bolt text-amber-500 w-4 text-center"></i>
+          <span>Potential Matches</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
+      </a>
+
+      <a href="claims.html" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-cyan-600 w-4 text-center"></i>
+          <span>My Claims</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+      </a>
+
+      <a href="profile.html" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-regular fa-user text-slate-400 w-4 text-center"></i>
+        <span>Profile & Settings</span>
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-slate-100">
+      <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+            AS
+          </div>
+          <div class="min-w-0">
+            <span class="text-xs font-bold text-navy truncate block">Abhishek Sharma</span>
+            <span class="text-[10px] text-slate-500 truncate block">abhishek@example.com</span>
+          </div>
+        </div>
+        <a href="login.html" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
+
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200/80">
+      <a href="search.html" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+        <span>Back to search results</span>
+      </a>
+
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-slate-400">Report ID:</span>
+        <span class="font-mono font-bold text-slate-700">#FB-9042</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <div class="lg:col-span-6 space-y-4">
+
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
+          <div class="h-80 sm:h-96 w-full bg-slate-100 relative">
+            <img id="main-item-img" src="../images/backpack.jpg" alt="Item Image" class="w-full h-full object-cover">
+
+            <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-rose-500 text-white shadow-md flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
+              <span id="item-status-text">LOST</span>
+            </span>
+
+            <span id="item-category-badge" class="absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-900/80 text-white backdrop-blur-md">
+              Bags & Luggage
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <button type="button" class="thumb-btn p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs focus:outline-none" data-src="../images/backpack.jpg">
+            <img src="../images/backpack.jpg" alt="Angle 1" class="w-full h-16 object-cover rounded-lg">
+          </button>
+          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="../images/backpack.jpg">
+            <img src="../images/backpack.jpg" alt="Angle 2" class="w-full h-16 object-cover rounded-lg">
+          </button>
+          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="../images/backpack.jpg">
+            <img src="../images/backpack.jpg" alt="Angle 3" class="w-full h-16 object-cover rounded-lg">
+          </button>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
+          <i class="fa-solid fa-shield-halved text-emerald-600 text-sm shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold text-navy block">Privacy-First Data Protection</span>
+            <p class="mt-0.5 text-slate-500 leading-relaxed">
+              Personal contact details, serial numbers, and home addresses are never published. Handover operations occur strictly through verified channels.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-6 space-y-6">
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+              <span>Category: <strong id="detail-category" class="text-navy">Bags & Luggage</strong></span>
+              <span>•</span>
+              <span>Brand: <strong id="detail-brand" class="text-navy">Incase / Herschel</strong></span>
             </div>
-            <div class="mt-6 grid gap-5 lg:grid-cols-[240px_1fr]">
-                <div class="rounded-xl bg-slate-50 p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Match score</p>
-                    <p class="mt-1 text-4xl font-bold text-blue-600">94%</p>
-                    <p class="mt-2 text-xs text-slate-500">Suggested match: found black phone</p>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <div class="flex justify-between text-sm"><span>Image similarity</span><b>96%</b></div>
-                        <div class="mt-2 h-2 rounded-full bg-slate-100">
-                            <div class="h-full w-[96%] rounded-full bg-blue-500"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm"><span>Description similarity</span><b>91%</b></div>
-                        <div class="mt-2 h-2 rounded-full bg-slate-100">
-                            <div class="h-full w-[91%] rounded-full bg-blue-500"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm"><span>Location match</span><b>88%</b></div>
-                        <div class="mt-2 h-2 rounded-full bg-slate-100">
-                            <div class="h-full w-[88%] rounded-full bg-blue-500"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm"><span>Time match</span><b>94%</b></div>
-                        <div class="mt-2 h-2 rounded-full bg-slate-100">
-                            <div class="h-full w-[94%] rounded-full bg-blue-500"></div>
-                        </div>
-                    </div>
-                </div>
+            <h1 id="detail-title" class="text-2xl font-extrabold font-heading text-navy leading-tight">
+              Matte Black Commuter Backpack with 15" Sleeve
+            </h1>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block">Primary Color</span>
+              <span class="font-bold text-navy">Matte Black</span>
             </div>
-            <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600">
-                <span class="font-semibold text-slate-900">AI explanation:</span> The reported image, case details, and
-                library location align strongly with a phone found near the library entrance later that day. Verify
-                distinctive ownership details before returning the item.</div>
-        </section>
-    </main>
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block">Last Seen / Found</span>
+              <span class="font-bold text-navy">Central Metro Line 2</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block">Report Date</span>
+              <span class="font-bold text-navy">Sep 21, 2026</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description</h3>
+            <p id="detail-desc" class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+              Water-resistant commuter backpack with 15-inch padded laptop sleeve and distinct yellow paracord zipper pull. Clean exterior with two water bottle side pockets. Contains university textbooks and student notes.
+            </p>
+          </div>
+
+          <div class="p-3 bg-blue-50/70 rounded-xl border border-blue-200/80 text-xs flex items-center justify-between">
+            <div class="flex items-center gap-2 text-primary">
+              <i class="fa-solid fa-lock text-xs"></i>
+              <span class="font-semibold">Hidden Verification Challenge Active</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-medium">2 shielded markers</span>
+          </div>
+
+          <div class="pt-2 space-y-2.5">
+            <button type="button" id="claim-item-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+              <span>I Think This is My Item (Claim Ownership)</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <button type="button" id="contact-reporter-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                <i class="fa-regular fa-paper-plane text-xs"></i>
+                <span>Message Reporter</span>
+              </button>
+              <button type="button" id="flag-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-rose-600 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                <i class="fa-regular fa-flag text-xs"></i>
+                <span>Report Issue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4 relative overflow-hidden">
+          <div class="flex items-center justify-between pb-3 border-b border-blue-100">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs shadow-xs">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-navy">AI Neural Match Candidate Nearby</h3>
+                <span class="text-[11px] text-slate-500">Autonomous multimodal pairing</span>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary text-white shadow-xs">94% Match</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 p-3 bg-blue-50/40 rounded-xl border border-blue-100 text-xs">
+            <div>
+              <span class="text-[10px] font-bold text-rose-600 uppercase block mb-1">Your Report (Lost)</span>
+              <div class="flex items-center gap-2">
+                <img src="../images/backpack.jpg" alt="Your Report" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                <div class="min-w-0">
+                  <span class="font-bold text-navy truncate block">Matte Black Backpack</span>
+                  <span class="text-[10px] text-slate-500">Central Metro Line 2</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-l border-blue-200/80 pl-3">
+              <span class="text-[10px] font-bold text-emerald-600 uppercase block mb-1">Found Candidate (#F-3118)</span>
+              <div class="flex items-center gap-2">
+                <img src="../images/backpack.jpg" alt="Candidate" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                <div class="min-w-0">
+                  <span class="font-bold text-navy truncate block">Commuter Backpack</span>
+                  <span class="text-[10px] text-slate-500">Station Customer Desk</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
+            <div class="flex items-center gap-1.5 text-emerald-700">
+              <i class="fa-solid fa-circle-check text-xs"></i>
+              <span>Similar visual geometry (96%)</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-700">
+              <i class="fa-solid fa-circle-check text-xs"></i>
+              <span>Same category & brand</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-700">
+              <i class="fa-solid fa-circle-check text-xs"></i>
+              <span>Proximity overlap (0.2 mi)</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-700">
+              <i class="fa-solid fa-circle-check text-xs"></i>
+              <span>Matching paracord pull tag</span>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500 italic">
+            * Note: AI match scores are algorithmic suggestions and do not confer legal ownership. Physical claims require challenge verification.
+          </p>
+
+          <a href="matches.html" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-blue-200 hover:border-primary text-primary rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2">
+            <span>Review Potential Match in AI Hub</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="claim-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="text-sm font-bold text-navy">Ownership Challenge Challenge</h3>
+        </div>
+        <button type="button" id="close-claim-modal" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-text-secondary leading-relaxed">
+        To initiate an ownership claim for this item, answer the security questions established by the reporter or custodian:
+      </p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">What distinct items or markings are inside?</label>
+          <input type="text" placeholder="e.g. Spiral notebook, silver keys with blue tag" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Provide serial number last 4 digits or receipt proof (if applicable)</label>
+          <input type="text" placeholder="e.g. 4481 or Purchase order receipt" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
+        </div>
+      </div>
+
+      <div class="pt-2 flex items-center justify-end gap-2">
+        <button type="button" id="cancel-claim-btn" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50">Cancel</button>
+        <button type="button" id="submit-claim-btn" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-dark shadow-xs">Submit Verification</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script src="../js/items.js"></script>
+
 </body>
-
 </html>

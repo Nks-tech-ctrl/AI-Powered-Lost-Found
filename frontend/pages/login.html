@@ -1,74 +1,273 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — FindBack</title>
+  <meta name="description" content="Sign in to your FindBack account to manage lost and found reports and view AI matches.">
+  <meta name="theme-color" content="#2563EB">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/output.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-  <title>Log in · FindBack</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB',
+            'primary-dark': '#1D4ED8',
+            'primary-light': '#3B82F6',
+            navy: '#0F172A',
+            indigo: '#4F46E5',
+            cyan: '#06B6D4',
+            'soft-blue': '#EFF6FF',
+            'bg-main': '#F8FAFC',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            'border-light': '#E2E8F0',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+            'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+            'glow-blue': '0 0 25px -3px rgba(37, 99, 235, 0.35)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      min-height: 100vh;
+    }
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+    }
+    @keyframes float-gentle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float-slow {
+      animation: float-gentle 5s ease-in-out infinite;
+    }
+  </style>
 </head>
+<body class="font-sans antialiased bg-bg-main text-navy selection:bg-primary selection:text-white min-h-screen flex flex-col justify-between">
 
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900">
-  <main class="grid min-h-screen lg:grid-cols-2">
-    <section class="relative hidden overflow-hidden bg-[#0B1220] p-12 lg:flex lg:flex-col lg:justify-between">
-      <a href="../index.html" class="flex w-fit items-center gap-3 text-white"><span
-          class="grid h-10 w-10 place-items-center rounded-xl bg-blue-600"><i
-            class="fa-solid fa-magnifying-glass"></i></span><span
-          class="text-xl font-bold tracking-tight">FindBack</span></a>
-      <div class="relative max-w-lg">
-        <p class="mb-5 text-sm font-semibold uppercase tracking-[0.18em] text-blue-400">AI-powered lost &amp; found</p>
-        <h1 class="text-5xl font-bold leading-tight tracking-tight text-white">Find what matters.<br>Get it back.</h1>
-        <p class="mt-6 max-w-md text-lg leading-relaxed text-slate-300">Report what is missing, review thoughtfully
-          suggested matches, and reconnect with what matters.</p>
-        <div class="mt-10 flex items-center gap-3 text-sm text-slate-300"><span
-            class="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-blue-400"><i
-              class="fa-solid fa-shield-halved"></i></span>AI suggestions always require ownership verification.</div>
+  <header class="w-full bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="../index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-satellite-dish text-sm"></i>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-text-secondary hidden sm:inline">Don't have an account?</span>
+        <a href="register.html" class="px-3.5 py-1.5 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-lg border border-blue-200 transition-colors">
+          Create Account
+        </a>
+        <a href="../index.html" class="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1 ml-2">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Home</span>
+        </a>
       </div>
-      <p class="text-sm text-slate-500">© 2026 FindBack. Built for safer returns.</p>
-    </section>
-    <section class="flex items-center justify-center px-6 py-12 sm:px-10">
-      <div class="w-full max-w-md">
-        <a href="../index.html" class="mb-12 flex items-center gap-2 lg:hidden"><span
-            class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
-              class="fa-solid fa-magnifying-glass"></i></span><span class="text-lg font-bold">FindBack</span></a>
-        <p class="text-sm font-medium text-blue-600">Welcome back</p>
-        <h2 class="mt-2 text-3xl font-bold tracking-tight">Sign in to FindBack</h2>
-        <p class="mt-3 text-sm leading-relaxed text-slate-500">Continue managing your reports, potential matches, and
-          claims.</p>
-        <form data-auth-form="login" class="mt-8 space-y-5" action="#" method="post">
-          <div><label for="email" class="text-sm font-medium text-slate-700">Email address</label><input id="email"
-              name="email" type="email" autocomplete="email" required placeholder="you@example.com"
-              class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+    </div>
+  </header>
+
+  <main class="flex-1 flex items-stretch max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full items-center">
+
+      <div class="lg:col-span-6 flex flex-col justify-center space-y-8 pr-0 lg:pr-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-primary text-xs font-bold mb-4">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            AI-Powered Lost & Found Platform
           </div>
-          <div>
-            <div class="flex justify-between"><label for="password"
-                class="text-sm font-medium text-slate-700">Password</label><a href="#"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700">Forgot password?</a></div><input
-              id="password" name="password" type="password" autocomplete="current-password" required
-              placeholder="Enter your password"
-              class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-navy tracking-tight leading-tight">
+            Find what matters. <br>
+            <span class="bg-gradient-to-r from-primary to-indigo bg-clip-text text-transparent">Get it back.</span>
+          </h1>
+          <p class="text-sm sm:text-base text-text-secondary mt-4 leading-relaxed max-w-lg">
+            FindBack uses smart neural matching and community-powered reporting to help reunite people with their lost belongings safely and quickly.
+          </p>
+        </div>
+
+        <div class="relative bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200 p-6 shadow-sm overflow-hidden bg-grid-pattern">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span class="text-[11px] font-bold text-slate-500 ml-1">AI VERIFICATION ENGINE</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">94% Confidence</span>
           </div>
-          <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600"><input type="checkbox"
-              name="remember" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">Remember me on
-            this device</label>
-          <button type="submit"
-            class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">Log
-            in</button>
-          <p data-auth-status class="text-center text-sm text-slate-500" aria-live="polite"></p>
-        </form>
-        <div class="my-8 flex items-center gap-4"><span class="h-px flex-1 bg-slate-200"></span><span
-            class="text-xs font-medium uppercase tracking-wider text-slate-400">New to FindBack?</span><span
-            class="h-px flex-1 bg-slate-200"></span></div>
-        <p class="text-center text-sm text-slate-600">Don't have an account? <a href="register.html"
-            class="font-semibold text-blue-600 hover:text-blue-700">Create an account</a></p>
+
+          <div class="grid grid-cols-3 gap-3 my-4 items-center">
+            
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-xs">
+              <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-500 mx-auto flex items-center justify-center text-sm mb-2">
+                <i class="fa-solid fa-laptop"></i>
+              </div>
+              <span class="text-[11px] font-bold text-slate-900 block truncate">1. Report Lost</span>
+              <span class="text-[9px] text-slate-500">Geo & Image AI</span>
+            </div>
+
+            <div class="text-center relative">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo text-white mx-auto flex items-center justify-center text-sm shadow-md animate-pulse">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <span class="text-[11px] font-bold text-primary block mt-1.5">2. Smart Match</span>
+              <span class="text-[9px] text-slate-500">Vector Scoring</span>
+            </div>
+
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-xs">
+              <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center text-sm mb-2">
+                <i class="fa-solid fa-handshake-angle"></i>
+              </div>
+              <span class="text-[11px] font-bold text-slate-900 block truncate">3. Reconnect</span>
+              <span class="text-[9px] text-slate-500">Encrypted Claim</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 text-[11px] text-slate-500">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-500"></i> Zero PII Leaks</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-primary"></i> 256-bit Encrypted</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-cyan"></i> 6,800+ Reunited</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+          <div class="w-9 h-9 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+            MR
+          </div>
+          <div class="text-xs">
+            <p class="text-slate-700 italic">"Found my MacBook within 48 hours thanks to the automated campus matching!"</p>
+            <span class="text-[11px] text-slate-400 font-semibold">— Marcus R., State University</span>
+          </div>
+        </div>
       </div>
-    </section>
+
+      <div class="lg:col-span-6 flex justify-center">
+        <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 relative">
+          
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold font-heading text-navy">Welcome back</h2>
+            <p class="text-xs sm:text-sm text-text-secondary mt-1">Sign in to continue to FindBack.</p>
+          </div>
+
+          <button type="button" id="google-auth-btn" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-3 transition-colors shadow-xs mb-5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="relative flex items-center justify-center mb-5">
+            <div class="border-t border-slate-200 w-full"></div>
+            <span class="bg-white px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">or sign in with email</span>
+          </div>
+
+          <form id="login-form" data-auth-form="login" class="space-y-4" novalidate>
+            
+            <div>
+              <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">Email address</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-envelope text-xs"></i>
+                </div>
+                <input type="email" id="email" name="email" required placeholder="alex@example.com" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+              </div>
+              <span id="email-error" class="text-[11px] text-rose-500 hidden mt-1">Please enter a valid email address.</span>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="password" class="block text-xs font-bold text-slate-700">Password</label>
+                <button type="button" id="forgot-password-btn" class="text-[11px] font-semibold text-primary hover:text-primary-dark transition-colors">
+                  Forgot password?
+                </button>
+              </div>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-lock text-xs"></i>
+                </div>
+                <input type="password" id="password" name="password" required placeholder="••••••••" class="w-full pl-9 pr-10 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+                <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="Toggle password visibility">
+                  <i class="fa-regular fa-eye text-xs"></i>
+                </button>
+              </div>
+              <span id="password-error" class="text-[11px] text-rose-500 hidden mt-1">Password must be at least 6 characters.</span>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="remember-me" class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
+                <span class="text-xs text-slate-600 select-none">Remember me for 30 days</span>
+              </label>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-98 transition-all font-semibold text-xs sm:text-sm flex items-center justify-center gap-2">
+              <span id="btn-text">Sign In</span>
+              <i id="btn-spinner" class="fa-solid fa-circle-notch fa-spin text-xs hidden"></i>
+            </button>
+          </form>
+
+          <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+            <p class="text-xs text-text-secondary">
+              Don't have an account? 
+              <a href="register.html" class="font-bold text-primary hover:underline ml-1">Create an account</a>
+            </p>
+          </div>
+
+          <div class="mt-4 p-2.5 bg-blue-50/80 rounded-xl border border-blue-200 text-center">
+            <p class="text-[11px] text-primary font-semibold">
+              <i class="fa-solid fa-circle-info mr-1"></i> Demo account ready: Click <strong>Sign In</strong> to explore the dashboard.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </main>
-  <script type="module" src="../js/auth-page.js"></script>
-</body>
 
+  <footer class="w-full border-t border-slate-200 py-6 bg-white/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+      <p>© 2026 FindBack Technologies Inc. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <a href="../index.html#safety" class="hover:text-primary transition-colors">Privacy Policy</a>
+        <a href="../index.html#safety" class="hover:text-primary transition-colors">Terms of Service</a>
+        <a href="../index.html" class="hover:text-primary transition-colors">FindBack Home</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script src="../js/auth-page.js"></script>
+</body>
 </html>

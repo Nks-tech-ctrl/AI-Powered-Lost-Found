@@ -1,141 +1,479 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-    <title>Search Items · FindBack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Catalog — FindBack</title>
+  <meta name="description" content="Search active lost and found reports across the FindBack community with instant filters.">
+  <meta name="theme-color" content="#2563EB">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB',
+            'primary-dark': '#1D4ED8',
+            'primary-light': '#3B82F6',
+            navy: '#0F172A',
+            indigo: '#4F46E5',
+            cyan: '#06B6D4',
+            'soft-blue': '#EFF6FF',
+            'bg-main': '#F8FAFC',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            'border-light': '#E2E8F0',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+            'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+  </style>
 </head>
+<body class="font-sans antialiased bg-bg-main text-navy selection:bg-primary selection:text-white min-h-screen flex flex-col lg:flex-row">
 
-<body class="bg-slate-50 font-sans text-slate-900">
-    <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-5 px-5 sm:px-8"><a
-                href="dashboard.html" class="flex items-center gap-2"><span
-                    class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white"><i
-                        class="fa-solid fa-magnifying-glass"></i></span><span
-                    class="text-lg font-bold">FindBack</span></a>
-            <nav class="hidden gap-5 text-sm font-medium text-slate-600 md:flex"><a href="dashboard.html"
-                    class="hover:text-blue-600">Dashboard</a><a href="matches.html"
-                    class="hover:text-blue-600">Matches</a><a href="claims.html" class="hover:text-blue-600">Claims</a>
-            </nav><a href="report-lost.html"
-                class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"><i
-                    class="fa-solid fa-plus mr-1"></i>Report item</a>
+  <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-30 shrink-0 select-none">
+    
+    <div class="h-20 px-6 flex items-center border-b border-slate-100">
+      <a href="../index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-satellite-dish text-sm"></i>
         </div>
-    </header>
-    <main class="mx-auto max-w-7xl px-5 py-9 sm:px-8">
-        <div class="max-w-2xl">
-            <p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Item directory</p>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight">Find an Item</h1>
-            <p class="mt-3 text-sm text-slate-500">Browse current reports or search by the words and details you
-                remember.</p>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+          </div>
+          <span class="text-[9px] font-semibold text-primary uppercase tracking-wider">Recovery Platform</span>
         </div>
-        <form data-search-form class="mt-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="flex flex-col gap-3 sm:flex-row"><label class="sr-only" for="item-search">Search by item name or
-                    description</label>
-                <div class="relative flex-1"><i
-                        class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input
-                        id="item-search" name="query" placeholder="Search by item name or description"
-                        class="w-full rounded-xl border border-slate-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                </div><button
-                    class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Search</button>
+      </a>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto" aria-label="Sidebar Navigation">
+      <a href="dashboard.html" data-sidebar-link="dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-chart-pie text-slate-400 w-4 text-center"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="report-lost.html" data-sidebar-link="report-lost" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 w-4 text-center"></i>
+          <span>Report Lost</span>
+        </div>
+      </a>
+
+      <a href="report-found.html" data-sidebar-link="report-found" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-hand-holding-heart text-emerald-500 w-4 text-center"></i>
+          <span>Report Found</span>
+        </div>
+      </a>
+
+      <a href="search.html" data-sidebar-link="search" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-primary bg-blue-50/90 border border-blue-200/80 shadow-xs transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-magnifying-glass text-primary w-4 text-center"></i>
+          <span>Search Items</span>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-primary"></span>
+      </a>
+
+      <a href="matches.html" data-sidebar-link="matches" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-bolt text-amber-500 w-4 text-center"></i>
+          <span>Potential Matches</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
+      </a>
+
+      <a href="claims.html" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-cyan-600 w-4 text-center"></i>
+          <span>My Claims</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+      </a>
+
+      <a href="profile.html" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <i class="fa-regular fa-user text-slate-400 w-4 text-center"></i>
+        <span>Profile & Settings</span>
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-slate-100">
+      <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+            AS
+          </div>
+          <div class="min-w-0">
+            <span class="text-xs font-bold text-navy truncate block">Abhishek Sharma</span>
+            <span class="text-[10px] text-slate-500 truncate block">abhishek@example.com</span>
+          </div>
+        </div>
+        <a href="login.html" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Find an Item</h1>
+        <p class="text-xs sm:text-sm text-text-secondary mt-1">Search active lost and found community reports by name, traits, or transit venue.</p>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <a href="report-lost.html" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-600 rounded-xl text-xs font-bold shadow-xs">
+          + Report Lost
+        </a>
+        <a href="report-found.html" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs">
+          + Report Found
+        </a>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
+
+      <form id="search-form" data-search-form class="relative">
+        <div class="relative flex items-center">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+          </div>
+          <input type="text" id="search-input" placeholder="Search by item name, description, brand, transit hub..." class="w-full pl-11 pr-24 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+          <button type="button" id="search-clear-btn" class="absolute inset-y-0 right-16 px-2 text-slate-400 hover:text-slate-600 hidden">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+          <button type="submit" class="absolute right-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-xs font-bold transition-colors">
+            Search
+          </button>
+        </div>
+      </form>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+
+        <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-navy shadow-xs" data-type="all">
+            All Items (<span id="count-all">6</span>)
+          </button>
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition-all" data-type="lost">
+            Lost (<span id="count-lost">3</span>)
+          </button>
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition-all" data-type="found">
+            Found (<span id="count-found">3</span>)
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+
+          <select id="filter-category" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            <option value="all">All Categories</option>
+            <option value="Bags">Bags & Luggage</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Jewelry">Jewelry & Watches</option>
+            <option value="Documents">Documents & IDs</option>
+            <option value="Keys">Keys</option>
+            <option value="Wallets">Wallets</option>
+          </select>
+
+          <select id="filter-location" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            <option value="all">All Locations</option>
+            <option value="Metro">Central Metro</option>
+            <option value="Coffee">Downtown Coffee Lab</option>
+            <option value="Park">City Park</option>
+            <option value="Library">State Univ Library</option>
+            <option value="Oakridge">Oakridge Bus Stop</option>
+            <option value="Airport">Airport Terminal</option>
+          </select>
+
+          <select id="filter-sort" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            <option value="recent">Sort: Most Recent</option>
+            <option value="name">Sort: Item Name</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="flex items-center gap-2 pt-1 overflow-x-auto text-[11px]">
+        <span class="text-slate-400 font-semibold shrink-0">Popular:</span>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Backpack</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Earbuds</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Chronograph Watch</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Student ID</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Keys</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Leather Wallet</button>
+      </div>
+
+    </div>
+
+    <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+      <span id="results-count-text"><strong id="results-count" class="text-navy font-bold">6</strong> reports matching your criteria</span>
+      <span class="text-[11px] text-slate-400"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Real-time AI cross-indexing enabled</span>
+    </div>
+
+    <div id="results-grid" data-results class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Bags" data-status="lost" data-location="Metro" data-name="Matte Black Backpack">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/backpack.jpg" alt="Backpack" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
+              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Bags
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">Matte Black Backpack</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Water-resistant commuter backpack with 15" laptop sleeve and distinct yellow paracord zipper pull.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
+                <span class="truncate">Central Metro Station, Line 2</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>Reported 2 hours ago</span>
+              </div>
             </div>
-            <div class="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2 lg:grid-cols-5"><select
-                    aria-label="Item type" class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
-                    <option>Lost &amp; Found</option>
-                    <option>Lost only</option>
-                    <option>Found only</option>
-                </select><select aria-label="Category"
-                    class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
-                    <option>All categories</option>
-                    <option>Electronics</option>
-                    <option>Personal items</option>
-                    <option>Clothing</option>
-                </select><input aria-label="Location" placeholder="Any location"
-                    class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><input aria-label="Date" type="date"
-                    class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"><select aria-label="Sort results"
-                    class="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm">
-                    <option>Most recent</option>
-                    <option>Best match</option>
-                    <option>Oldest first</option>
-                </select></div>
-        </form>
-        <div data-results class="mt-8">
-            <div class="mb-4 flex items-center justify-between">
-                <p class="text-sm text-slate-500">Showing <span class="font-semibold text-slate-900">12</span> reports
-                </p><button class="text-sm font-medium text-slate-600"><i
-                        class="fa-solid fa-sliders mr-1"></i>Filters</button>
-            </div>
-            <section class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
-                        class="h-44 w-full object-cover"
-                        src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=700&q=80"
-                        alt="Black smartphone on a surface">
-                    <div class="p-5">
-                        <div class="flex items-center justify-between"><span
-                                class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">LOST</span><span
-                                class="text-xs text-slate-400">Sep 19</span></div>
-                        <h2 class="mt-4 font-bold">Black iPhone 15</h2>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Black phone with a clear case, last seen
-                            near the library.</p>
-                        <p class="mt-4 text-sm text-slate-500"><i
-                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Central Library</p><a
-                            href="item-details.html"
-                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
-                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
-                    </div>
-                </article>
-                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
-                        class="h-44 w-full object-cover"
-                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80"
-                        alt="Red athletic shoe">
-                    <div class="p-5">
-                        <div class="flex items-center justify-between"><span
-                                class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span
-                                class="text-xs text-slate-400">Sep 20</span></div>
-                        <h2 class="mt-4 font-bold">Red running shoe</h2>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Single red athletic shoe found by the
-                            sports complex entrance.</p>
-                        <p class="mt-4 text-sm text-slate-500"><i
-                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>Sports Complex</p><a
-                            href="item-details.html"
-                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
-                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
-                    </div>
-                </article>
-                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><img
-                        class="h-44 w-full object-cover"
-                        src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80"
-                        alt="Canvas tote bag">
-                    <div class="p-5">
-                        <div class="flex items-center justify-between"><span
-                                class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">FOUND</span><span
-                                class="text-xs text-slate-400">Sep 18</span></div>
-                        <h2 class="mt-4 font-bold">Canvas tote bag</h2>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-500">Natural canvas bag, held safely after
-                            being found near the gate.</p>
-                        <p class="mt-4 text-sm text-slate-500"><i
-                                class="fa-solid fa-location-dot mr-1 text-blue-600"></i>North Gate</p><a
-                            href="item-details.html"
-                            class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600">View details
-                            <i class="fa-solid fa-arrow-right text-xs"></i></a>
-                    </div>
-                </article>
-            </section>
+          </div>
         </div>
-        <section data-empty-state class="hidden py-16 text-center"><span
-                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-xl text-blue-600"><i
-                    class="fa-solid fa-magnifying-glass"></i></span>
-            <h2 class="mt-5 text-xl font-bold">No reports found</h2>
-            <p class="mx-auto mt-2 max-w-sm text-sm text-slate-500">Try a different search term or clear a filter to see
-                more items.</p>
-        </section>
-    </main>
-    <script type="module" src="../js/search.js"></script>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=backpack" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Electronics" data-status="found" data-location="Coffee" data-name="Blue Wireless Earbuds">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/earbuds.jpg" alt="Earbuds" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
+              <i class="fa-solid fa-check text-[10px]"></i> Found
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Electronics
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">Blue Wireless Earbuds</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Navy blue charging case with golden hinge. Found left on a corner booth at downtown cafe.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
+                <span class="truncate">Downtown Coffee Lab, Table 7</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>Today, 11:30 AM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=earbuds" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Jewelry" data-status="lost" data-location="Park" data-name="Silver Chronograph Watch">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/watch.jpg" alt="Watch" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
+              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Jewelry
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">Silver Chronograph Watch</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Stainless steel mesh strap with blue sunburst dial. Heirloom gift with back casing engraving.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
+                <span class="truncate">City Park South Promenade</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>Yesterday afternoon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=watch" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Documents" data-status="found" data-location="Library" data-name="Student ID Card">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/id_card.jpg" alt="Student ID" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
+              <i class="fa-solid fa-check text-[10px]"></i> Found
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Documents
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">Student ID Card (State Univ)</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Clear lanyard badge holder with university magnetic keycard. Identity protected for privacy.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
+                <span class="truncate">University Main Library, 2nd Fl</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>Yesterday, 5:45 PM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=id_card" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Keys" data-status="lost" data-location="Oakridge" data-name="House Keys with Leather Fob">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/keys.jpg" alt="Keys" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
+              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Keys
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">House Keys with Leather Fob</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Set of 3 brass house keys attached to a distinctive tan stitched leather keychain fob.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
+                <span class="truncate">Oakridge Boulevard Bus Stop</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>2 days ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=keys" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Wallets" data-status="found" data-location="Airport" data-name="Brown Bi-Fold Leather Wallet">
+        <div>
+          <div class="h-48 bg-slate-100 relative overflow-hidden">
+            <img src="../images/wallet.jpg" alt="Wallet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
+              <i class="fa-solid fa-check text-[10px]"></i> Found
+            </span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+              Wallets
+            </span>
+          </div>
+          <div class="p-5">
+            <h3 class="text-base font-bold text-navy mb-1">Brown Bi-Fold Leather Wallet</h3>
+            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+              Distressed brown leather wallet. Handed over to terminal security desk for safe cataloging.
+            </p>
+            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
+                <span class="truncate">North Airport Terminal, Gate 14</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                <span>3 days ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 pt-1">
+          <a href="item-details.html?id=wallet" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
+            <span>View Details</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="empty-state" data-empty-state class="hidden bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-lg mx-auto my-8">
+      <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center text-2xl">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-navy">No matching reports found</h3>
+        <p class="text-xs text-text-secondary mt-1">
+          Try changing your search terms, broadening your category selection, or clearing current filters.
+        </p>
+      </div>
+      <button type="button" id="clear-filters-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-all shadow-xs">
+        Clear All Filters
+      </button>
+    </div>
+
+  </main>
+
+  <script src="../js/search.js"></script>
+
 </body>
-
 </html>

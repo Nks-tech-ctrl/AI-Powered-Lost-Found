@@ -1,7 +1,20 @@
-import { hydrateCurrentUser } from "./current-user.js";
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('mobile-sidebar-toggle');
+  const drawer = document.getElementById('mobile-sidebar-drawer');
 
-document.querySelectorAll("[data-sidebar-link]").forEach((link) => {
-  link.addEventListener("click", () => document.querySelectorAll("[data-sidebar-link]").forEach((item) => item.classList.remove("bg-blue-50", "text-blue-700")));
+  if (toggle && drawer) {
+    toggle.addEventListener('click', () => {
+      drawer.classList.toggle('hidden');
+    });
+  }
+
+  const claimRows = document.querySelectorAll('.claim-row');
+  claimRows.forEach(row => {
+    row.addEventListener('click', () => {
+      const claimId = row.getAttribute('data-claim-id');
+      if (claimId) {
+        window.location.href = `claims.html?id=${claimId}`;
+      }
+    });
+  });
 });
-
-hydrateCurrentUser();
