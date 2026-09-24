@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     googleAuthBtn.addEventListener('click', () => {
       showToast('Google OAuth simulated — redirecting to FindBack Dashboard...', 'info');
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = '/items/';
       }, 1000);
     });
   }
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     googleSignupBtn.addEventListener('click', () => {
       showToast('Google OAuth simulated — creating account and redirecting...', 'info');
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = '/items/';
       }, 1000);
     });
   }
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         showToast('Sign-in successful! Welcome back, Abhishek.', 'success');
         setTimeout(() => {
-          window.location.href = 'dashboard.html';
+          window.location.href = '/items/';
         }, 800);
       }, 900);
     });
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         showToast('Account created successfully! Welcome to FindBack.', 'success');
         setTimeout(() => {
-          window.location.href = 'dashboard.html';
+          window.location.href = '/items/';
         }, 800);
       }, 1000);
     });

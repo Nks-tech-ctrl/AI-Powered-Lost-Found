@@ -386,10 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const learnSafetyBtn = document.getElementById('learn-safety-btn');
   const footerContactLink = document.getElementById('footer-contact-link');
 
-  if (navLoginBtn) navLoginBtn.addEventListener('click', () => window.location.href = 'pages/login.html');
-  if (mobileLoginBtn) mobileLoginBtn.addEventListener('click', () => window.location.href = 'pages/login.html');
-  if (navGetStartedBtn) navGetStartedBtn.addEventListener('click', () => window.location.href = 'pages/register.html');
-  if (browseAllBtn) browseAllBtn.addEventListener('click', () => window.location.href = 'pages/search.html');
+  if (navLoginBtn) navLoginBtn.addEventListener('click', () => window.location.href = '/accounts/login/');
+  if (mobileLoginBtn) mobileLoginBtn.addEventListener('click', () => window.location.href = '/accounts/login/');
+  if (navGetStartedBtn) navGetStartedBtn.addEventListener('click', () => window.location.href = '/accounts/register/');
+  if (browseAllBtn) browseAllBtn.addEventListener('click', () => window.location.href = '/items/search/');
   if (learnSafetyBtn) learnSafetyBtn.addEventListener('click', () => {
     const safetySec = document.getElementById('safety');
     if (safetySec) safetySec.scrollIntoView({ behavior: 'smooth' });

@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       claimModal.classList.add('hidden');
       showToast('Ownership claim submitted! Redirecting to Claims tracking center...', 'success');
       setTimeout(() => {
-        window.location.href = 'claims.html';
+        window.location.href = '/claims/';
       }, 1200);
     });
   }

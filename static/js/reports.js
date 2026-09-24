@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       showToast('Report submitted! AI matching engine initiated...', 'success');
       setTimeout(() => {
-        window.location.href = 'matches.html';
+        window.location.href = '/matches/';
       }, 1200);
     });
   }
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       showToast('Found report submitted! Scanning registered lost items for instant matches...', 'success');
       setTimeout(() => {
-        window.location.href = 'matches.html';
+        window.location.href = '/matches/';
       }, 1200);
     });
   }

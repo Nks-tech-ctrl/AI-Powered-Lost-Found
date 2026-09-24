@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def claims_view(request):
+    return render(request, 'claims/claims.html')

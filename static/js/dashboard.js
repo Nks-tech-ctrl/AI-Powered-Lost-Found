@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.addEventListener('click', () => {
       const claimId = row.getAttribute('data-claim-id');
       if (claimId) {
-        window.location.href = `claims.html?id=${claimId}`;
+        window.location.href = `/claims/?id=${claimId}`;
       }
     });
   });
