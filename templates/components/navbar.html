@@ -1,0 +1,71 @@
+{% load static %}
+<header id="navbar" class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+
+            <a href="/" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-primary rounded-xl p-1">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-satellite-dish text-lg group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+                    </div>
+                    <span class="text-[10px] font-semibold text-primary uppercase tracking-wider hidden sm:inline-block">AI-Powered Recovery</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+                <a href="/#how-it-works" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">How It Works</a>
+                <a href="/#features" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Features</a>
+                <a href="/#ai-matching" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors flex items-center gap-1.5">
+                    <span>AI Matching</span>
+                    <span class="px-1.5 py-0.5 text-[10px] font-bold bg-cyan/15 text-cyan-700 rounded-md border border-cyan/30">Demo</span>
+                </a>
+                <a href="/items/" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Browse Items</a>
+                <a href="/#safety" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Safety & Trust</a>
+                <a href="/#testimonials" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Stories</a>
+            </nav>
+
+            <div class="hidden md:flex items-center gap-3">
+                <a href="/accounts/login/" id="nav-login-btn" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors">
+                    Log In
+                </a>
+                <a href="/accounts/register/" id="nav-get-started-btn" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-95 transition-all duration-200">
+                    Get Started
+                    <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                </a>
+            </div>
+
+            <div class="flex md:hidden items-center">
+                <button id="mobile-menu-toggle" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle Navigation Menu" class="p-2.5 rounded-xl text-slate-600 hover:text-navy hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary transition-colors">
+                    <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 shadow-xl">
+        <div class="flex flex-col space-y-1">
+            <a href="/#how-it-works" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">How It Works</a>
+            <a href="/#features" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Features</a>
+            <a href="/#ai-matching" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors flex items-center justify-between">
+                <span>AI Matching</span>
+                <span class="px-2 py-0.5 text-xs font-semibold bg-cyan/15 text-cyan-700 rounded-md">Interactive</span>
+            </a>
+            <a href="/items/" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Browse Items</a>
+            <a href="/#safety" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Safety & Trust</a>
+            <a href="/#testimonials" class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Community Stories</a>
+        </div>
+        <div class="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+            <a href="/accounts/login/" id="mobile-login-btn" class="w-full py-2.5 text-center text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                Log In
+            </a>
+            <a href="/accounts/register/" id="mobile-start-btn" class="w-full py-2.5 text-center text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark rounded-xl shadow-md transition-all">
+                Get Started Free
+            </a>
+        </div>
+    </div>
+</header>

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -312,7 +313,7 @@
 
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <script src="../js/profile.js"></script>
+  <script src="{% static 'js/profile.js' %}"></script>
 
 </body>
 </html>

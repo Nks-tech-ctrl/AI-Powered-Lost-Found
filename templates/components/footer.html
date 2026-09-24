@@ -1,0 +1,64 @@
+{% load static %}
+<footer class="bg-navy text-white pt-16 pb-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+            <div class="lg:col-span-2 space-y-4">
+                <a href="/" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-satellite-dish text-sm"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tight font-heading text-white">Find<span class="text-primary">Back</span></span>
+                </a>
+                <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+                    AI-powered lost & found recovery platform connecting communities, transit systems, and individuals to safely return belongings.
+                </p>
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fa-brands fa-x-twitter text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fa-brands fa-github text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fa-brands fa-linkedin-in text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Platform</h4>
+                <ul class="space-y-2.5 text-sm text-slate-400">
+                    <li><a href="/items/report-lost/" class="hover:text-white transition-colors">Report Lost Item</a></li>
+                    <li><a href="/items/report-found/" class="hover:text-white transition-colors">Report Found Item</a></li>
+                    <li><a href="/items/search/" class="hover:text-white transition-colors">Search Catalog</a></li>
+                    <li><a href="/matches/" class="hover:text-white transition-colors">AI Match Engine</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Account</h4>
+                <ul class="space-y-2.5 text-sm text-slate-400">
+                    <li><a href="/accounts/login/" class="hover:text-white transition-colors">Log In</a></li>
+                    <li><a href="/accounts/register/" class="hover:text-white transition-colors">Register</a></li>
+                    <li><a href="/accounts/profile/" class="hover:text-white transition-colors">Profile & Settings</a></li>
+                    <li><a href="/claims/" class="hover:text-white transition-colors">Ownership Claims</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Safety & Trust</h4>
+                <ul class="space-y-2.5 text-sm text-slate-400">
+                    <li><a href="/#safety" class="hover:text-white transition-colors">Verification Protocol</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Community Guidelines</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p>&copy; 2026 FindBack. All rights reserved.</p>
+            <p>Built with intelligent neural matching & community recovery protocols.</p>
+        </div>
+    </div>
+</footer>

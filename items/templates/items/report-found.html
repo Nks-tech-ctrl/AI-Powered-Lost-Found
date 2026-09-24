@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -336,7 +337,7 @@
           <div class="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-6 text-center bg-slate-50/40 cursor-pointer transition-colors">
             <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 max-w-sm mx-auto">
               <div class="flex items-center gap-3">
-                <img src="../images/earbuds.jpg" alt="Earbuds" class="w-12 h-12 rounded-lg object-cover border border-slate-200">
+                <img src="{% static 'images/earbuds.jpg' %}" alt="Earbuds" class="w-12 h-12 rounded-lg object-cover border border-slate-200">
                 <div class="text-left">
                   <span class="text-xs font-bold text-navy block truncate max-w-[160px]">earbuds.jpg</span>
                   <span class="text-[10px] text-emerald-600 font-semibold">Ready for matching</span>
@@ -356,7 +357,7 @@
 
         <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-4">
           <div class="flex items-start gap-4">
-            <img src="../images/earbuds.jpg" alt="Found Earbuds" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs">
+            <img src="{% static 'images/earbuds.jpg' %}" alt="Found Earbuds" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs">
             <div class="min-w-0 flex-1">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-600 border border-emerald-200">FOUND REPORT</span>
               <h3 class="text-base font-bold text-navy mt-1">Blue Wireless Earbuds in Charging Case</h3>
@@ -413,7 +414,7 @@
 
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <script src="../js/reports.js"></script>
+  <script src="{% static 'js/reports.js' %}"></script>
 
 </body>
 </html>

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -216,7 +217,7 @@
                 <tr class="claim-row bg-blue-50/40 hover:bg-blue-50/70 transition-colors cursor-pointer" data-claim-id="c801">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/backpack.jpg" alt="Backpack" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/backpack.jpg' %}" alt="Backpack" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block">Matte Black Backpack</span>
                         <span class="text-[10px] text-slate-400 font-mono">Claim #C-801</span>
@@ -238,7 +239,7 @@
                 <tr class="claim-row hover:bg-slate-50 transition-colors cursor-pointer" data-claim-id="c744">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/earbuds.jpg" alt="Earbuds" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/earbuds.jpg' %}" alt="Earbuds" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block">Blue Wireless Earbuds</span>
                         <span class="text-[10px] text-slate-400 font-mono">Claim #C-744</span>
@@ -260,7 +261,7 @@
                 <tr class="claim-row hover:bg-slate-50 transition-colors cursor-pointer" data-claim-id="c690">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/watch.jpg" alt="Watch" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/watch.jpg' %}" alt="Watch" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block">Silver Chronograph</span>
                         <span class="text-[10px] text-slate-400 font-mono">Claim #C-690</span>
@@ -391,7 +392,7 @@
 
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <script src="../js/claims.js"></script>
+  <script src="{% static 'js/claims.js' %}"></script>
 
 </body>
 </html>

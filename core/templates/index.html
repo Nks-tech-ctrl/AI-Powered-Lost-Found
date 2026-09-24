@@ -1,0 +1,1921 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindBack — AI-Powered Lost & Found Platform</title>
+    <meta name="description"
+        content="FindBack connects people with their lost belongings through intelligent AI matching, community reporting, and secure recovery.">
+    <meta name="keywords"
+        content="lost and found, AI matching, find lost items, recovery platform, lost belongings, community reunion">
+    <meta name="theme-color" content="#2563EB">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        'primary-dark': '#1D4ED8',
+                        'primary-light': '#3B82F6',
+                        navy: '#0F172A',
+                        indigo: '#4F46E5',
+                        cyan: '#06B6D4',
+                        'soft-blue': '#EFF6FF',
+                        'bg-main': '#F8FAFC',
+                        'text-primary': '#0F172A',
+                        'text-secondary': '#64748B',
+                        'border-light': '#E2E8F0',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+                        heading: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glass': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
+                        'glass-hover': '0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.04)',
+                        'glow-blue': '0 0 25px -3px rgba(37, 99, 235, 0.35)',
+                        'glow-cyan': '0 0 25px -3px rgba(6, 182, 212, 0.35)',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+        }
+
+        .glass-nav.scrolled {
+            background: rgba(255, 255, 255, 0.97);
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+            border-bottom-color: rgba(203, 213, 225, 0.9);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.85);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.35);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(1.7);
+                opacity: 0;
+            }
+        }
+
+        .radar-pulse-anim {
+            animation: pulse-ring 3s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+        }
+
+        .radar-pulse-delay-1 {
+            animation-delay: 1s;
+        }
+
+        .radar-pulse-delay-2 {
+            animation-delay: 2s;
+        }
+
+        @keyframes float-gentle {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .animate-float-slow {
+            animation: float-gentle 5s ease-in-out infinite;
+        }
+
+        .animate-float-alt {
+            animation: float-gentle 6s ease-in-out infinite 1.5s;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .reveal-elem {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-elem.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bg-grid-pattern {
+            background-size: 32px 32px;
+            background-image:
+                linear-gradient(to right, rgba(226, 232, 240, 0.5) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-elem {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+
+            .radar-pulse-anim,
+            .animate-float-slow,
+            .animate-float-alt {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-navy bg-bg-main selection:bg-blue-600 selection:text-white">
+
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+
+                <a href="#hero"
+                    class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-primary rounded-xl p-1">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                        <i class="fa-solid fa-satellite-dish text-lg group-hover:rotate-12 transition-transform"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span
+                                    class="text-primary">Back</span></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+                        </div>
+                        <span
+                            class="text-[10px] font-semibold text-primary uppercase tracking-wider hidden sm:inline-block">AI-Powered
+                            Recovery</span>
+                    </div>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+                    <a href="#how-it-works"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">How
+                        It Works</a>
+                    <a href="#features"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Features</a>
+                    <a href="#ai-matching"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors flex items-center gap-1.5">
+                        <span>AI Matching</span>
+                        <span
+                            class="px-1.5 py-0.5 text-[10px] font-bold bg-cyan/15 text-cyan-700 rounded-md border border-cyan/30">Demo</span>
+                    </a>
+                    <a href="#browse-items"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Browse
+                        Items</a>
+                    <a href="#safety"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Safety
+                        & Trust</a>
+                    <a href="#testimonials"
+                        class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Stories</a>
+                </nav>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <button id="nav-login-btn" type="button"
+                        class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors">
+                        Log In
+                    </button>
+                    <button id="nav-get-started-btn" type="button"
+                        class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-95 transition-all duration-200">
+                        Get Started
+                        <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="flex md:hidden items-center">
+                    <button id="mobile-menu-toggle" type="button" aria-controls="mobile-menu" aria-expanded="false"
+                        aria-label="Toggle Navigation Menu"
+                        class="p-2.5 rounded-xl text-slate-600 hover:text-navy hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary transition-colors">
+                        <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="mobile-menu"
+            class="hidden md:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 shadow-xl">
+            <div class="flex flex-col space-y-1">
+                <a href="#how-it-works"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">How
+                    It Works</a>
+                <a href="#features"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Features</a>
+                <a href="#ai-matching"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors flex items-center justify-between">
+                    <span>AI Matching</span>
+                    <span
+                        class="px-2 py-0.5 text-xs font-semibold bg-cyan/15 text-cyan-700 rounded-md">Interactive</span>
+                </a>
+                <a href="#browse-items"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Browse
+                    Items</a>
+                <a href="#safety"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Safety
+                    & Trust</a>
+                <a href="#testimonials"
+                    class="mobile-nav-link px-4 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">Community
+                    Stories</a>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+                <button id="mobile-login-btn" type="button"
+                    class="w-full py-2.5 text-center text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                    Log In
+                </button>
+                <button id="mobile-start-btn" type="button"
+                    class="w-full py-2.5 text-center text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark rounded-xl shadow-md transition-all">
+                    Get Started Free
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="hero"
+        class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-blue-50/60 via-slate-50/40 to-bg-main">
+
+        <div class="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none"></div>
+        <div
+            class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-blue-400/20 via-indigo-300/15 to-cyan-300/20 rounded-full blur-3xl pointer-events-none -z-10">
+        </div>
+        <div
+            class="absolute top-1/3 -right-24 w-80 h-80 bg-cyan-400/15 rounded-full blur-2xl pointer-events-none -z-10">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+
+                <div class="lg:col-span-6 space-y-6 sm:space-y-8 text-center lg:text-left">
+
+                    <div
+                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-sm hover:border-blue-300 transition-colors">
+                        <span class="flex h-2 w-2 relative">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <span>✨ AI-powered lost & found platform</span>
+                    </div>
+
+                    <h1
+                        class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-heading text-navy leading-[1.12]">
+                        Lost something?<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo to-cyan">
+                            Let's help you find it.
+                        </span>
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                        FindBack connects people with their lost belongings through intelligent matching,
+                        community-powered reporting, and a simple, secure recovery process.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                        <button id="hero-report-lost-btn" type="button"
+                            class="w-full sm:w-auto px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 group">
+                            <span>Report a Lost Item</span>
+                            <i
+                                class="fa-solid fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
+                        </button>
+                        <button id="hero-found-item-btn" type="button"
+                            class="w-full sm:w-auto px-6 py-3.5 text-base font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-hand-holding-heart text-cyan text-sm"></i>
+                            <span>I Found Something</span>
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200/70 space-y-3">
+                        <div
+                            class="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm font-medium text-slate-600">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-lock text-primary"></i> Secure reports
+                            </span>
+                            <span class="text-slate-300">·</span>
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-users text-indigo"></i> Community-driven
+                            </span>
+                            <span class="text-slate-300">·</span>
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-bolt text-cyan"></i> Smart matching
+                            </span>
+                        </div>
+
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 border border-slate-200 rounded-lg text-xs text-slate-600 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="font-semibold text-slate-800">Recent Reunion:</span>
+                            <span>Silver Watch recovered in Central Metro</span>
+                            <span class="text-slate-400">· 18m ago</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="lg:col-span-6 relative">
+
+                    <div
+                        class="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-cyan-500/10 rounded-3xl blur-2xl -z-10">
+                    </div>
+
+                    <div
+                        class="relative bg-white/90 backdrop-blur-xl border border-white/80 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-slate-900/10">
+
+                        <div class="flex items-center justify-between pb-5 mb-5 border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                                <span class="ml-2 text-xs font-semibold text-slate-400 tracking-wider">AI MATCHING
+                                    ENGINE v2.4</span>
+                            </div>
+                            <span
+                                class="px-2.5 py-0.5 text-[11px] font-bold uppercase rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live Scan
+                            </span>
+                        </div>
+
+                        <div class="space-y-4">
+
+                            <div
+                                class="glass-card bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 shadow-sm relative group hover:border-blue-300 transition-all">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span
+                                        class="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation text-[9px]"></i> Lost Report #L-9042
+                                    </span>
+                                    <span class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>
+                                        Yesterday, 4:15 PM</span>
+                                </div>
+                                <div class="flex items-center gap-3.5">
+                                    <div
+                                        class="w-14 h-14 rounded-xl overflow-hidden shadow-sm shrink-0 border border-slate-200 bg-white">
+                                        <img src="{% static 'images/airpods.jpg' %}" alt="Apple AirPods Pro"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-sm font-bold text-navy truncate">Apple AirPods Pro (2nd Gen)
+                                        </h4>
+                                        <p class="text-xs text-slate-500 truncate"><i
+                                                class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Central Metro
+                                            Line 3 · Platform South</p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold text-slate-600 bg-white px-2 py-1 rounded-md border border-slate-200">White
+                                        Case</span>
+                                </div>
+                            </div>
+
+                            <div class="relative py-2 flex items-center justify-center">
+
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-full h-0.5 bg-gradient-to-r from-blue-300 via-indigo-400 to-cyan-300">
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="relative z-10 bg-white px-4 py-2 rounded-full border-2 border-primary/30 shadow-md flex items-center gap-3">
+                                    <div class="relative flex items-center justify-center w-7 h-7">
+                                        <div class="absolute w-7 h-7 rounded-full bg-primary/20 radar-pulse-anim"></div>
+                                        <div
+                                            class="absolute w-7 h-7 rounded-full bg-cyan/25 radar-pulse-anim radar-pulse-delay-1">
+                                        </div>
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-cyan text-white flex items-center justify-center text-xs shadow-sm">
+                                            <i class="fa-solid fa-brain"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-left">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider leading-none">Neural
+                                            Confidence</span>
+                                        <span
+                                            class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo">94%
+                                            High Match</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="glass-card bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 shadow-sm relative group hover:border-cyan-300 transition-all">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span
+                                        class="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                        <i class="fa-solid fa-check-circle text-[9px]"></i> Found Report #F-3118
+                                    </span>
+                                    <span class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i> Today,
+                                        9:20 AM</span>
+                                </div>
+                                <div class="flex items-center gap-3.5">
+                                    <div
+                                        class="w-14 h-14 rounded-xl overflow-hidden shadow-sm shrink-0 border border-slate-200 bg-white">
+                                        <img src="{% static 'images/earbuds.jpg' %}" alt="Wireless Earbuds Case"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-sm font-bold text-navy truncate">Wireless Earbuds Case with
+                                            Initials</h4>
+                                        <p class="text-xs text-slate-500 truncate"><i
+                                                class="fa-solid fa-location-dot text-emerald-500 mr-1"></i> Central
+                                            Metro Lost & Found Station</p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold text-slate-600 bg-white px-2 py-1 rounded-md border border-slate-200">Matching
+                                        Geo</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between bg-blue-50/70 p-3 rounded-xl border border-blue-100">
+                            <div class="flex items-center gap-2.5">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                    <i class="fa-solid fa-bell animate-bounce"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-bold text-slate-900">Potential match found!</h5>
+                                    <p class="text-[11px] text-slate-500">Multimodal similarity score: 94%</p>
+                                </div>
+                            </div>
+                            <button id="hero-quick-match-demo-btn" type="button"
+                                class="text-xs font-semibold text-primary hover:text-primary-dark bg-white px-3 py-1.5 rounded-lg border border-blue-200 shadow-sm transition-colors">
+                                View Match →
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="hidden sm:flex absolute -bottom-5 -left-5 bg-white p-3 rounded-xl border border-slate-200 shadow-lg items-center gap-3 animate-float-slow">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-slate-900 block">Verified Ownership</span>
+                            <span class="text-[10px] text-slate-500">Encrypted claim process</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="hidden sm:flex absolute -top-4 -right-4 bg-white p-2.5 rounded-xl border border-slate-200 shadow-lg items-center gap-2.5 animate-float-alt">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan animate-pulse"></span>
+                        <span class="text-xs font-bold text-slate-800">4,200+ Active Search Nodes</span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="py-12 bg-white border-y border-slate-200/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div
+                class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+
+                <div class="text-center pt-4 lg:pt-0 reveal-elem">
+                    <div
+                        class="flex items-center justify-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy font-heading">
+                        <span class="stat-counter" data-target="10480" data-format="k">0</span>
+                        <span class="text-primary">+</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-600 mt-1">Items Reported</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Across 45+ cities & transit hubs</p>
+                </div>
+
+                <div class="text-center pt-4 lg:pt-0 reveal-elem">
+                    <div
+                        class="flex items-center justify-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy font-heading">
+                        <span class="stat-counter" data-target="6820" data-format="k">0</span>
+                        <span class="text-indigo">+</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-600 mt-1">Items Reunited</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Safely restored to owners</p>
+                </div>
+
+                <div class="text-center pt-4 lg:pt-0 reveal-elem">
+                    <div
+                        class="flex items-center justify-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy font-heading">
+                        <span class="stat-counter" data-target="94" data-format="percent">0</span>
+                        <span class="text-cyan">%</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-600 mt-1">Smart Match Accuracy*</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Multimodal neural ranking</p>
+                </div>
+
+                <div class="text-center pt-4 lg:pt-0 reveal-elem">
+                    <div
+                        class="flex items-center justify-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy font-heading">
+                        <span>24/7</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-600 mt-1">Community Support</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Active moderation & alerts</p>
+                </div>
+
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-[11px] text-slate-400">
+                    *Illustrative demo metric — connect to real production analytics and database reports in live
+                    deployment.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="how-it-works" class="py-20 lg:py-28 bg-bg-main relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-elem">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-primary border border-blue-200">
+                    <i class="fa-solid fa-list-check"></i> Simple & Transparent
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy tracking-tight font-heading">
+                    Finding your item is simpler than you think.
+                </h2>
+                <p class="text-base sm:text-lg text-text-secondary leading-relaxed">
+                    A clear, three-step process designed to make recovery faster, safer, and entirely stress-free.
+                </p>
+            </div>
+
+            <div class="relative grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+
+                <div
+                    class="hidden md:block absolute top-1/2 left-1/6 right-1/6 -translate-y-8 h-0.5 bg-gradient-to-r from-blue-300 via-indigo-300 to-cyan-300 -z-0">
+                </div>
+
+                <div
+                    class="glass-card glass-card-hover bg-white rounded-2xl p-8 border border-slate-200/80 relative z-10 flex flex-col justify-between reveal-elem">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-primary flex items-center justify-center text-2xl shadow-sm">
+                                <i class="fa-solid fa-file-circle-plus"></i>
+                            </div>
+                            <span class="text-3xl font-extrabold font-heading text-slate-200">01</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy mb-3">Step 1 — Report</h3>
+                        <p class="text-sm text-text-secondary leading-relaxed mb-6">
+                            Tell us what you lost or found. Add details, precise location, date, and upload clear photos
+                            to help with identification.
+                        </p>
+                    </div>
+                    <div
+                        class="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-primary">
+                        <i class="fa-solid fa-check text-emerald-500"></i> Takes less than 2 minutes
+                    </div>
+                </div>
+
+                <div
+                    class="glass-card glass-card-hover bg-white rounded-2xl p-8 border border-slate-200/80 relative z-10 flex flex-col justify-between reveal-elem">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo flex items-center justify-center text-2xl shadow-sm">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+                            <span class="text-3xl font-extrabold font-heading text-slate-200">02</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy mb-3">Step 2 — Smart Match</h3>
+                        <p class="text-sm text-text-secondary leading-relaxed mb-6">
+                            Our intelligent matching system compares descriptions, images, and relevant details to
+                            automatically identify potential matches.
+                        </p>
+                    </div>
+                    <div
+                        class="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-indigo">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Multi-vector AI correlation
+                    </div>
+                </div>
+
+                <div
+                    class="glass-card glass-card-hover bg-white rounded-2xl p-8 border border-slate-200/80 relative z-10 flex flex-col justify-between reveal-elem">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan flex items-center justify-center text-2xl shadow-sm">
+                                <i class="fa-solid fa-handshake-simple"></i>
+                            </div>
+                            <span class="text-3xl font-extrabold font-heading text-slate-200">03</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy mb-3">Step 3 — Reconnect</h3>
+                        <p class="text-sm text-text-secondary leading-relaxed mb-6">
+                            Review the match, verify ownership through secure questions, and safely reconnect with the
+                            item via protected channels.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-cyan">
+                        <i class="fa-solid fa-shield-check text-primary"></i> Protected safe return zones
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section id="features" class="py-20 lg:py-28 bg-white border-t border-slate-200/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-elem">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo border border-indigo-200">
+                    <i class="fa-solid fa-cubes"></i> Powerful Architecture
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy tracking-tight font-heading">
+                    Everything you need to find what matters.
+                </h2>
+                <p class="text-base sm:text-lg text-text-secondary leading-relaxed">
+                    Designed with privacy, security, and precision matching technology to give your lost items the best
+                    chance of coming back home.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-100 text-primary flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">AI-Powered Matching</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Compare item descriptions, images, categories, and other attributes to suggest potential matches
+                        across hundreds of reports in seconds.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-primary">Neural feature vectors →</span>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">Smart Search & Filters</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Filter instantly by item type, color, location radius, date range, brand, and serial digits to
+                        pinpoint matching reports.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-indigo">Faceted filtering →</span>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">Image-Based Reporting</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Upload photos to make lost and found reports easier to identify. Our computer vision model
+                        extracts key visual markers automatically.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-cyan">Vision tag detection →</span>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">Secure Claim Verification</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Help ensure items are returned to their rightful owners through an ownership verification
+                        challenge before contact details are shared.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-emerald-600">Anti-fraud protocols →</span>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">Real-Time Notifications</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Receive automated alerts the instant a potential match is found or when an update is posted to
+                        your submitted item report.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-amber-600">SMS & Email hooks →</span>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 hover:bg-white rounded-2xl p-7 border border-slate-200/80 transition-all duration-300 relative group reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-people-roof"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-navy mb-2">Community-Powered Recovery</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed mb-4">
+                        Connect people who lose items with good Samaritans, public venues, transit systems, and
+                        university campuses in a trusted network.
+                    </p>
+                    <span class="inline-block text-xs font-semibold text-purple-600">Civic network integration →</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section id="ai-matching"
+        class="py-20 lg:py-28 bg-gradient-to-b from-bg-main via-blue-50/30 to-bg-main relative overflow-hidden">
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                <div class="lg:col-span-5 space-y-6 reveal-elem">
+                    <div
+                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan/10 text-cyan-800 border border-cyan/30">
+                        <i class="fa-solid fa-sparkles"></i> Intelligent Recovery Engine
+                    </div>
+
+                    <h2
+                        class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy tracking-tight font-heading leading-tight">
+                        Technology that brings lost items closer to home.
+                    </h2>
+
+                    <p class="text-base text-text-secondary leading-relaxed">
+                        Finding a match isn't just about keywords. Our intelligent matching system analyzes
+                        multi-dimensional parameters simultaneously to determine the highest probable match:
+                    </p>
+
+                    <div class="space-y-3.5 pt-2">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-md bg-blue-100 text-primary flex items-center justify-center text-xs mt-0.5 shrink-0">
+                                <i class="fa-solid fa-align-left"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-navy">Item Descriptions</h4>
+                                <p class="text-xs text-slate-500">Natural language embeddings catch synonyms,
+                                    distinctive tags, and wear marks.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-md bg-cyan-100 text-cyan flex items-center justify-center text-xs mt-0.5 shrink-0">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-navy">Visual Images & Color</h4>
+                                <p class="text-xs text-slate-500">Computer vision extracts object silhouettes, brand
+                                    logos, color shades, and textures.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-md bg-indigo-100 text-indigo flex items-center justify-center text-xs mt-0.5 shrink-0">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-navy">Category & Hierarchy</h4>
+                                <p class="text-xs text-slate-500">Taxonomy trees prevent misclassifying tablets as
+                                    laptops or keys as jewelry.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs mt-0.5 shrink-0">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-navy">Location & Timestamp Proximity</h4>
+                                <p class="text-xs text-slate-500">Correlates geo-fences, transit lines, and time-lapse
+                                    windows for logical overlap.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <a href="#browse-items"
+                            class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary-dark transition-colors group">
+                            <span>Explore Smart Matching Reports</span>
+                            <i
+                                class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="lg:col-span-7 reveal-elem">
+                    <div
+                        class="glass-card bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xl relative">
+
+                        <div
+                            class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold text-navy">AI Neural Match Simulator</h3>
+                                    <p class="text-[11px] text-slate-400">Interactive live prototype preview</p>
+                                </div>
+                            </div>
+                            <button id="run-demo-match-btn" type="button"
+                                class="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark rounded-lg shadow-sm hover:shadow active:scale-95 transition-all flex items-center gap-1.5">
+                                <i id="demo-btn-icon" class="fa-solid fa-play"></i>
+                                <span id="demo-btn-text">Run Demo Match</span>
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
+                            <span
+                                class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Target
+                                Search Query</span>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-magnifying-glass text-primary text-sm"></i>
+                                    <span class="text-sm font-semibold text-navy">"Lost Matte Black Backpack with
+                                        15-inch Laptop Sleeve"</span>
+                                </div>
+                                <span
+                                    class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">Bags
+                                    & Luggage</span>
+                            </div>
+                        </div>
+
+                        <div id="ai-scanning-state" class="hidden py-8 text-center space-y-4">
+                            <div class="relative w-16 h-16 mx-auto">
+                                <div class="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+                                <div
+                                    class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin">
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center text-primary text-lg">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <p id="scanning-step-text" class="text-sm font-bold text-navy">Analyzing semantic
+                                    embeddings...</p>
+                                <p class="text-xs text-slate-400">Comparing 450+ found catalog records against query</p>
+                            </div>
+                        </div>
+
+                        <div id="ai-results-container" class="space-y-6">
+
+                            <div
+                                class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center bg-blue-50/50 rounded-xl p-5 border border-blue-100">
+
+                                <div class="sm:col-span-5 flex flex-col items-center justify-center text-center">
+                                    <div class="relative w-28 h-28 flex items-center justify-center">
+                                        <svg class="w-full h-full" viewBox="0 0 100 100">
+
+                                            <circle cx="50" cy="50" r="40" stroke="#E2E8F0" stroke-width="8"
+                                                fill="none" />
+
+                                            <circle id="demo-progress-circle" class="progress-ring-circle" cx="50"
+                                                cy="50" r="40" stroke="url(#blue-gradient)" stroke-width="8"
+                                                stroke-linecap="round" fill="none" stroke-dasharray="251.2"
+                                                stroke-dashoffset="15" />
+                                            <defs>
+                                                <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stop-color="#2563EB" />
+                                                    <stop offset="100%" stop-color="#06B6D4" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                        <div class="absolute flex flex-col items-center">
+                                            <span id="demo-percentage-text"
+                                                class="text-2xl font-extrabold text-navy font-heading">94%</span>
+                                            <span
+                                                class="text-[9px] font-bold text-primary uppercase tracking-wider">Match
+                                                Score</span>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full mt-2">
+                                        Verified Match Candidate
+                                    </span>
+                                </div>
+
+                                <div class="sm:col-span-7 space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                            <span><i class="fa-solid fa-eye text-primary mr-1"></i> Visual & Color
+                                                Similarity</span>
+                                            <span class="text-primary font-bold">96%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 96%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                            <span><i class="fa-solid fa-shapes text-indigo mr-1"></i> Category
+                                                Taxonomy</span>
+                                            <span class="text-indigo font-bold">100%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo h-2 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                            <span><i class="fa-solid fa-location-crosshairs text-cyan mr-1"></i> Nearby
+                                                Geospatial Radius</span>
+                                            <span class="text-cyan font-bold">92%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-cyan h-2 rounded-full" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                            <span><i class="fa-solid fa-file-lines text-slate-600 mr-1"></i> Description
+                                                Overlap</span>
+                                            <span class="text-slate-800 font-bold">89%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-slate-700 h-2 rounded-full" style="width: 89%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-slate-200 bg-white">
+                                        <img src="{% static 'images/backpack.jpg' %}" alt="Found Backpack"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h5 class="text-xs font-bold text-navy">Found: Matte Black Commuter Backpack
+                                        </h5>
+                                        <p class="text-[11px] text-slate-500">Reported at South Concourse Information
+                                            Desk · 3 hrs ago</p>
+                                    </div>
+                                </div>
+                                <button id="demo-claim-btn" type="button"
+                                    class="px-3 py-1.5 text-xs font-bold text-primary bg-white hover:bg-primary hover:text-white border border-blue-200 rounded-lg transition-colors shadow-sm">
+                                    Review & Claim
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <span class="text-[11px] text-slate-400">
+                                Visual demonstration interface only. Actual AI inference connects to FindBack neural
+                                backend API.
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="browse-items" class="py-20 lg:py-28 bg-white border-t border-slate-200/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 reveal-elem">
+                <div class="max-w-2xl space-y-2">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-primary border border-blue-200">
+                        <i class="fa-solid fa-radar"></i> Live Catalog Feed
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight font-heading">
+                        Explore recent reports
+                    </h2>
+                    <p class="text-base text-text-secondary">
+                        Browse through community-submitted lost and found items. Click any card to preview verification
+                        details and high-resolution photo.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 self-start md:self-auto"
+                    role="tablist" aria-label="Item Filter">
+                    <button type="button" data-filter="all"
+                        class="filter-tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-navy shadow-sm transition-all">
+                        All Items (<span id="count-all">6</span>)
+                    </button>
+                    <button type="button" data-filter="lost"
+                        class="filter-tab-btn px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-navy transition-all">
+                        Lost Items (<span id="count-lost">3</span>)
+                    </button>
+                    <button type="button" data-filter="found"
+                        class="filter-tab-btn px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-navy transition-all">
+                        Found Items (<span id="count-found">3</span>)
+                    </button>
+                    <button type="button" data-filter="recent"
+                        class="filter-tab-btn px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-navy transition-all">
+                        Recently Added
+                    </button>
+                </div>
+            </div>
+
+            <div id="items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="lost" data-recent="true">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/backpack.jpg' %}" alt="Matte Black Backpack"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Bags
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">Matte Black Backpack</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Water-resistant commuter backpack with 15" laptop sleeve and distinct yellow paracord
+                                zipper pull.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-rose-500 w-4 text-center"></i>
+                                    <span>Central Metro Station, Line 2</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>Reported 2 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="Matte Black Backpack" data-type="Lost"
+                            data-location="Central Metro Station, Line 2" data-date="2 hours ago"
+                            data-desc="Water-resistant commuter backpack with 15-inch laptop sleeve and distinct yellow paracord zipper pull. Contains university notebooks."
+                            data-image="{% static 'images/backpack.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="found" data-recent="true">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/earbuds.jpg' %}" alt="Blue Wireless Earbuds"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-check text-[10px]"></i> Found
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Electronics
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">Blue Wireless Earbuds</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Navy blue charging case with golden hinge. Found left on a corner booth at downtown
+                                cafe.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-emerald-500 w-4 text-center"></i>
+                                    <span>Downtown Coffee Lab, Table 7</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>Today, 11:30 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="Blue Wireless Earbuds" data-type="Found"
+                            data-location="Downtown Coffee Lab, Table 7" data-date="Today, 11:30 AM"
+                            data-desc="Navy blue wireless charging case with golden hinge accent. Handed to cafe shift manager for safekeeping. Claim requires verifying device serial or bluetooth name."
+                            data-image="{% static 'images/earbuds.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="lost" data-recent="false">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/watch.jpg' %}" alt="Silver Chronograph Watch"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Jewelry
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">Silver Chronograph Watch</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Stainless steel mesh strap with blue sunburst dial. Heirloom gift with back casing
+                                engraving.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-rose-500 w-4 text-center"></i>
+                                    <span>City Park South Promenade</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>Yesterday afternoon</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="Silver Chronograph Watch" data-type="Lost"
+                            data-location="City Park South Promenade" data-date="Yesterday afternoon"
+                            data-desc="Stainless steel mesh bracelet, 40mm case with sunburst blue dial. Inscription on reverse case. Substantial sentimental value."
+                            data-image="{% static 'images/watch.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="found" data-recent="true">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/id_card.jpg' %}" alt="Student ID Card"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-check text-[10px]"></i> Found
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Documents
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">Student ID Card (State Univ)</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Clear lanyard badge holder with university magnetic keycard. Identity protected for
+                                privacy.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-emerald-500 w-4 text-center"></i>
+                                    <span>University Main Library, 2nd Fl</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>Yesterday, 5:45 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="Student ID Card" data-type="Found"
+                            data-location="University Main Library - 2nd Floor" data-date="Yesterday, 5:45 PM"
+                            data-desc="Plastic student ID badge with magnetic stripe and photo. Deposited at Library Circulation Desk. Owner must present matching university registration to claim."
+                            data-image="{% static 'images/id_card.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="lost" data-recent="false">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/keys.jpg' %}" alt="House Keys with Leather Fob"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Keys
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">House Keys with Leather Fob</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Set of 3 brass house keys attached to a distinctive tan stitched leather keychain fob.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-rose-500 w-4 text-center"></i>
+                                    <span>Oakridge Boulevard Bus Stop</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>2 days ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="House Keys with Leather Fob" data-type="Lost"
+                            data-location="Oakridge Boulevard Bus Stop" data-date="2 days ago"
+                            data-desc="Keychain consisting of 3 brass keys, 1 silver bike lock key, and a custom stamped tan leather tag with initials."
+                            data-image="{% static 'images/keys.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="item-card glass-card-hover bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col justify-between reveal-elem"
+                    data-type="found" data-recent="false">
+                    <div>
+
+                        <div class="h-52 bg-slate-100 relative overflow-hidden group">
+                            <img src="{% static 'images/wallet.jpg' %}" alt="Brown Bi-Fold Leather Wallet"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span
+                                class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md flex items-center gap-1">
+                                <i class="fa-solid fa-check text-[10px]"></i> Found
+                            </span>
+                            <span
+                                class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm shadow-sm">
+                                Wallets
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-navy mb-1.5">Brown Bi-Fold Leather Wallet</h3>
+                            <p class="text-xs text-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                                Distressed brown leather wallet. Handed over to terminal security desk for safe
+                                cataloging.
+                            </p>
+                            <div class="space-y-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-emerald-500 w-4 text-center"></i>
+                                    <span>North Airport Terminal, Gate 14</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400 w-4 text-center"></i>
+                                    <span>3 days ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2">
+                        <button type="button"
+                            class="view-item-btn w-full py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5"
+                            data-item="Brown Leather Wallet" data-type="Found"
+                            data-location="North Airport Terminal, Gate 14" data-date="3 days ago"
+                            data-desc="Vintage bi-fold leather wallet found in waiting area near Gate 14. Stored at Airport Police Lost & Found office. Identity card name verification required."
+                            data-image="{% static 'images/wallet.jpg' %}">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="no-items-match" class="hidden text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+                <div
+                    class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl mb-3">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h4 class="text-base font-bold text-navy">No reports found for this filter</h4>
+                <p class="text-xs text-slate-500 mt-1">Try selecting a different filter category or reset to All Items.
+                </p>
+                <button id="reset-filter-btn" type="button"
+                    class="mt-4 px-4 py-2 text-xs font-bold text-primary bg-white border border-blue-200 rounded-lg shadow-sm">
+                    Reset Filter
+                </button>
+            </div>
+
+            <div class="mt-12 text-center reveal-elem">
+                <button id="browse-all-btn" type="button"
+                    class="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-bold text-navy bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm hover:shadow transition-all group">
+                    <span>View All 10,480+ Reports</span>
+                    <i
+                        class="fa-solid fa-arrow-right text-xs text-primary transition-transform group-hover:translate-x-1"></i>
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="safety"
+        class="py-20 lg:py-28 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white relative border-t border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-elem">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <i class="fa-solid fa-shield-heart"></i> Safe & Responsible Reunions
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy tracking-tight font-heading">
+                    Built for safe and responsible reunions.
+                </h2>
+                <p class="text-base sm:text-lg text-text-secondary leading-relaxed">
+                    We designed FindBack from the ground up to protect personal privacy, deter fraudulent claims, and
+                    ensure safe exchanges between community members.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <div class="glass-card bg-white rounded-2xl p-6 border border-slate-200/80 reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-100 text-primary flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-navy mb-2">Privacy-Conscious Reporting</h3>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        Sensitive serial codes, phone numbers, and full names are masked. Public cards never expose
+                        personal identifying data.
+                    </p>
+                </div>
+
+                <div class="glass-card bg-white rounded-2xl p-6 border border-slate-200/80 reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-fingerprint"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-navy mb-2">Claim Verification</h3>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        Claimants must answer hidden verification questions (wallpaper, internal engravings, receipts)
+                        before handovers occur.
+                    </p>
+                </div>
+
+                <div class="glass-card bg-white rounded-2xl p-6 border border-slate-200/80 reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-comments-dollar"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-navy mb-2">Secure Proxy Messaging</h3>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        Communicate through an encrypted internal messaging proxy without sharing personal phone numbers
+                        or home addresses.
+                    </p>
+                </div>
+
+                <div class="glass-card bg-white rounded-2xl p-6 border border-slate-200/80 reveal-elem">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-navy mb-2">Safe Handover Hubs</h3>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        Designated partner safe zones—including police lobbies, transit customer desks, and campus
+                        libraries—for secure meetups.
+                    </p>
+                </div>
+
+            </div>
+
+            <div
+                class="mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 reveal-elem">
+                <div class="flex items-center gap-4 text-center md:text-left">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-2xl shrink-0">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-navy">Our Responsible Platform Pledge</h4>
+                        <p class="text-xs sm:text-sm text-text-secondary">
+                            FindBack is designed to support honest community recovery without monetary ransom or hostage
+                            incentives.
+                        </p>
+                    </div>
+                </div>
+                <button id="learn-safety-btn" type="button"
+                    class="whitespace-nowrap px-5 py-2.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                    Read Safety Guidelines
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-20 lg:py-28 bg-white border-t border-slate-200/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-elem">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-primary border border-blue-200">
+                    <i class="fa-solid fa-heart"></i> Community Stories
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy tracking-tight font-heading">
+                    Reunions that inspire us.
+                </h2>
+                <p class="text-base sm:text-lg text-text-secondary leading-relaxed">
+                    Real stories from people who recovered what mattered most with the help of community reporting and
+                    AI matching.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 rounded-2xl p-8 border border-slate-200/80 flex flex-col justify-between reveal-elem">
+                    <div class="space-y-4">
+
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-700 italic leading-relaxed">
+                            "I thought my wallet and student ID were gone forever after dropping them on the morning
+                            express metro. Within 3 hours of posting, a fellow passenger registered the found item, and
+                            the AI match flagged it instantly!"
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-200/70 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm">
+                            ER
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-navy">Elena Rostova</h4>
+                            <p class="text-xs text-slate-400">Master's Student · Portland, OR</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 rounded-2xl p-8 border border-slate-200/80 flex flex-col justify-between reveal-elem">
+                    <div class="space-y-4">
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-700 italic leading-relaxed">
+                            "Returning someone's lost DSLR camera was effortless. FindBack's claim verification made
+                            sure the true owner answered specific details about the lens filter before we coordinated a
+                            safe meetup at the library desk."
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-200/70 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white flex items-center justify-center font-bold text-sm">
+                            MV
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-navy">Marcus Vance</h4>
+                            <p class="text-xs text-slate-400">Software Engineer · Seattle, WA</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="glass-card-hover bg-slate-50/70 rounded-2xl p-8 border border-slate-200/80 flex flex-col justify-between reveal-elem">
+                    <div class="space-y-4">
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-700 italic leading-relaxed">
+                            "Losing our family heirloom ring in the park was heartbreaking. The geo-radius alert
+                            notified a dog walker who had picked it up. We were reunited that very evening. Truly
+                            thoughtful technology."
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-200/70 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-emerald-500 text-white flex items-center justify-center font-bold text-sm">
+                            SL
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-navy">Sarah & David Lin</h4>
+                            <p class="text-xs text-slate-400">Local Residents · Austin, TX</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-[11px] text-slate-400">
+                    *Sample community feedback representing simulated platform user experiences.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="py-20 lg:py-28 bg-bg-main relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div
+                class="relative rounded-3xl bg-gradient-to-r from-primary via-indigo to-blue-700 p-8 sm:p-12 lg:p-16 text-white shadow-2xl shadow-blue-500/20 overflow-hidden reveal-elem">
+
+                <div
+                    class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-400/25 rounded-full blur-3xl pointer-events-none">
+                </div>
+                <div
+                    class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-300/20 rounded-full blur-3xl pointer-events-none">
+                </div>
+
+                <div class="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+                    <span
+                        class="inline-block px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/15 text-white backdrop-blur-md border border-white/20">
+                        Start Your Recovery Today
+                    </span>
+
+                    <h2
+                        class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight font-heading leading-tight">
+                        Your next reunion could start here.
+                    </h2>
+
+                    <p class="text-base sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+                        Whether you've lost something irreplaceable or found an item that belongs to someone else, every
+                        report makes an immediate difference.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <button id="cta-lost-btn" type="button"
+                            class="w-full sm:w-auto px-7 py-3.5 text-base font-bold text-primary bg-white hover:bg-blue-50 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Report a Lost Item</span>
+                        </button>
+                        <button id="cta-found-btn" type="button"
+                            class="w-full sm:w-auto px-7 py-3.5 text-base font-bold text-white bg-white/15 hover:bg-white/25 border border-white/30 rounded-xl backdrop-blur-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Report a Found Item</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-blue-100/90 pt-4">
+                        <span><i class="fa-solid fa-check mr-1.5 text-cyan-300"></i> Free community accounts</span>
+                        <span><i class="fa-solid fa-check mr-1.5 text-cyan-300"></i> No credit card required</span>
+                        <span><i class="fa-solid fa-check mr-1.5 text-cyan-300"></i> End-to-end privacy</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-navy text-slate-300 pt-16 pb-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
+
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-sm">
+                            <i class="fa-solid fa-satellite-dish text-base"></i>
+                        </div>
+                        <span class="text-xl font-extrabold tracking-tight font-heading text-white">Find<span
+                                class="text-primary-light">Back</span></span>
+                    </div>
+                    <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+                        Intelligent lost and found platform combining multi-vector AI matching with community reporting
+                        to help people reconnect with their belongings.
+                    </p>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <a href="#" aria-label="FindBack on Twitter / X"
+                            class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-primary text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                            <i class="fa-brands fa-x-twitter text-sm"></i>
+                        </a>
+                        <a href="#" aria-label="FindBack on GitHub"
+                            class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-primary text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                            <i class="fa-brands fa-github text-sm"></i>
+                        </a>
+                        <a href="#" aria-label="FindBack on LinkedIn"
+                            class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-primary text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                            <i class="fa-brands fa-linkedin-in text-sm"></i>
+                        </a>
+                        <a href="#" aria-label="FindBack on Discord"
+                            class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-primary text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                            <i class="fa-brands fa-discord text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Platform</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#hero" class="hover:text-white transition-colors">Report Lost Item</a></li>
+                        <li><a href="#hero" class="hover:text-white transition-colors">Report Found Item</a></li>
+                        <li><a href="#browse-items" class="hover:text-white transition-colors">Browse Reports</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#ai-matching" class="hover:text-white transition-colors">AI Match Tech</a></li>
+                    </ul>
+                </div>
+
+                <div class="lg:col-span-3 space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Company & Safety</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#safety" class="hover:text-white transition-colors">Safety Guidelines</a></li>
+                        <li><a href="#features" class="hover:text-white transition-colors">Platform Features</a></li>
+                        <li><a href="#testimonials" class="hover:text-white transition-colors">Community Stories</a>
+                        </li>
+                        <li><a href="#footer-contact" id="footer-contact-link"
+                                class="hover:text-white transition-colors">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Transit Partnerships</a></li>
+                    </ul>
+                </div>
+
+                <div class="lg:col-span-2 space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Legal</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Claim Protocols</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Cookie Preferences</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>© 2026 FindBack Technologies Inc. All rights reserved.</p>
+                <p class="text-slate-400">Built to help communities reconnect with what matters.</p>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-slate-400">All Systems Operational</span>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <div id="report-modal"
+        class="fixed inset-0 z-50 hidden bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300"
+        role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div
+            class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-float-slow">
+
+            <button id="close-report-modal-btn" type="button" aria-label="Close dialog"
+                class="absolute top-4 right-4 p-2 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-xl transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="mb-6">
+                <div
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 text-primary mb-2">
+                    <i class="fa-solid fa-file-pen"></i> New Item Report
+                </div>
+                <h3 id="modal-title" class="text-xl font-bold text-navy">Submit an Item Report</h3>
+                <p class="text-xs text-text-secondary mt-1">Provide accurate details to enable instant AI matching.</p>
+            </div>
+
+            <form id="report-form" class="space-y-4">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Report
+                        Type</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label
+                            class="flex items-center justify-center gap-2 p-3 border-2 border-primary bg-blue-50/50 rounded-xl cursor-pointer text-xs font-bold text-primary">
+                            <input type="radio" name="report_type" value="lost" checked
+                                class="text-primary focus:ring-primary">
+                            <span>I Lost an Item</span>
+                        </label>
+                        <label
+                            class="flex items-center justify-center gap-2 p-3 border-2 border-slate-200 hover:border-slate-300 rounded-xl cursor-pointer text-xs font-semibold text-slate-700">
+                            <input type="radio" name="report_type" value="found"
+                                class="text-primary focus:ring-primary">
+                            <span>I Found an Item</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="form-item-title" class="block text-xs font-bold text-slate-700 mb-1">Item Title
+                        *</label>
+                    <input type="text" id="form-item-title" required placeholder="e.g. Sony Wireless Headphones"
+                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="form-category" class="block text-xs font-bold text-slate-700 mb-1">Category
+                            *</label>
+                        <select id="form-category"
+                            class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white">
+                            <option value="electronics">Electronics</option>
+                            <option value="bags">Bags & Luggage</option>
+                            <option value="keys">Keys</option>
+                            <option value="jewelry">Jewelry & Watches</option>
+                            <option value="wallets">Wallets & Cards</option>
+                            <option value="other">Other Accessories</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="form-date" class="block text-xs font-bold text-slate-700 mb-1">Date & Time *</label>
+                        <input type="date" id="form-date"
+                            class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="form-location" class="block text-xs font-bold text-slate-700 mb-1">Approximate Location
+                        *</label>
+                    <input type="text" id="form-location" required placeholder="e.g. Central Station, Line 1 Platform"
+                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="form-description" class="block text-xs font-bold text-slate-700 mb-1">Detailed
+                        Description *</label>
+                    <textarea id="form-description" rows="3" required
+                        placeholder="Mention specific colors, stickers, scratches, or unique markings to assist verification..."
+                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Attach Photo (Optional)</label>
+                    <div
+                        class="border-2 border-dashed border-slate-200 hover:border-primary rounded-xl p-4 text-center cursor-pointer transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-2xl mb-1"></i>
+                        <p class="text-xs text-slate-600 font-medium">Click to upload or drag and drop image</p>
+                        <p class="text-[10px] text-slate-400">PNG, JPG or WEBP up to 10MB</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3">
+                    <button type="button" id="cancel-report-btn"
+                        class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark rounded-xl shadow-md transition-all">
+                        Simulate Report Submission
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div id="details-modal"
+        class="fixed inset-0 z-50 hidden bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300"
+        role="dialog" aria-modal="true" aria-labelledby="details-title">
+        <div
+            class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+
+            <button id="close-details-modal-btn" type="button" aria-label="Close dialog"
+                class="absolute top-4 right-4 p-2 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-xl transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="w-full h-48 rounded-xl overflow-hidden mb-4 border border-slate-200 shadow-sm bg-slate-50">
+                <img id="details-image" src="{% static 'images/backpack.jpg' %}" alt="Item preview" class="w-full h-full object-cover">
+            </div>
+
+            <div class="mb-4">
+                <span id="details-badge"
+                    class="px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white">Lost Item</span>
+                <h3 id="details-title" class="text-xl font-bold text-navy mt-2">Item Name</h3>
+                <p id="details-meta" class="text-xs text-slate-500 mt-0.5">Location & Date</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Description</h4>
+                    <p id="details-description" class="text-sm text-slate-600 leading-relaxed"></p>
+                </div>
+
+                <div class="p-4 bg-blue-50/60 rounded-xl border border-blue-100 space-y-2">
+                    <h4 class="text-xs font-bold text-primary flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> Verification & Security Protocol
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        To prevent fraud, sensitive identifying information (serial digits, wallpapers, or inside
+                        contents) must be verified before contact details are revealed.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button type="button" id="close-details-btn-action"
+                    class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                    Close
+                </button>
+                <button type="button" id="initiate-claim-btn"
+                    class="px-5 py-2.5 text-xs font-bold text-white bg-primary hover:bg-primary-dark rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-hand-holding"></i>
+                    <span>Initiate Ownership Claim</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"
+        aria-live="polite"></div>
+
+    <button id="back-to-top-btn" type="button" aria-label="Scroll back to top"
+        class="fixed bottom-6 left-6 z-40 p-3.5 rounded-xl bg-white/95 text-navy hover:text-primary shadow-lg border border-slate-200 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 hover:-translate-y-1">
+        <i class="fa-solid fa-arrow-up text-sm"></i>
+    </button>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>

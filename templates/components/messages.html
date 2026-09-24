@@ -1,0 +1,35 @@
+{% load static %}
+{% if messages %}
+<div id="django-messages-container" class="fixed top-24 right-6 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-auto transition-all">
+    {% for message in messages %}
+    <div class="flex items-center gap-3 p-4 rounded-xl shadow-lg border backdrop-blur-md transition-all duration-300
+        {% if message.tags == 'success' %}
+            bg-emerald-50/95 border-emerald-200 text-emerald-800
+        {% elif message.tags == 'error' %}
+            bg-rose-50/95 border-rose-200 text-rose-800
+        {% elif message.tags == 'warning' %}
+            bg-amber-50/95 border-amber-200 text-amber-800
+        {% else %}
+            bg-blue-50/95 border-blue-200 text-blue-800
+        {% endif %}">
+        <div class="shrink-0 text-base">
+            {% if message.tags == 'success' %}
+                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+            {% elif message.tags == 'error' %}
+                <i class="fa-solid fa-circle-xmark text-rose-600"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            {% else %}
+                <i class="fa-solid fa-circle-info text-blue-600"></i>
+            {% endif %}
+        </div>
+        <div class="flex-1 text-xs font-semibold leading-relaxed">
+            {{ message }}
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-700 transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

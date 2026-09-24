@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -156,7 +157,7 @@
 
         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
           <div class="h-80 sm:h-96 w-full bg-slate-100 relative">
-            <img id="main-item-img" src="../images/backpack.jpg" alt="Item Image" class="w-full h-full object-cover">
+            <img id="main-item-img" src="{% static 'images/backpack.jpg' %}" alt="Item Image" class="w-full h-full object-cover">
 
             <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-rose-500 text-white shadow-md flex items-center gap-1.5">
               <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
@@ -170,14 +171,14 @@
         </div>
 
         <div class="grid grid-cols-3 gap-3">
-          <button type="button" class="thumb-btn p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs focus:outline-none" data-src="../images/backpack.jpg">
-            <img src="../images/backpack.jpg" alt="Angle 1" class="w-full h-16 object-cover rounded-lg">
+          <button type="button" class="thumb-btn p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs focus:outline-none" data-src="{% static 'images/backpack.jpg' %}">
+            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 1" class="w-full h-16 object-cover rounded-lg">
           </button>
-          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="../images/backpack.jpg">
-            <img src="../images/backpack.jpg" alt="Angle 2" class="w-full h-16 object-cover rounded-lg">
+          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="{% static 'images/backpack.jpg' %}">
+            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 2" class="w-full h-16 object-cover rounded-lg">
           </button>
-          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="../images/backpack.jpg">
-            <img src="../images/backpack.jpg" alt="Angle 3" class="w-full h-16 object-cover rounded-lg">
+          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="{% static 'images/backpack.jpg' %}">
+            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 3" class="w-full h-16 object-cover rounded-lg">
           </button>
         </div>
 
@@ -274,7 +275,7 @@
             <div>
               <span class="text-[10px] font-bold text-rose-600 uppercase block mb-1">Your Report (Lost)</span>
               <div class="flex items-center gap-2">
-                <img src="../images/backpack.jpg" alt="Your Report" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                <img src="{% static 'images/backpack.jpg' %}" alt="Your Report" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                 <div class="min-w-0">
                   <span class="font-bold text-navy truncate block">Matte Black Backpack</span>
                   <span class="text-[10px] text-slate-500">Central Metro Line 2</span>
@@ -285,7 +286,7 @@
             <div class="border-l border-blue-200/80 pl-3">
               <span class="text-[10px] font-bold text-emerald-600 uppercase block mb-1">Found Candidate (#F-3118)</span>
               <div class="flex items-center gap-2">
-                <img src="../images/backpack.jpg" alt="Candidate" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                <img src="{% static 'images/backpack.jpg' %}" alt="Candidate" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                 <div class="min-w-0">
                   <span class="font-bold text-navy truncate block">Commuter Backpack</span>
                   <span class="text-[10px] text-slate-500">Station Customer Desk</span>
@@ -368,7 +369,7 @@
 
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <script src="../js/items.js"></script>
+  <script src="{% static 'js/items.js' %}"></script>
 
 </body>
 </html>

@@ -1,0 +1,90 @@
+{% load static %}
+<aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 z-30 shrink-0 select-none">
+    <div class="h-20 px-6 flex items-center border-b border-slate-100">
+        <a href="/" class="flex items-center gap-2.5 group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-satellite-dish text-sm"></i>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
+                </div>
+                <span class="text-[9px] font-semibold text-primary uppercase tracking-wider">Recovery Platform</span>
+            </div>
+        </a>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto" aria-label="Sidebar Navigation">
+        <a href="/items/" data-sidebar-link="dashboard" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-chart-pie text-sm text-primary w-4 text-center"></i>
+                <span>Dashboard</span>
+            </div>
+        </a>
+
+        <a href="/items/report-lost/" data-sidebar-link="report-lost" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 w-4 text-center"></i>
+                <span>Report Lost</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold border border-rose-200">Lost</span>
+        </a>
+
+        <a href="/items/report-found/" data-sidebar-link="report-found" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-hand-holding-heart text-emerald-500 w-4 text-center"></i>
+                <span>Report Found</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-600 font-bold border border-emerald-200">Found</span>
+        </a>
+
+        <a href="/items/search/" data-sidebar-link="search" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 w-4 text-center"></i>
+            <span>Search Items</span>
+        </a>
+
+        <a href="/matches/" data-sidebar-link="matches" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-bolt text-amber-500 w-4 text-center"></i>
+                <span>Potential Matches</span>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
+        </a>
+
+        <a href="/claims/" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-shield-halved text-cyan-600 w-4 text-center"></i>
+                <span>My Claims</span>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+        </a>
+
+        <a href="/accounts/profile/" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <i class="fa-regular fa-user text-slate-400 w-4 text-center"></i>
+            <span>Profile & Settings</span>
+        </a>
+    </nav>
+
+    <div class="p-3 border-t border-slate-100 space-y-2">
+        <a href="/#safety" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors">
+            <i class="fa-regular fa-circle-question text-slate-400"></i>
+            <span>Help & Safety Guidelines</span>
+        </a>
+
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+            <a href="/accounts/profile/" class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+                    FB
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-bold text-slate-800 truncate">My Account</p>
+                    <p class="text-[10px] text-slate-500 truncate">Manage reports</p>
+                </div>
+            </a>
+            <a href="/accounts/login/" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+            </a>
+        </div>
+    </div>
+</aside>

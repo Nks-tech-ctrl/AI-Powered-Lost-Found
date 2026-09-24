@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -366,7 +367,7 @@
                 <tr class="hover:bg-slate-50/70 transition-colors">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/airpods.jpg" alt="AirPods" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/airpods.jpg' %}" alt="AirPods" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block truncate max-w-[140px]">Apple AirPods Pro</span>
                         <span class="text-[10px] text-slate-400">Electronics</span>
@@ -392,7 +393,7 @@
                 <tr class="hover:bg-slate-50/70 transition-colors">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/backpack.jpg" alt="Backpack" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/backpack.jpg' %}" alt="Backpack" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block truncate max-w-[140px]">Matte Black Backpack</span>
                         <span class="text-[10px] text-slate-400">Bags & Luggage</span>
@@ -418,7 +419,7 @@
                 <tr class="hover:bg-slate-50/70 transition-colors">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/watch.jpg" alt="Watch" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/watch.jpg' %}" alt="Watch" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block truncate max-w-[140px]">Silver Chronograph</span>
                         <span class="text-[10px] text-slate-400">Jewelry</span>
@@ -444,7 +445,7 @@
                 <tr class="hover:bg-slate-50/70 transition-colors">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-3">
-                      <img src="../images/keys.jpg" alt="Keys" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
+                      <img src="{% static 'images/keys.jpg' %}" alt="Keys" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
                       <div>
                         <span class="font-bold text-navy block truncate max-w-[140px]">Brass House Keys</span>
                         <span class="text-[10px] text-slate-400">Personal Keys</span>
@@ -497,7 +498,7 @@
             </div>
 
             <div class="flex items-start gap-3">
-              <img src="../images/earbuds.jpg" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
+              <img src="{% static 'images/earbuds.jpg' %}" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
               <div class="min-w-0">
                 <span class="text-xs font-bold text-navy block truncate">Blue Wireless Earbuds Case</span>
                 <span class="text-[11px] text-slate-600 block mt-0.5">Found at Downtown Coffee Lab</span>
@@ -523,7 +524,7 @@
             </div>
 
             <div class="flex items-start gap-3">
-              <img src="../images/backpack.jpg" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
+              <img src="{% static 'images/backpack.jpg' %}" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
               <div class="min-w-0">
                 <span class="text-xs font-bold text-navy block truncate">Matte Black Laptop Backpack</span>
                 <span class="text-[11px] text-slate-600 block mt-0.5">Found at Central Metro Station Line 2</span>
@@ -612,7 +613,7 @@
 
   </main>
 
-  <script src="../js/dashboard.js"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
 
 </body>
 </html>
