@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Profile & Settings — FindBack{% endblock %}
+{% block title %}Profile — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
 
 {% block content %}
 <div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
@@ -10,8 +12,8 @@
   <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
 
     <div class="pb-2 border-b border-slate-200/80">
-      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Profile & Settings</h1>
-      <p class="text-xs sm:text-sm text-text-secondary mt-1">Manage your identity credentials, safety privacy controls, and recovery notifications.</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Profile & Account</h1>
+      <p class="text-xs sm:text-sm text-text-secondary mt-1">Authenticated user credentials and system recovery identity.</p>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
@@ -19,49 +21,55 @@
         
         <div class="relative group">
           <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl flex items-center justify-center shadow-md">
-            RS
+            {% if user.first_name and user.last_name %}
+              {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+            {% elif user.username %}
+              {{ user.username|slice:":2"|upper }}
+            {% else %}
+              FB
+            {% endif %}
           </div>
-          <button type="button" id="change-avatar-btn" class="absolute -bottom-1.5 -right-1.5 p-1.5 bg-white border border-slate-200 text-slate-600 hover:text-primary rounded-lg shadow-xs" title="Change photo">
-            <i class="fa-solid fa-camera text-xs"></i>
-          </button>
         </div>
 
         <div>
           <div class="flex items-center justify-center sm:justify-start gap-2">
-            <h2 class="text-xl font-bold font-heading text-navy">Rohit Sharma</h2>
+            <h2 class="text-xl font-bold font-heading text-navy">{{ user.get_full_name|default:user.username }}</h2>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-              <i class="fa-solid fa-shield-halved text-[9px] mr-1"></i> Verified User
+              <i class="fa-solid fa-shield-halved text-[9px] mr-1"></i> Authenticated User
             </span>
           </div>
-          <span class="text-xs text-text-secondary block mt-0.5">rohit@example.com</span>
+          <span class="text-xs text-text-secondary block mt-0.5">@{{ user.username }} &bull; {{ user.email }}</span>
           <div class="flex items-center justify-center sm:justify-start gap-3 text-[11px] text-slate-400 mt-2">
-            <span><i class="fa-regular fa-calendar mr-1"></i> Member since March 2026</span>
-            <span>•</span>
-            <span><i class="fa-solid fa-location-dot mr-1"></i> Central Metro Corridor</span>
+            <span><i class="fa-regular fa-calendar mr-1"></i> Member since {{ user.date_joined|date:"F Y" }}</span>
+            <span>&bull;</span>
+            <span><i class="fa-regular fa-clock mr-1"></i> Last login: {{ user.last_login|date:"M d, Y"|default:"Active session" }}</span>
           </div>
         </div>
       </div>
 
-      <button type="button" id="edit-profile-btn" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors shadow-xs">
-        <i class="fa-regular fa-pen-to-square mr-1.5"></i> Edit Details
-      </button>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'logout' %}" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+          <span>Sign Out</span>
+        </a>
+      </div>
     </div>
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-        <span class="text-2xl font-extrabold font-heading text-navy block">6</span>
+        <span class="text-2xl font-extrabold font-heading text-navy block">0</span>
         <span class="text-xs font-semibold text-text-secondary">Reports Submitted</span>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-        <span class="text-2xl font-extrabold font-heading text-amber-600 block">3</span>
+        <span class="text-2xl font-extrabold font-heading text-amber-600 block">0</span>
         <span class="text-xs font-semibold text-text-secondary">Potential Matches</span>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-        <span class="text-2xl font-extrabold font-heading text-cyan-600 block">2</span>
+        <span class="text-2xl font-extrabold font-heading text-cyan-600 block">0</span>
         <span class="text-xs font-semibold text-text-secondary">Active Claims</span>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
-        <span class="text-2xl font-extrabold font-heading text-emerald-600 block">1</span>
+        <span class="text-2xl font-extrabold font-heading text-emerald-600 block">0</span>
         <span class="text-xs font-semibold text-text-secondary">Items Reunited</span>
       </div>
     </div>
@@ -71,106 +79,85 @@
       <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-6">
         <div class="border-b border-slate-100 pb-3">
           <h3 class="text-base font-bold font-heading text-navy">Personal Information</h3>
-          <p class="text-xs text-text-secondary mt-0.5">Your official name and verified contact channels.</p>
+          <p class="text-xs text-text-secondary mt-0.5">Official credentials for your verified FindBack account.</p>
         </div>
 
-        <form id="profile-form" data-profile-form class="space-y-4">
+        <div class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="prof-name" class="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
-              <input type="text" id="prof-name" value="Enter Full Name" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">First Name</label>
+              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
+                {{ user.first_name|default:"Not specified" }}
+              </div>
             </div>
 
             <div>
-              <label for="prof-email" class="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
-              <input type="email" id="prof-email" value="email@example.com" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Last Name</label>
+              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
+                {{ user.last_name|default:"Not specified" }}
+              </div>
             </div>
 
             <div>
-              <label for="prof-phone" class="block text-xs font-bold text-slate-700 mb-1.5">Emergency Dispatch Phone</label>
-              <input type="tel" id="prof-phone" value="Enter your Number" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
-              <span class="text-[10px] text-slate-400 mt-1 block">Shielded from public view; used only for physical handover SMS.</span>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Username</label>
+              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
+                {{ user.username }}
+              </div>
             </div>
 
             <div>
-              <label for="prof-loc" class="block text-xs font-bold text-slate-700 mb-1.5">Primary Area / Transit Zone</label>
-              <input type="text" id="prof-loc" value="Central Metro & Downtown Corridor" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
+              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold truncate">
+                {{ user.email|default:"No email registered" }}
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
+              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
+                {{ user.get_full_name|default:user.username }}
+              </div>
             </div>
           </div>
 
-          <div class="pt-3 border-t border-slate-100 flex justify-end">
-            <button type="submit" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">
-              Save Changes
-            </button>
+          <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center gap-2.5 text-xs text-primary">
+            <i class="fa-solid fa-circle-info shrink-0"></i>
+            <span>Profile editing and additional settings will be introduced in Step 5.</span>
           </div>
-        </form>
+        </div>
       </div>
 
       <div class="lg:col-span-5 space-y-6">
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div class="border-b border-slate-100 pb-3">
-            <h3 class="text-sm font-bold font-heading text-navy">Notifications Preferences</h3>
-            <p class="text-xs text-text-secondary">Control real-time recovery alert channels.</p>
-          </div>
-
-          <div class="space-y-3 text-xs">
-            <label class="flex items-center justify-between cursor-pointer">
-              <div>
-                <span class="font-bold text-navy block">Potential Match Alerts</span>
-                <span class="text-[11px] text-slate-500">Instant ping when AI detects &gt;85% match</span>
-              </div>
-              <input type="checkbox" checked class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
-            </label>
-
-            <label class="flex items-center justify-between cursor-pointer">
-              <div>
-                <span class="font-bold text-navy block">Claim Status Updates</span>
-                <span class="text-[11px] text-slate-500">Milestone alerts during verification review</span>
-              </div>
-              <input type="checkbox" checked class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
-            </label>
-
-            <label class="flex items-center justify-between cursor-pointer">
-              <div>
-                <span class="font-bold text-navy block">Community Broadcasts</span>
-                <span class="text-[11px] text-slate-500">Weekly recovery metrics & hub announcements</span>
-              </div>
-              <input type="checkbox" class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20">
-            </label>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <div class="border-b border-slate-100 pb-3">
-            <h3 class="text-sm font-bold font-heading text-navy">Privacy & Account Security</h3>
-            <p class="text-xs text-text-secondary">Shield personal info across the network.</p>
+            <h3 class="text-sm font-bold font-heading text-navy">Account Security</h3>
+            <p class="text-xs text-text-secondary">Django authentication status.</p>
           </div>
 
           <div class="space-y-3 text-xs">
             <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
               <div>
-                <span class="font-bold text-navy block">Anonymous Proxy Relay</span>
-                <span class="text-[10px] text-slate-500">Phone and email hidden from other users</span>
+                <span class="font-bold text-navy block">Authentication System</span>
+                <span class="text-[10px] text-slate-500">django.contrib.auth</span>
               </div>
               <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Active</span>
             </div>
 
             <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
               <div>
-                <span class="font-bold text-navy block">Two-Factor Authentication</span>
-                <span class="text-[10px] text-slate-500">Enabled via Authenticator App</span>
+                <span class="font-bold text-navy block">Password Protection</span>
+                <span class="text-[10px] text-slate-500">PBKDF2 SHA-256 Hashed</span>
               </div>
-              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Enabled</span>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Secure</span>
             </div>
 
-            <div class="pt-2 flex items-center justify-between gap-2">
-              <button type="button" id="change-password-btn" class="w-1/2 py-2 px-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition-colors shadow-xs">
-                Change Password
-              </button>
-              <button type="button" id="signout-devices-btn" class="w-1/2 py-2 px-3 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs font-bold text-rose-600 transition-colors">
-                Sign Out Devices
-              </button>
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
+                <span class="font-bold text-navy block">Account Status</span>
+                <span class="text-[10px] text-slate-500">{% if user.is_active %}Active & Validated{% else %}Disabled{% endif %}</span>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Verified</span>
             </div>
           </div>
         </div>
@@ -183,6 +170,4 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/profile.js' %}"></script>
-{% endblock %}
+{% block footer %}{% endblock %}

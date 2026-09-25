@@ -16,7 +16,7 @@
     </div>
 
     <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto" aria-label="Sidebar Navigation">
-        <a href="/items/" data-sidebar-link="dashboard" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <a href="{% url 'dashboard' %}" data-sidebar-link="dashboard" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-chart-pie text-sm text-primary w-4 text-center"></i>
                 <span>Dashboard</span>
@@ -60,7 +60,7 @@
             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
         </a>
 
-        <a href="/accounts/profile/" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <a href="{% url 'profile' %}" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
             <i class="fa-regular fa-user text-slate-400 w-4 text-center"></i>
             <span>Profile & Settings</span>
         </a>
@@ -73,16 +73,22 @@
         </a>
 
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
-            <a href="/accounts/profile/" class="flex items-center gap-2.5 min-w-0">
+            <a href="{% url 'profile' %}" class="flex items-center gap-2.5 min-w-0">
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
-                    FB
+                    {% if user.first_name and user.last_name %}
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    {% elif user.username %}
+                        {{ user.username|slice:":2"|upper }}
+                    {% else %}
+                        FB
+                    {% endif %}
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-bold text-slate-800 truncate">My Account</p>
-                    <p class="text-[10px] text-slate-500 truncate">Manage reports</p>
+                    <p class="text-xs font-bold text-slate-800 truncate">{{ user.get_full_name|default:user.username }}</p>
+                    <p class="text-[10px] text-slate-500 truncate">@{{ user.username }}</p>
                 </div>
             </a>
-            <a href="/accounts/login/" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+            <a href="{% url 'logout' %}" title="Sign out" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
                 <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
             </a>
         </div>

@@ -3,6 +3,8 @@
 
 {% block title %}Item Details — FindBack{% endblock %}
 
+{% block header %}{% endblock %}
+
 {% block content %}
 <div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
 {% include 'components/sidebar.html' %}
@@ -238,6 +240,8 @@
   </div>
 </div>
 {% endblock %}
+
+{% block footer %}{% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/items.js' %}"></script>

@@ -32,4 +32,18 @@
     </div>
     {% endfor %}
 </div>
+<script>
+    setTimeout(function() {
+        var container = document.getElementById('django-messages-container');
+        if (container) {
+            container.style.opacity = '0';
+            container.style.transition = 'opacity 0.5s ease';
+            setTimeout(function() {
+                if (container && container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            }, 500);
+        }
+    }, 5000);
+</script>
 {% endif %}
