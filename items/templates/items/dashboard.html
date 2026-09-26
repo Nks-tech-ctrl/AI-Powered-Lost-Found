@@ -58,7 +58,12 @@
         <i class="fa-regular fa-user text-slate-400 text-sm"></i> Profile & Settings
       </a>
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-        <span class="text-xs font-semibold text-slate-600">{{ user.get_full_name|default:user.username }}</span>
+        <div class="flex items-center gap-2">
+          {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-6 h-6 rounded-full object-cover border border-slate-200">
+          {% endif %}
+          <span class="text-xs font-semibold text-slate-600">{{ user.get_full_name|default:user.username }}</span>
+        </div>
         <a href="{% url 'logout' %}" class="text-xs font-bold text-rose-600">Sign out</a>
       </div>
     </div>
@@ -67,11 +72,16 @@
   <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight" data-user-greeting>
-          Welcome back, <span data-user-name class="text-primary">{{ user.first_name|default:user.username }}</span>
-        </h1>
-        <p class="text-xs sm:text-sm text-text-secondary mt-1">Here's what's happening with your reports and active AI matches.</p>
+      <div class="flex items-center gap-3.5">
+        {% if user.profile.profile_picture %}
+          <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.first_name|default:user.username }}" class="w-12 h-12 rounded-2xl object-cover border-2 border-primary/20 shadow-xs shrink-0">
+        {% endif %}
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight" data-user-greeting>
+            Welcome back, <span data-user-name class="text-primary">{{ user.first_name|default:user.username }}</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-text-secondary mt-0.5">Here's what's happening with your reports and active AI matches.</p>
+        </div>
       </div>
 
       <div class="flex items-center gap-2.5 shrink-0">

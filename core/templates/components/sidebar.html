@@ -74,15 +74,19 @@
 
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
             <a href="{% url 'profile' %}" class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
-                    {% if user.first_name and user.last_name %}
-                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-                    {% elif user.username %}
-                        {{ user.username|slice:":2"|upper }}
-                    {% else %}
-                        FB
-                    {% endif %}
-                </div>
+                {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0">
+                {% else %}
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                        {% elif user.username %}
+                            {{ user.username|slice:":2"|upper }}
+                        {% else %}
+                            FB
+                        {% endif %}
+                    </div>
+                {% endif %}
                 <div class="min-w-0">
                     <p class="text-xs font-bold text-slate-800 truncate">{{ user.get_full_name|default:user.username }}</p>
                     <p class="text-[10px] text-slate-500 truncate">@{{ user.username }}</p>

@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, UserUpdateForm, ProfileUpdateForm
+from .models import UserProfile
 
 
 def register_view(request):
@@ -101,8 +102,36 @@ def logout_view(request):
 def profile_view(request):
     """
     Protected user profile view.
-    Displays authenticated user's account details.
+    Handles viewing and editing user details and profile preferences.
+    Uses POST-Redirect-GET pattern on successful update.
     """
+    profile_instance, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(
+            request.POST,
+            request.FILES,
+            instance=profile_instance
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect('profile')
+        else:
+            messages.error(request, "Please correct the errors indicated below.")
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile_instance)
+
     return render(request, 'accounts/profile.html', {
-        'user': request.user
+        'user': request.user,
+        'user_form': user_form,
+        'profile_form': profile_form,
     })
+
+
+# Alias for compatibility if referenced as profile
+profile = profile_view

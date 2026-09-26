@@ -1,60 +1,157 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Profile — FindBack{% endblock %}
+{% block title %}Profile & Settings — FindBack{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
 <div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
-{% include 'components/sidebar.html' %}
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Top Navigation Header -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="/matches/" class="relative p-2 text-slate-600 hover:text-primary rounded-lg" title="Matches">
+          <i class="fa-solid fa-bolt text-sm"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span>
+        </a>
+        <button type="button" id="mobile-profile-sidebar-toggle" aria-label="Toggle Navigation" class="p-2 text-slate-600 hover:text-navy rounded-lg">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-profile-sidebar-drawer" class="hidden border-t border-slate-200 bg-white p-4 space-y-2 shadow-xl">
+      <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <i class="fa-solid fa-chart-pie text-sm text-primary"></i> Dashboard
+      </a>
+      <a href="/items/report-lost/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i> Report Lost Item
+      </a>
+      <a href="/items/report-found/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <i class="fa-solid fa-hand-holding-heart text-emerald-500 text-sm"></i> Report Found Item
+      </a>
+      <a href="/items/search/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i> Search Items
+      </a>
+      <a href="/matches/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-bolt text-amber-500 text-sm"></i> Potential Matches
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
+      </a>
+      <a href="/claims/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-cyan-600 text-sm"></i> My Claims
+        </div>
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+      </a>
+      <a href="{% url 'profile' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-primary bg-blue-50">
+        <i class="fa-regular fa-user text-primary text-sm"></i> Profile & Settings
+      </a>
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-600">{{ user.get_full_name|default:user.username }}</span>
+        <a href="{% url 'logout' %}" class="text-xs font-bold text-rose-600">Sign out</a>
+      </div>
+    </div>
+  </div>
 
   <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
 
+    <!-- Page Heading -->
     <div class="pb-2 border-b border-slate-200/80">
-      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Profile & Account</h1>
-      <p class="text-xs sm:text-sm text-text-secondary mt-1">Authenticated user credentials and system recovery identity.</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Profile & Settings</h1>
+      <p class="text-xs sm:text-sm text-text-secondary mt-1">Manage your personal information, profile photo, and notification preferences.</p>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
-      <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+    <!-- Profile Header Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
         
-        <div class="relative group">
-          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl flex items-center justify-center shadow-md">
-            {% if user.first_name and user.last_name %}
-              {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-            {% elif user.username %}
-              {{ user.username|slice:":2"|upper }}
-            {% else %}
-              FB
-            {% endif %}
-          </div>
+        <!-- Profile Picture or Initials Avatar -->
+        <div class="relative shrink-0">
+          {% if user.profile.profile_picture %}
+            <img id="header-avatar-img" src="{{ user.profile.profile_picture.url }}" alt="{{ user.get_full_name|default:user.username }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white shadow-md">
+            <div id="header-avatar-initials" class="hidden w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl sm:text-3xl flex items-center justify-center shadow-md">
+              {% if user.first_name and user.last_name %}
+                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+              {% elif user.username %}
+                {{ user.username|slice:":2"|upper }}
+              {% else %}
+                FB
+              {% endif %}
+            </div>
+          {% else %}
+            <img id="header-avatar-img" src="" alt="Avatar" class="hidden w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white shadow-md">
+            <div id="header-avatar-initials" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl sm:text-3xl flex items-center justify-center shadow-md">
+              {% if user.first_name and user.last_name %}
+                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+              {% elif user.username %}
+                {{ user.username|slice:":2"|upper }}
+              {% else %}
+                FB
+              {% endif %}
+            </div>
+          {% endif %}
+          <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center text-[10px] text-white shadow-xs" title="Online & Active">
+            <i class="fa-solid fa-check text-[8px]"></i>
+          </span>
         </div>
 
+        <!-- Identity Details -->
         <div>
-          <div class="flex items-center justify-center sm:justify-start gap-2">
-            <h2 class="text-xl font-bold font-heading text-navy">{{ user.get_full_name|default:user.username }}</h2>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-              <i class="fa-solid fa-shield-halved text-[9px] mr-1"></i> Authenticated User
+          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <h2 class="text-xl sm:text-2xl font-bold font-heading text-navy">{{ user.get_full_name|default:user.username }}</h2>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
+              <i class="fa-solid fa-shield-halved text-[9px]"></i> Authenticated User
             </span>
           </div>
-          <span class="text-xs text-text-secondary block mt-0.5">@{{ user.username }} &bull; {{ user.email }}</span>
-          <div class="flex items-center justify-center sm:justify-start gap-3 text-[11px] text-slate-400 mt-2">
-            <span><i class="fa-regular fa-calendar mr-1"></i> Member since {{ user.date_joined|date:"F Y" }}</span>
+
+          <div class="text-xs text-text-secondary mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1">
+            <span class="font-semibold text-slate-700">@{{ user.username }}</span>
             <span>&bull;</span>
-            <span><i class="fa-regular fa-clock mr-1"></i> Last login: {{ user.last_login|date:"M d, Y"|default:"Active session" }}</span>
+            <span class="text-slate-600">{{ user.email }}</span>
           </div>
+
+          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-[11px] text-slate-500 mt-2.5">
+            <span><i class="fa-regular fa-calendar mr-1 text-primary"></i> Member since {{ user.date_joined|date:"F Y" }}</span>
+            <span>&bull;</span>
+            <span><i class="fa-regular fa-clock mr-1 text-primary"></i> Last login: {{ user.last_login|date:"d M Y, h:i A"|default:"Not available" }}</span>
+          </div>
+
+          {% if user.profile.location or user.profile.phone %}
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-[11px] text-slate-600 mt-1.5">
+              {% if user.profile.location %}
+                <span><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>{{ user.profile.location }}</span>
+              {% endif %}
+              {% if user.profile.phone %}
+                <span><i class="fa-solid fa-phone mr-1 text-slate-400"></i>{{ user.profile.phone }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <a href="{% url 'logout' %}" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5">
+      <!-- Quick Action: Sign Out -->
+      <div class="shrink-0">
+        <a href="{% url 'logout' %}" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 active:scale-95">
           <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
           <span>Sign Out</span>
         </a>
       </div>
     </div>
 
+    <!-- Quick Stats Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
         <span class="text-2xl font-extrabold font-heading text-navy block">0</span>
@@ -74,100 +171,470 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Profile Edit Form -->
+    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data" id="profile-update-form" novalidate>
+      {% csrf_token %}
 
-      <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-6">
-        <div class="border-b border-slate-100 pb-3">
-          <h3 class="text-base font-bold font-heading text-navy">Personal Information</h3>
-          <p class="text-xs text-text-secondary mt-0.5">Official credentials for your verified FindBack account.</p>
-        </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        <div class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1.5">First Name</label>
-              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
-                {{ user.first_name|default:"Not specified" }}
-              </div>
-            </div>
+        <!-- Left Column: Form Fields & Settings (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1.5">Last Name</label>
-              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
-                {{ user.last_name|default:"Not specified" }}
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1.5">Username</label>
-              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
-                {{ user.username }}
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
-              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold truncate">
-                {{ user.email|default:"No email registered" }}
-              </div>
-            </div>
-
-            <div class="sm:col-span-2">
-              <label class="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
-              <div class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy font-semibold">
-                {{ user.get_full_name|default:user.username }}
-              </div>
-            </div>
-          </div>
-
-          <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center gap-2.5 text-xs text-primary">
-            <i class="fa-solid fa-circle-info shrink-0"></i>
-            <span>Profile editing and additional settings will be introduced in Step 5.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="lg:col-span-5 space-y-6">
-
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <div class="border-b border-slate-100 pb-3">
-            <h3 class="text-sm font-bold font-heading text-navy">Account Security</h3>
-            <p class="text-xs text-text-secondary">Django authentication status.</p>
-          </div>
-
-          <div class="space-y-3 text-xs">
-            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <!-- 1. Profile Picture Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-5">
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
               <div>
-                <span class="font-bold text-navy block">Authentication System</span>
-                <span class="text-[10px] text-slate-500">django.contrib.auth</span>
+                <h3 class="text-base font-bold font-heading text-navy">Profile Picture</h3>
+                <p class="text-xs text-text-secondary mt-0.5">Upload a clear photo to help build trust during community reunions.</p>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-primary border border-blue-200">JPG, PNG, WEBP</span>
+            </div>
+
+            <!-- Upload Area & Live Preview -->
+            <div class="flex flex-col sm:flex-row items-center gap-5">
+              <div class="relative group shrink-0">
+                {% if user.profile.profile_picture %}
+                  <img id="form-avatar-preview" src="{{ user.profile.profile_picture.url }}" alt="Preview" class="w-20 h-20 rounded-2xl object-cover border-2 border-slate-200 shadow-sm">
+                  <div id="form-avatar-placeholder" class="hidden w-20 h-20 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl flex items-center justify-center shadow-sm">
+                    {{ user.username|slice:":2"|upper }}
+                  </div>
+                {% else %}
+                  <img id="form-avatar-preview" src="" alt="Preview" class="hidden w-20 h-20 rounded-2xl object-cover border-2 border-slate-200 shadow-sm">
+                  <div id="form-avatar-placeholder" class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-primary to-indigo text-white font-extrabold text-2xl flex items-center justify-center shadow-sm">
+                    {{ user.username|slice:":2"|upper }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="space-y-2 text-center sm:text-left flex-1">
+                <!-- Hidden Real File Input -->
+                {{ profile_form.profile_picture }}
+
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                  <button type="button" id="trigger-file-upload-btn" class="px-4 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-primary rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-camera text-xs"></i>
+                    <span>Choose Image</span>
+                  </button>
+                  <span id="selected-file-name" class="text-xs text-slate-500 font-medium truncate max-w-[200px]">No file chosen</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Recommended size: Square 500x500px, max 5MB.</p>
+              </div>
+            </div>
+
+            <!-- Client-Side Validation Message Banner -->
+            <div id="client-image-error" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-semibold text-rose-700 flex items-center gap-2">
+              <i class="fa-solid fa-circle-exclamation text-rose-600 shrink-0"></i>
+              <span id="client-image-error-text">Please upload a valid image file.</span>
+            </div>
+
+            <!-- Server-Side Error for Profile Picture -->
+            {% if profile_form.profile_picture.errors %}
+              <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-rose-600 shrink-0"></i>
+                <div>
+                  {% for error in profile_form.profile_picture.errors %}
+                    <p>{{ error }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- 2. Personal Information Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-6">
+            <div class="border-b border-slate-100 pb-3">
+              <h3 class="text-base font-bold font-heading text-navy">Personal Information</h3>
+              <p class="text-xs text-text-secondary mt-0.5">Update your basic identity and verified contact channels.</p>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Name Fields -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="id_first_name" class="block text-xs font-bold text-slate-700 mb-1.5">First Name</label>
+                  {{ user_form.first_name }}
+                  {% if user_form.first_name.errors %}
+                    <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ user_form.first_name.errors.0 }}</p>
+                  {% endif %}
+                </div>
+
+                <div>
+                  <label for="id_last_name" class="block text-xs font-bold text-slate-700 mb-1.5">Last Name</label>
+                  {{ user_form.last_name }}
+                  {% if user_form.last_name.errors %}
+                    <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ user_form.last_name.errors.0 }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label for="id_email" class="block text-xs font-bold text-slate-700 mb-1.5">
+                  Email Address <span class="text-rose-500">*</span>
+                </label>
+                {{ user_form.email }}
+                {% if user_form.email.errors %}
+                  <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ user_form.email.errors.0 }}</p>
+                {% endif %}
+                <p class="text-[10px] text-slate-400 mt-1">Used for match notifications, login, and recovery communications.</p>
+              </div>
+
+              <!-- Phone & Location -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="id_phone" class="block text-xs font-bold text-slate-700 mb-1.5">Phone Number</label>
+                  {{ profile_form.phone }}
+                  {% if profile_form.phone.errors %}
+                    <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ profile_form.phone.errors.0 }}</p>
+                  {% endif %}
+                </div>
+
+                <div>
+                  <label for="id_location" class="block text-xs font-bold text-slate-700 mb-1.5">Location / City</label>
+                  {{ profile_form.location }}
+                  {% if profile_form.location.errors %}
+                    <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ profile_form.location.errors.0 }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Bio -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="id_bio" class="block text-xs font-bold text-slate-700">Bio</label>
+                  <span id="bio-counter" class="text-[10px] text-slate-400">0/500</span>
+                </div>
+                {{ profile_form.bio }}
+                {% if profile_form.bio.errors %}
+                  <p class="text-[11px] text-rose-600 font-semibold mt-1">{{ profile_form.bio.errors.0 }}</p>
+                {% endif %}
+                <p class="text-[10px] text-slate-400 mt-1">Brief summary or notes to help verify your community presence.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Notification Preferences Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-5">
+            <div class="border-b border-slate-100 pb-3">
+              <h3 class="text-base font-bold font-heading text-navy">Notification Preferences</h3>
+              <p class="text-xs text-text-secondary mt-0.5">Control which event alerts and recovery triggers are stored for your account.</p>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Match Notifications Toggle -->
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-blue-200 transition-colors">
+                <div class="pr-4">
+                  <span class="text-xs font-bold text-navy block">Potential match alerts</span>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Receive automated alerts when our AI detects a high-confidence match with your reported item.</p>
+                </div>
+                <label for="id_match_notifications" class="relative inline-flex items-center cursor-pointer shrink-0">
+                  {{ profile_form.match_notifications }}
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <!-- Claim Notifications Toggle -->
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-blue-200 transition-colors">
+                <div class="pr-4">
+                  <span class="text-xs font-bold text-navy block">Claim updates</span>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Notifications when a claim is filed, verified, or ready for custody pickup.</p>
+                </div>
+                <label for="id_claim_notifications" class="relative inline-flex items-center cursor-pointer shrink-0">
+                  {{ profile_form.claim_notifications }}
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <!-- Report Updates Toggle -->
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-blue-200 transition-colors">
+                <div class="pr-4">
+                  <span class="text-xs font-bold text-navy block">Report updates</span>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Status changes, system renewals, and activity on your submitted items.</p>
+                </div>
+                <label for="id_report_notifications" class="relative inline-flex items-center cursor-pointer shrink-0">
+                  {{ profile_form.report_notifications }}
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <!-- Community Notifications Toggle -->
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-blue-200 transition-colors">
+                <div class="pr-4">
+                  <span class="text-xs font-bold text-navy block">Community notifications</span>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Community broadcasts regarding lost pets, high-value electronics, or safety bulletins.</p>
+                </div>
+                <label for="id_community_notifications" class="relative inline-flex items-center cursor-pointer shrink-0">
+                  {{ profile_form.community_notifications }}
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button Action -->
+          <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-3">
+            <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors text-center">
+              Cancel
+            </a>
+            <button type="submit" id="save-profile-btn" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/20 active:scale-95 transition-all text-xs flex items-center justify-center gap-2">
+              <i class="fa-solid fa-floppy-disk text-xs"></i>
+              <span id="save-btn-text">Save Changes</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Account Info & Security (5 Cols) -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- 4. Read-Only Account Information Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold font-heading text-navy">Account Information</h3>
+                <p class="text-xs text-text-secondary mt-0.5">Read-only account metadata.</p>
+              </div>
+              <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">System Data</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Username</span>
+                  <span class="font-bold text-navy mt-0.5 block">@{{ user.username }}</span>
+                </div>
+                <i class="fa-solid fa-user-tag text-slate-400"></i>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Account Created</span>
+                  <span class="font-bold text-navy mt-0.5 block">{{ user.date_joined|date:"d M Y" }}</span>
+                </div>
+                <i class="fa-regular fa-calendar-check text-slate-400"></i>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Last Login</span>
+                  <span class="font-bold text-navy mt-0.5 block">{{ user.last_login|date:"d M Y, h:i A"|default:"Not available" }}</span>
+                </div>
+                <i class="fa-regular fa-clock text-slate-400"></i>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Profile Last Updated</span>
+                  <span class="font-bold text-navy mt-0.5 block">{{ user.profile.updated_at|date:"d M Y, h:i A"|default:"Just now" }}</span>
+                </div>
+                <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Security Section (Placeholder as per Step 5 Guidelines) -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold font-heading text-navy">Account Security</h3>
+                <p class="text-xs text-text-secondary mt-0.5">Authentication status and credential management.</p>
               </div>
               <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Active</span>
             </div>
 
-            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <div>
-                <span class="font-bold text-navy block">Password Protection</span>
-                <span class="text-[10px] text-slate-500">PBKDF2 SHA-256 Hashed</span>
+            <div class="space-y-3 text-xs">
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="font-bold text-navy block">Authentication System</span>
+                  <span class="text-[10px] text-slate-500">django.contrib.auth</span>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Standard</span>
               </div>
-              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Secure</span>
+
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div>
+                  <span class="font-bold text-navy block">Password Encryption</span>
+                  <span class="text-[10px] text-slate-500">PBKDF2 SHA-256 Hashed</span>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Secure</span>
+              </div>
             </div>
 
-            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <div>
-                <span class="font-bold text-navy block">Account Status</span>
-                <span class="text-[10px] text-slate-500">{% if user.is_active %}Active & Validated{% else %}Disabled{% endif %}</span>
+            <!-- Clearly Marked Placeholder Security Actions -->
+            <div class="pt-2 space-y-2.5">
+              <div class="relative">
+                <button type="button" class="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors" onclick="toggleSecurityNotice('pwd-notice')">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-key text-slate-400 text-xs"></i>
+                    <span>Change Password</span>
+                  </div>
+                  <span class="text-[10px] font-semibold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded">Next Step</span>
+                </button>
+                <div id="pwd-notice" class="hidden mt-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-[11px] text-primary leading-relaxed">
+                  <i class="fa-solid fa-circle-info mr-1"></i> Password change workflows will be introduced in the dedicated security update.
+                </div>
               </div>
-              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Verified</span>
+
+              <div class="relative">
+                <button type="button" class="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors" onclick="toggleSecurityNotice('session-notice')">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen-button text-slate-400 text-xs"></i>
+                    <span>Sign out of all devices</span>
+                  </div>
+                  <span class="text-[10px] font-semibold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded">Next Step</span>
+                </button>
+                <div id="session-notice" class="hidden mt-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-[11px] text-primary leading-relaxed">
+                  <i class="fa-solid fa-circle-info mr-1"></i> Multi-device session revocation will be introduced in the upcoming security update.
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
 
       </div>
-
-    </div>
+    </form>
 
   </main>
 </div>
 {% endblock %}
 
 {% block footer %}{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Mobile drawer toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const mobileToggle = document.getElementById('mobile-profile-sidebar-toggle');
+    const mobileDrawer = document.getElementById('mobile-profile-sidebar-drawer');
+    if (mobileToggle && mobileDrawer) {
+      mobileToggle.addEventListener('click', () => {
+        mobileDrawer.classList.toggle('hidden');
+      });
+    }
+
+    // Bio character counter
+    const bioTextarea = document.getElementById('id_bio');
+    const bioCounter = document.getElementById('bio-counter');
+    if (bioTextarea && bioCounter) {
+      const updateBioCounter = () => {
+        const len = bioTextarea.value.length;
+        bioCounter.textContent = `${len}/500`;
+        if (len > 500) {
+          bioCounter.classList.add('text-rose-600', 'font-bold');
+        } else {
+          bioCounter.classList.remove('text-rose-600', 'font-bold');
+        }
+      };
+      bioTextarea.addEventListener('input', updateBioCounter);
+      updateBioCounter();
+    }
+
+    // Profile picture selection & preview
+    const fileInput = document.getElementById('id_profile_picture');
+    const triggerBtn = document.getElementById('trigger-file-upload-btn');
+    const fileNameSpan = document.getElementById('selected-file-name');
+    const formPreview = document.getElementById('form-avatar-preview');
+    const formPlaceholder = document.getElementById('form-avatar-placeholder');
+    const headerImg = document.getElementById('header-avatar-img');
+    const headerInitials = document.getElementById('header-avatar-initials');
+    const clientError = document.getElementById('client-image-error');
+    const clientErrorText = document.getElementById('client-image-error-text');
+
+    if (triggerBtn && fileInput) {
+      triggerBtn.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        // Reset any previous errors
+        if (clientError) clientError.classList.add('hidden');
+
+        // Client-side validation: allowed image types
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+        const fileNameLower = file.name.toLowerCase();
+        const hasValidExt = allowedExtensions.some(ext => fileNameLower.endsWith(ext));
+
+        if (!allowedTypes.includes(file.type) && !hasValidExt) {
+          if (clientError && clientErrorText) {
+            clientErrorText.textContent = "Please upload a valid image file (JPG, PNG, or WEBP).";
+            clientError.classList.remove('hidden');
+          }
+          fileInput.value = '';
+          if (fileNameSpan) fileNameSpan.textContent = 'No file chosen';
+          return;
+        }
+
+        // Client-side validation: max size 5MB
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          if (clientError && clientErrorText) {
+            clientErrorText.textContent = "Please upload a valid image file. Size must be under 5MB.";
+            clientError.classList.remove('hidden');
+          }
+          fileInput.value = '';
+          if (fileNameSpan) fileNameSpan.textContent = 'No file chosen';
+          return;
+        }
+
+        // Display selected file name
+        if (fileNameSpan) {
+          fileNameSpan.textContent = file.name;
+          fileNameSpan.classList.add('text-primary', 'font-semibold');
+        }
+
+        // Live preview via FileReader
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const result = event.target.result;
+
+          // Update form avatar preview
+          if (formPreview) {
+            formPreview.src = result;
+            formPreview.classList.remove('hidden');
+          }
+          if (formPlaceholder) {
+            formPlaceholder.classList.add('hidden');
+          }
+
+          // Update header avatar preview
+          if (headerImg) {
+            headerImg.src = result;
+            headerImg.classList.remove('hidden');
+          }
+          if (headerInitials) {
+            headerInitials.classList.add('hidden');
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Submit state prevention
+    const form = document.getElementById('profile-update-form');
+    const saveBtn = document.getElementById('save-profile-btn');
+    const saveBtnText = document.getElementById('save-btn-text');
+    if (form && saveBtn) {
+      form.addEventListener('submit', () => {
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        if (saveBtnText) {
+          saveBtnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving...';
+        }
+      });
+    }
+  });
+
+  // Placeholder security toggle function
+  function toggleSecurityNotice(noticeId) {
+    const el = document.getElementById(noticeId);
+    if (el) {
+      el.classList.toggle('hidden');
+    }
+  }
+</script>
+{% endblock %}
