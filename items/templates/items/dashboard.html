@@ -163,9 +163,9 @@
           <i class="fa-regular fa-file-lines"></i>
         </div>
         <div>
-          <span class="text-xl sm:text-2xl font-extrabold font-heading text-navy block">6</span>
+          <span class="text-xl sm:text-2xl font-extrabold font-heading text-navy block">{{ total_count|default:0 }}</span>
           <span class="text-xs font-semibold text-text-secondary">My Reports</span>
-          <span class="text-[10px] text-emerald-600 font-bold block mt-0.5"><i class="fa-solid fa-arrow-up text-[8px]"></i> 2 active</span>
+          <span class="text-[10px] text-emerald-600 font-bold block mt-0.5"><i class="fa-solid fa-arrow-up text-[8px]"></i> {{ active_count|default:0 }} active</span>
         </div>
       </div>
 
@@ -196,7 +196,7 @@
           <i class="fa-solid fa-handshake-angle"></i>
         </div>
         <div>
-          <span class="text-xl sm:text-2xl font-extrabold font-heading text-navy block">1</span>
+          <span class="text-xl sm:text-2xl font-extrabold font-heading text-navy block">{{ recovered_count|default:0 }}</span>
           <span class="text-xs font-semibold text-text-secondary">Items Recovered</span>
           <span class="text-[10px] text-emerald-600 font-bold block mt-0.5">Verified returned</span>
         </div>
@@ -213,8 +213,8 @@
               <p class="text-xs text-text-secondary">Live status of your submitted reports</p>
             </div>
             <div class="flex items-center gap-1.5">
-              <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-primary border border-blue-200">Active (4)</span>
-              <a href="/items/search/" class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100">All (6)</a>
+              <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-primary border border-blue-200">Active ({{ active_count|default:0 }})</span>
+              <a href="/items/search/" class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100">All ({{ total_count|default:0 }})</a>
             </div>
           </div>
 
@@ -231,111 +231,96 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-xs">
-
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-3.5 px-4">
-                    <div class="flex items-center gap-3">
-                      <img src="{% static 'images/airpods.jpg' %}" alt="AirPods" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
-                      <div>
-                        <span class="font-bold text-navy block truncate max-w-[140px]">Apple AirPods Pro</span>
-                        <span class="text-[10px] text-slate-400">Electronics</span>
+                {% if items %}
+                  {% for item in items %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
+                          {% else %}
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-primary">
+                              <i class="fa-solid fa-box-open text-xs"></i>
+                            </div>
+                          {% endif %}
+                          <div class="min-w-0">
+                            <a href="{% url 'item_details_id' id=item.id %}" class="font-bold text-navy hover:text-primary block truncate max-w-[150px] sm:max-w-[200px] transition-colors" title="{{ item.title }}">
+                              {{ item.title }}
+                            </a>
+                            <span class="text-[10px] text-slate-400 block truncate">{{ item.get_category_display }}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 whitespace-nowrap">
+                        {% if item.item_type == 'LOST' %}
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border border-rose-200">LOST</span>
+                        {% else %}
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-600 border border-emerald-200">FOUND</span>
+                        {% endif %}
+                      </td>
+                      <td class="py-3.5 px-3 text-slate-600 max-w-[130px] truncate" title="{{ item.location }}">{{ item.location }}</td>
+                      <td class="py-3.5 px-3 text-slate-500 whitespace-nowrap">{{ item.date_occurred|date:"M d, Y" }}</td>
+                      <td class="py-3.5 px-3 whitespace-nowrap">
+                        {% if item.status == 'ACTIVE' %}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            Active
+                          </span>
+                        {% elif item.status == 'MATCHED' %}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-primary">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Match Found
+                          </span>
+                        {% elif item.status == 'CLAIMED' %}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-600">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                            In Claim
+                          </span>
+                        {% elif item.status == 'RETURNED' %}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Reunited
+                          </span>
+                        {% else %}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                            {{ item.get_status_display }}
+                          </span>
+                        {% endif %}
+                      </td>
+                      <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                        <a href="{% url 'item_details_id' id=item.id %}" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-blue-50 transition-colors inline-flex items-center gap-1">
+                          <span>View</span>
+                          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="6" class="py-12 px-4 text-center">
+                      <div class="max-w-sm mx-auto space-y-3">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center">
+                          <i class="fa-solid fa-clipboard-list text-lg"></i>
+                        </div>
+                        <div>
+                          <p class="font-bold text-navy text-sm">No items reported yet</p>
+                          <p class="text-xs text-text-secondary mt-1">Once you report a lost or found item, its tracking status, location, and match updates will appear here.</p>
+                        </div>
+                        <div class="pt-2 flex items-center justify-center gap-2.5">
+                          <a href="{% url 'report_lost' %}" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
+                            <span>Report Lost Item</span>
+                          </a>
+                          <a href="{% url 'report_found' %}" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart text-[10px]"></i>
+                            <span>Report Found Item</span>
+                          </a>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td class="py-3.5 px-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border border-rose-200">LOST</span>
-                  </td>
-                  <td class="py-3.5 px-3 text-slate-600 max-w-[120px] truncate">Central Library</td>
-                  <td class="py-3.5 px-3 text-slate-500 whitespace-nowrap">Sep 19</td>
-                  <td class="py-3.5 px-3">
-                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-primary">
-                      <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                      Match Found
-                    </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <a href="/items/details/" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-blue-50 transition-colors">View</a>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-3.5 px-4">
-                    <div class="flex items-center gap-3">
-                      <img src="{% static 'images/backpack.jpg' %}" alt="Backpack" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
-                      <div>
-                        <span class="font-bold text-navy block truncate max-w-[140px]">Matte Black Backpack</span>
-                        <span class="text-[10px] text-slate-400">Bags & Luggage</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="py-3.5 px-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border border-rose-200">LOST</span>
-                  </td>
-                  <td class="py-3.5 px-3 text-slate-600 max-w-[120px] truncate">Metro Line 2</td>
-                  <td class="py-3.5 px-3 text-slate-500 whitespace-nowrap">Sep 21</td>
-                  <td class="py-3.5 px-3">
-                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                      Searching
-                    </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <a href="/items/details/" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-blue-50 transition-colors">View</a>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-3.5 px-4">
-                    <div class="flex items-center gap-3">
-                      <img src="{% static 'images/watch.jpg' %}" alt="Watch" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
-                      <div>
-                        <span class="font-bold text-navy block truncate max-w-[140px]">Silver Chronograph</span>
-                        <span class="text-[10px] text-slate-400">Jewelry</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="py-3.5 px-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-600 border border-emerald-200">FOUND</span>
-                  </td>
-                  <td class="py-3.5 px-3 text-slate-600 max-w-[120px] truncate">City Park Promenade</td>
-                  <td class="py-3.5 px-3 text-slate-500 whitespace-nowrap">Sep 20</td>
-                  <td class="py-3.5 px-3">
-                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-                      In Claim
-                    </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <a href="/items/details/" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-blue-50 transition-colors">View</a>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-3.5 px-4">
-                    <div class="flex items-center gap-3">
-                      <img src="{% static 'images/keys.jpg' %}" alt="Keys" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0">
-                      <div>
-                        <span class="font-bold text-navy block truncate max-w-[140px]">Brass House Keys</span>
-                        <span class="text-[10px] text-slate-400">Personal Keys</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="py-3.5 px-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border border-rose-200">LOST</span>
-                  </td>
-                  <td class="py-3.5 px-3 text-slate-600 max-w-[120px] truncate">Oakridge Bus Stop</td>
-                  <td class="py-3.5 px-3 text-slate-500 whitespace-nowrap">Sep 18</td>
-                  <td class="py-3.5 px-3">
-                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Reunited
-                    </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <a href="/items/details/" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-blue-50 transition-colors">View</a>
-                  </td>
-                </tr>
-
+                    </td>
+                  </tr>
+                {% endif %}
               </tbody>
             </table>
           </div>
@@ -359,54 +344,18 @@
             <a href="/matches/" class="text-xs font-bold text-primary hover:underline">View All (3)</a>
           </div>
 
-          <div class="p-4 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50/80 transition-colors mb-3">
-            <div class="flex items-center justify-between mb-2.5">
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary text-white">94% Confidence</span>
-              <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i> Today, 11:30 AM</span>
+          <div class="py-10 px-4 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center mb-3">
+              <i class="fa-solid fa-bolt text-lg"></i>
             </div>
-
-            <div class="flex items-start gap-3">
-              <img src="{% static 'images/earbuds.jpg' %}" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
-              <div class="min-w-0">
-                <span class="text-xs font-bold text-navy block truncate">Blue Wireless Earbuds Case</span>
-                <span class="text-[11px] text-slate-600 block mt-0.5">Found at Downtown Coffee Lab</span>
-                <div class="flex items-center gap-3 text-[10px] text-emerald-700 font-medium mt-1.5">
-                  <span>✓ Similar appearance</span>
-                  <span>✓ Nearby geo (0.3 mi)</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-3 pt-2.5 border-t border-blue-200/50 flex items-center justify-between">
-              <span class="text-[10px] text-slate-500">Matches your lost report</span>
-              <a href="/matches/" class="px-3 py-1 bg-primary hover:bg-primary-dark text-white rounded-lg text-[11px] font-semibold transition-colors">
-                Review Match
-              </a>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
-            <div class="flex items-center justify-between mb-2.5">
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">89% Confidence</span>
-              <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i> Yesterday</span>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <img src="{% static 'images/backpack.jpg' %}" alt="Match" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0">
-              <div class="min-w-0">
-                <span class="text-xs font-bold text-navy block truncate">Matte Black Laptop Backpack</span>
-                <span class="text-[11px] text-slate-600 block mt-0.5">Found at Central Metro Station Line 2</span>
-                <div class="flex items-center gap-3 text-[10px] text-emerald-700 font-medium mt-1.5">
-                  <span>✓ Same category</span>
-                  <span>✓ Distinct zipper pull</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-              <span class="text-[10px] text-slate-500">Report #F-3118</span>
-              <a href="/matches/" class="px-3 py-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-colors">
-                Review Match
+            <h3 class="text-sm font-bold text-navy">No Potential Matches Yet</h3>
+            <p class="text-xs text-text-secondary mt-1 max-w-xs mx-auto">
+              FindBack's neural AI periodically scans your active reports against newly registered lost and found items.
+            </p>
+            <div class="pt-4">
+              <a href="/items/search/" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-primary bg-blue-50 hover:bg-blue-100 transition-colors inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                <span>Explore Catalog</span>
               </a>
             </div>
           </div>
@@ -429,55 +378,44 @@
         <span class="text-xs text-slate-400 font-medium">Auto-synced with network</span>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 relative">
-
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 relative">
-          <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs mb-2">
-            <i class="fa-solid fa-check"></i>
-          </div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Sep 19, 09:15 AM</span>
-          <h4 class="text-xs font-bold text-navy mt-1">Report Submitted</h4>
-          <p class="text-[11px] text-slate-600 mt-0.5">AirPods Pro registered lost at Central Library.</p>
+      {% if items %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+          {% for item in items|slice:":4" %}
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 relative flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-7 h-7 rounded-full {% if item.item_type == 'LOST' %}bg-rose-500{% else %}bg-emerald-500{% endif %} text-white flex items-center justify-center text-xs">
+                    <i class="fa-solid {% if item.item_type == 'LOST' %}fa-circle-exclamation{% else %}fa-hand-holding-heart{% endif %}"></i>
+                  </div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {{ item.created_at|date:"M d, H:i" }}
+                  </span>
+                </div>
+                <h4 class="text-xs font-bold text-navy truncate" title="{{ item.title }}">{{ item.title }}</h4>
+                <p class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">
+                  Reported as {{ item.get_item_type_display|lower }} at {{ item.location }}.
+                </p>
+              </div>
+              <div class="pt-3 mt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+                <span class="font-semibold text-primary">{{ item.get_status_display }}</span>
+                <a href="{% url 'item_details_id' id=item.id %}" class="text-xs font-bold text-slate-500 hover:text-primary">
+                  View &rarr;
+                </a>
+              </div>
+            </div>
+          {% endfor %}
         </div>
-
-        <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 relative">
-          <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs mb-2">
-            <i class="fa-solid fa-bolt"></i>
+      {% else %}
+        <div class="py-10 px-4 text-center">
+          <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+            <i class="fa-regular fa-clock text-lg"></i>
           </div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-primary block">Sep 19, 04:20 PM</span>
-          <h4 class="text-xs font-bold text-navy mt-1">AI Match Discovered</h4>
-          <p class="text-[11px] text-slate-600 mt-0.5">94% multimodal match with found report #F-3118.</p>
+          <p class="text-sm font-bold text-navy">No Recent Activity</p>
+          <p class="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
+            Once you submit a lost or found report or verify a claim, your recovery progress and milestone updates will appear here.
+          </p>
         </div>
-
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 relative">
-          <div class="w-7 h-7 rounded-full bg-cyan-500 text-white flex items-center justify-center text-xs mb-2">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Sep 20, 10:45 AM</span>
-          <h4 class="text-xs font-bold text-navy mt-1">Claim Initiated</h4>
-          <p class="text-[11px] text-slate-600 mt-0.5">Ownership verification questions answered.</p>
-        </div>
-
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 relative">
-          <div class="w-7 h-7 rounded-full bg-indigo text-white flex items-center justify-center text-xs mb-2">
-            <i class="fa-solid fa-file-circle-check"></i>
-          </div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Sep 21, 02:00 PM</span>
-          <h4 class="text-xs font-bold text-navy mt-1">Claim Verified</h4>
-          <p class="text-[11px] text-slate-600 mt-0.5">Custody coordinator approved pickup code.</p>
-        </div>
-
-        <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 relative">
-          <div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs mb-2">
-            <i class="fa-solid fa-handshake-angle"></i>
-          </div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Sep 22, 05:30 PM</span>
-          <h4 class="text-xs font-bold text-navy mt-1">Reunion Completed</h4>
-          <p class="text-[11px] text-slate-600 mt-0.5">Item safely picked up at Central Station Desk.</p>
-        </div>
-
-      </div>
-    </div>
+      {% endif %}
 
   </main>
 </div>

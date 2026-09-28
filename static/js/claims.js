@@ -4,24 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const badge = document.getElementById('timeline-status-badge');
   const hubBtn = document.getElementById('contact-hub-btn');
 
-  const claimData = {
-    c801: {
-      title: 'Claim #C-801: Matte Black Backpack',
-      status: 'UNDER REVIEW',
-      statusClass: 'px-2.5 py-1 rounded text-xs font-bold uppercase bg-indigo/10 text-indigo border border-indigo/20'
-    },
-    c744: {
-      title: 'Claim #C-744: Blue Wireless Earbuds',
-      status: 'VERIFIED',
-      statusClass: 'px-2.5 py-1 rounded text-xs font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200'
-    },
-    c690: {
-      title: 'Claim #C-690: Silver Chronograph Watch',
-      status: 'COMPLETED',
-      statusClass: 'px-2.5 py-1 rounded text-xs font-bold uppercase bg-slate-100 text-slate-700 border border-slate-200'
-    }
-  };
-
   rows.forEach(row => {
     row.addEventListener('click', () => {
       rows.forEach(r => r.classList.remove('bg-blue-50/40'));

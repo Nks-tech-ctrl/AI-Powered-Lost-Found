@@ -11,22 +11,15 @@ from .models import Item
 class ItemForm(forms.ModelForm):
     """
     Unified form for reporting Lost and Found items.
-    Supports both Report Lost and Report Found flows.
-    Excludes user, status, and timestamps from user editing.
+    Contains only user-editable fields.
+    Excludes user, item_type, status, created_at, and updated_at.
     """
-
-    # Optional item_type hidden field or constructor arg for unified flow
-    item_type = forms.ChoiceField(
-        choices=Item.ItemType.choices,
-        required=False,
-        widget=forms.HiddenInput()
-    )
 
     title = forms.CharField(
         max_length=150,
         required=True,
         widget=forms.TextInput(attrs={
-            'id': 'item-name',
+            'id': 'item-title',
             'placeholder': 'e.g. Matte Black Commuter Backpack with 15-inch Sleeve',
             'class': 'w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all',
         }),
@@ -86,7 +79,7 @@ class ItemForm(forms.ModelForm):
         max_length=255,
         required=True,
         widget=forms.TextInput(attrs={
-            'id': 'lost-location',
+            'id': 'item-location',
             'placeholder': 'e.g. Central Metro Station, Line 2 Platform 3',
             'class': 'w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all',
         }),
@@ -98,7 +91,7 @@ class ItemForm(forms.ModelForm):
     date_occurred = forms.DateField(
         required=True,
         widget=forms.DateInput(attrs={
-            'id': 'lost-date',
+            'id': 'item-date',
             'type': 'date',
             'class': 'w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all',
         }),
@@ -111,7 +104,7 @@ class ItemForm(forms.ModelForm):
     time_occurred = forms.TimeField(
         required=False,
         widget=forms.TimeInput(attrs={
-            'id': 'lost-time',
+            'id': 'item-time',
             'type': 'time',
             'class': 'w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all',
         })
@@ -156,16 +149,6 @@ class ItemForm(forms.ModelForm):
             'identification_details',
         ]
 
-    def __init__(self, *args, item_type=None, **kwargs):
-        """
-        Support passing item_type directly (e.g. Item.ItemType.LOST or Item.ItemType.FOUND)
-        to pre-configure or enforce item type during view handling.
-        """
-        self.preset_item_type = item_type
-        super().__init__(*args, **kwargs)
-        if self.preset_item_type:
-            self.fields['item_type'].initial = self.preset_item_type
-
     def clean_date_occurred(self):
         date = self.cleaned_data.get('date_occurred')
         if date and date > timezone.now().date():
@@ -204,9 +187,6 @@ class ItemForm(forms.ModelForm):
 
     def save(self, commit=True):
         item = super().save(commit=False)
-        item_type = self.cleaned_data.get('item_type') or self.preset_item_type
-        if item_type and not item.item_type:
-            item.item_type = item_type
         if commit:
             item.save()
             self.save_m2m()

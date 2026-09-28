@@ -1,207 +1,266 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Item Details — FindBack{% endblock %}
+{% block title %}{% if item %}{{ item.title }} (#FB-{{ item.id }}) — FindBack{% else %}Item Not Found — FindBack{% endif %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full" data-dynamic-item="true">
 {% include 'components/sidebar.html' %}
 
   <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
 
     <div class="flex items-center justify-between pb-3 border-b border-slate-200/80">
-      <a href="/items/search/" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-primary transition-colors">
-        <i class="fa-solid fa-arrow-left text-[11px]"></i>
-        <span>Back to search results</span>
-      </a>
-
-      <div class="flex items-center gap-2 text-xs">
-        <span class="text-slate-400">Report ID:</span>
-        <span class="font-mono font-bold text-slate-700">#FB-9042</span>
+      <div class="flex items-center gap-3">
+        <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-primary transition-colors">
+          <i class="fa-solid fa-arrow-left text-[11px]"></i>
+          <span>Dashboard</span>
+        </a>
+        <span class="text-slate-300">•</span>
+        <a href="/items/search/" class="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-primary transition-colors">
+          <span>Search Catalog</span>
+        </a>
       </div>
+
+      {% if item %}
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-400">Report ID:</span>
+          <span class="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">#FB-{{ item.id }}</span>
+        </div>
+      {% endif %}
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    {% if item %}
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-      <div class="lg:col-span-6 space-y-4">
+        <!-- Left Column: Item Imagery & Privacy Badge -->
+        <div class="lg:col-span-6 space-y-4">
 
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
-          <div class="h-80 sm:h-96 w-full bg-slate-100 relative">
-            <img id="main-item-img" src="{% static 'images/backpack.jpg' %}" alt="Item Image" class="w-full h-full object-cover">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
+            <div class="h-80 sm:h-96 w-full bg-slate-100 relative flex items-center justify-center">
+              {% if item.image %}
+                <img id="main-item-img" src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+              {% else %}
+                <div class="flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                  <div class="w-16 h-16 rounded-2xl bg-slate-200/70 flex items-center justify-center mb-3 text-slate-500">
+                    <i class="fa-solid fa-image text-2xl"></i>
+                  </div>
+                  <span class="text-xs font-bold text-slate-600">No Image Uploaded</span>
+                  <span class="text-[11px] text-slate-400 mt-0.5">Reporter did not attach a photograph</span>
+                </div>
+              {% endif %}
 
-            <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-rose-500 text-white shadow-md flex items-center gap-1.5">
-              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
-              <span id="item-status-text">LOST</span>
-            </span>
+              <!-- Status Badge -->
+              {% if item.item_type == 'LOST' %}
+                <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-rose-500 text-white shadow-md flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
+                  <span id="item-status-text">LOST</span>
+                </span>
+              {% else %}
+                <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-emerald-500 text-white shadow-md flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
+                  <span id="item-status-text">FOUND</span>
+                </span>
+              {% endif %}
 
-            <span id="item-category-badge" class="absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-900/80 text-white backdrop-blur-md">
-              Bags & Luggage
-            </span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3">
-          <button type="button" class="thumb-btn p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs focus:outline-none" data-src="{% static 'images/backpack.jpg' %}">
-            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 1" class="w-full h-16 object-cover rounded-lg">
-          </button>
-          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="{% static 'images/backpack.jpg' %}">
-            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 2" class="w-full h-16 object-cover rounded-lg">
-          </button>
-          <button type="button" class="thumb-btn p-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl overflow-hidden shadow-xs focus:outline-none opacity-70 hover:opacity-100" data-src="{% static 'images/backpack.jpg' %}">
-            <img src="{% static 'images/backpack.jpg' %}" alt="Angle 3" class="w-full h-16 object-cover rounded-lg">
-          </button>
-        </div>
-
-        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
-          <i class="fa-solid fa-shield-halved text-emerald-600 text-sm shrink-0 mt-0.5"></i>
-          <div>
-            <span class="font-bold text-navy block">Privacy-First Data Protection</span>
-            <p class="mt-0.5 text-slate-500 leading-relaxed">
-              Personal contact details, serial numbers, and home addresses are never published. Handover operations occur strictly through verified channels.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="lg:col-span-6 space-y-6">
-
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <div>
-            <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
-              <span>Category: <strong id="detail-category" class="text-navy">Bags & Luggage</strong></span>
-              <span>•</span>
-              <span>Brand: <strong id="detail-brand" class="text-navy">Incase / Herschel</strong></span>
+              <!-- Category Badge -->
+              <span id="item-category-badge" class="absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-900/80 text-white backdrop-blur-md">
+                {{ item.get_category_display }}
+              </span>
             </div>
-            <h1 id="detail-title" class="text-2xl font-extrabold font-heading text-navy leading-tight">
-              Matte Black Commuter Backpack with 15" Sleeve
-            </h1>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
+          {% if item.image %}
+            <div class="flex items-center gap-3">
+              <div class="p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs w-20">
+                <img src="{{ item.image.url }}" alt="Primary view" class="w-full h-14 object-cover rounded-lg">
+              </div>
+              <span class="text-xs text-slate-400">Original uploaded item image</span>
+            </div>
+          {% endif %}
+
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
+            <i class="fa-solid fa-shield-halved text-emerald-600 text-sm shrink-0 mt-0.5"></i>
             <div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Primary Color</span>
-              <span class="font-bold text-navy">Matte Black</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Last Seen / Found</span>
-              <span class="font-bold text-navy">Central Metro Line 2</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Report Date</span>
-              <span class="font-bold text-navy">Sep 21, 2026</span>
+              <span class="font-bold text-navy block">Privacy-First Protection</span>
+              <p class="mt-0.5 text-slate-500 leading-relaxed">
+                Contact information, private markings, and serial numbers are strictly secured. Claims must undergo challenge verification before physical custody is released.
+              </p>
             </div>
           </div>
 
-          <div>
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description</h3>
-            <p id="detail-desc" class="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              Water-resistant commuter backpack with 15-inch padded laptop sleeve and distinct yellow paracord zipper pull. Clean exterior with two water bottle side pockets. Contains university textbooks and student notes.
-            </p>
-          </div>
-
-          <div class="p-3 bg-blue-50/70 rounded-xl border border-blue-200/80 text-xs flex items-center justify-between">
-            <div class="flex items-center gap-2 text-primary">
-              <i class="fa-solid fa-lock text-xs"></i>
-              <span class="font-semibold">Hidden Verification Challenge Active</span>
-            </div>
-            <span class="text-[11px] text-slate-500 font-medium">2 shielded markers</span>
-          </div>
-
-          <div class="pt-2 space-y-2.5">
-            <button type="button" id="claim-item-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
-              <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
-              <span>I Think This is My Item (Claim Ownership)</span>
-            </button>
-
-            <div class="grid grid-cols-2 gap-2.5">
-              <button type="button" id="contact-reporter-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                <i class="fa-regular fa-paper-plane text-xs"></i>
-                <span>Message Reporter</span>
-              </button>
-              <button type="button" id="flag-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-rose-600 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                <i class="fa-regular fa-flag text-xs"></i>
-                <span>Report Issue</span>
-              </button>
-            </div>
-          </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4 relative overflow-hidden">
-          <div class="flex items-center justify-between pb-3 border-b border-blue-100">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs shadow-xs">
-                <i class="fa-solid fa-bolt"></i>
+        <!-- Right Column: Item Information & Actions -->
+        <div class="lg:col-span-6 space-y-6">
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+            <div>
+              <div class="flex items-center gap-2 text-xs text-slate-500 mb-1.5">
+                <span>Category: <strong id="detail-category" class="text-navy">{{ item.get_category_display }}</strong></span>
+                {% if item.brand %}
+                  <span>•</span>
+                  <span>Brand: <strong id="detail-brand" class="text-navy">{{ item.brand }}</strong></span>
+                {% endif %}
+              </div>
+              <h1 id="detail-title" class="text-2xl font-extrabold font-heading text-navy leading-tight">
+                {{ item.title }}
+              </h1>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block">Primary Color</span>
+                <span class="font-bold text-navy truncate block">{{ item.color|default:"Not specified" }}</span>
               </div>
               <div>
-                <h3 class="text-xs font-bold text-navy">AI Neural Match Candidate Nearby</h3>
-                <span class="text-[11px] text-slate-500">Autonomous multimodal pairing</span>
+                <span class="text-[10px] text-slate-400 font-semibold block">{% if item.item_type == 'LOST' %}Last Seen{% else %}Location Found{% endif %}</span>
+                <span class="font-bold text-navy truncate block" title="{{ item.location }}">{{ item.location }}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block">Incident Date</span>
+                <span class="font-bold text-navy">{{ item.date_occurred|date:"M d, Y" }}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block">Current Status</span>
+                <span class="font-bold text-primary">{{ item.get_status_display }}</span>
               </div>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary text-white shadow-xs">94% Match</span>
-          </div>
 
-          <div class="grid grid-cols-2 gap-3 p-3 bg-blue-50/40 rounded-xl border border-blue-100 text-xs">
             <div>
-              <span class="text-[10px] font-bold text-rose-600 uppercase block mb-1">Your Report (Lost)</span>
-              <div class="flex items-center gap-2">
-                <img src="{% static 'images/backpack.jpg' %}" alt="Your Report" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
-                <div class="min-w-0">
-                  <span class="font-bold text-navy truncate block">Matte Black Backpack</span>
-                  <span class="text-[10px] text-slate-500">Central Metro Line 2</span>
-                </div>
-              </div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description</h3>
+              <p id="detail-desc" class="text-xs sm:text-sm text-text-secondary leading-relaxed whitespace-pre-line bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
+                {{ item.description }}
+              </p>
             </div>
 
-            <div class="border-l border-blue-200/80 pl-3">
-              <span class="text-[10px] font-bold text-emerald-600 uppercase block mb-1">Found Candidate (#F-3118)</span>
-              <div class="flex items-center gap-2">
-                <img src="{% static 'images/backpack.jpg' %}" alt="Candidate" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
-                <div class="min-w-0">
-                  <span class="font-bold text-navy truncate block">Commuter Backpack</span>
-                  <span class="text-[10px] text-slate-500">Station Customer Desk</span>
+            <!-- Ownership / Confidential Verification Details -->
+            {% if user.is_authenticated and user == item.user or user.is_staff %}
+              <div class="p-4 bg-amber-50/80 rounded-xl border border-amber-200 text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2 text-amber-800 font-bold">
+                    <i class="fa-solid fa-user-shield text-sm"></i>
+                    <span>Your Private Identification Markers</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200/70 text-amber-900">Only Visible to You</span>
                 </div>
+                {% if item.identification_details %}
+                  <p class="text-slate-800 bg-white p-3 rounded-lg border border-amber-200/60 font-mono text-[11px] leading-relaxed">
+                    {{ item.identification_details }}
+                  </p>
+                {% else %}
+                  <p class="text-slate-500 italic bg-white p-2.5 rounded-lg border border-amber-200/40">No private identification markers were entered for this report.</p>
+                {% endif %}
+                <p class="text-[10px] text-amber-700/80">
+                  <i class="fa-solid fa-lock mr-1"></i> These details are kept confidential to verify ownership when someone claims this item.
+                </p>
               </div>
+            {% else %}
+              <div class="p-3.5 bg-blue-50/70 rounded-xl border border-blue-200/80 text-xs flex items-center justify-between">
+                <div class="flex items-center gap-2 text-primary">
+                  <i class="fa-solid fa-lock text-xs"></i>
+                  <span class="font-semibold">Hidden Verification Challenge Active</span>
+                </div>
+                <span class="text-[11px] text-slate-500 font-medium">Confidential markers shielded</span>
+              </div>
+            {% endif %}
+
+            <!-- Interactive Action Area -->
+            <div class="pt-2 space-y-2.5">
+              {% if user.is_authenticated and user == item.user %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                  <span class="font-bold text-navy flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    You submitted this report
+                  </span>
+                  <span class="text-[11px] text-slate-500">Submitted on {{ item.created_at|date:"M d, Y" }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  <a href="{% url 'dashboard' %}" class="py-2.5 px-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-table-columns text-xs"></i>
+                    <span>Back to Dashboard</span>
+                  </a>
+                  <a href="/items/search/" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    <span>Browse All Reports</span>
+                  </a>
+                </div>
+              {% else %}
+                <button type="button" id="claim-item-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+                  <span>I Think This is My Item (Claim Ownership)</span>
+                </button>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button type="button" id="contact-reporter-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-regular fa-paper-plane text-xs"></i>
+                    <span>Message Reporter</span>
+                  </button>
+                  <button type="button" id="flag-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-rose-600 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-regular fa-flag text-xs"></i>
+                    <span>Report Issue</span>
+                  </button>
+                </div>
+              {% endif %}
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
-            <div class="flex items-center gap-1.5 text-emerald-700">
-              <i class="fa-solid fa-circle-check text-xs"></i>
-              <span>Similar visual geometry (96%)</span>
+          <!-- AI Matches Preview Placeholder -->
+          <div class="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4 relative overflow-hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-blue-100">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs shadow-xs">
+                  <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-navy">AI Neural Match Candidate Hub</h3>
+                  <span class="text-[11px] text-slate-500">Multimodal similarity scanning</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary text-white shadow-xs">Live Engine</span>
             </div>
-            <div class="flex items-center gap-1.5 text-emerald-700">
-              <i class="fa-solid fa-circle-check text-xs"></i>
-              <span>Same category & brand</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-emerald-700">
-              <i class="fa-solid fa-circle-check text-xs"></i>
-              <span>Proximity overlap (0.2 mi)</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-emerald-700">
-              <i class="fa-solid fa-circle-check text-xs"></i>
-              <span>Matching paracord pull tag</span>
-            </div>
+
+            <p class="text-xs text-text-secondary leading-relaxed">
+              FindBack's automated matching engine periodically cross-analyzes this {{ item.get_item_type_display|lower }} report against incoming {% if item.item_type == 'LOST' %}found{% else %}lost{% endif %} items using visual embeddings and geolocation proximity.
+            </p>
+
+            <a href="/matches/" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-blue-200 hover:border-primary text-primary rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2">
+              <span>View Potential Matches in Match Center</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
           </div>
 
-          <p class="text-[11px] text-slate-500 italic">
-            * Note: AI match scores are algorithmic suggestions and do not confer legal ownership. Physical claims require challenge verification.
-          </p>
-
-          <a href="/matches/" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-blue-200 hover:border-primary text-primary rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2">
-            <span>Review Potential Match in AI Hub</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
         </div>
 
       </div>
-
-    </div>
+    {% else %}
+      <!-- Empty State when item is not found -->
+      <div class="text-center py-16 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm max-w-lg mx-auto space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-file-circle-question"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-navy">Item Report Not Found</h2>
+          <p class="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
+            The requested report ID could not be located in the database. It may have been resolved, removed, or the link may be incomplete.
+          </p>
+        </div>
+        <div class="pt-2 flex items-center justify-center gap-3">
+          <a href="{% url 'dashboard' %}" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-colors">
+            Go to My Dashboard
+          </a>
+          <a href="/items/search/" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
+            Search All Items
+          </a>
+        </div>
+      </div>
+    {% endif %}
 
   </main>
 
+  <!-- Claim Ownership Modal -->
   <div id="claim-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -209,7 +268,7 @@
           <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
-          <h3 class="text-sm font-bold text-navy">Ownership Challenge Challenge</h3>
+          <h3 class="text-sm font-bold text-navy">Ownership Challenge</h3>
         </div>
         <button type="button" id="close-claim-modal" class="text-slate-400 hover:text-slate-600">
           <i class="fa-solid fa-xmark text-sm"></i>
@@ -223,7 +282,7 @@
       <div class="space-y-3 text-xs">
         <div>
           <label class="block font-bold text-slate-700 mb-1">What distinct items or markings are inside?</label>
-          <input type="text" placeholder="e.g. Spiral notebook, silver keys with blue tag" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
+          <input type="text" placeholder="e.g. Unique sticker, engraving, contents" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
         </div>
 
         <div>

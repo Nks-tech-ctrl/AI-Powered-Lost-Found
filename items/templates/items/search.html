@@ -18,10 +18,10 @@
       </div>
 
       <div class="flex items-center gap-2.5">
-        <a href="/items/report-lost/" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-600 rounded-xl text-xs font-bold shadow-xs">
+        <a href="{% url 'report_lost' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-600 rounded-xl text-xs font-bold shadow-xs transition-colors">
           + Report Lost
         </a>
-        <a href="/items/report-found/" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs">
+        <a href="{% url 'report_found' %}" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors">
           + Report Found
         </a>
       </div>
@@ -29,13 +29,13 @@
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
 
-      <form id="search-form" data-search-form class="relative">
+      <form id="search-form" data-search-form method="GET" action="{% url 'search' %}" class="relative">
         <div class="relative flex items-center">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
             <i class="fa-solid fa-magnifying-glass text-sm"></i>
           </div>
-          <input type="text" id="search-input" placeholder="Search by item name, description, brand, transit hub..." class="w-full pl-11 pr-24 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
-          <button type="button" id="search-clear-btn" class="absolute inset-y-0 right-16 px-2 text-slate-400 hover:text-slate-600 hidden">
+          <input type="text" name="q" id="search-input" value="{{ query }}" placeholder="Search by item name, description, brand, location..." class="w-full pl-11 pr-24 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+          <button type="button" id="search-clear-btn" class="absolute inset-y-0 right-16 px-2 text-slate-400 hover:text-slate-600 {% if not query %}hidden{% endif %}">
             <i class="fa-solid fa-xmark text-xs"></i>
           </button>
           <button type="submit" class="absolute right-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-xs font-bold transition-colors">
@@ -47,14 +47,14 @@
       <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
 
         <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
-          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-navy shadow-xs" data-type="all">
-            All Items (<span id="count-all">6</span>)
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all {% if not selected_type %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}" data-type="all">
+            All Items (<span id="count-all">{{ items.count|default:0 }}</span>)
           </button>
-          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition-all" data-type="lost">
-            Lost (<span id="count-lost">3</span>)
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all {% if selected_type == 'LOST' %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}" data-type="lost">
+            Lost
           </button>
-          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition-all" data-type="found">
-            Found (<span id="count-found">3</span>)
+          <button type="button" class="filter-type-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all {% if selected_type == 'FOUND' %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}" data-type="found">
+            Found
           </button>
         </div>
 
@@ -62,22 +62,9 @@
 
           <select id="filter-category" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
             <option value="all">All Categories</option>
-            <option value="Bags">Bags & Luggage</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Jewelry">Jewelry & Watches</option>
-            <option value="Documents">Documents & IDs</option>
-            <option value="Keys">Keys</option>
-            <option value="Wallets">Wallets</option>
-          </select>
-
-          <select id="filter-location" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            <option value="all">All Locations</option>
-            <option value="Metro">Central Metro</option>
-            <option value="Coffee">Downtown Coffee Lab</option>
-            <option value="Park">City Park</option>
-            <option value="Library">State Univ Library</option>
-            <option value="Oakridge">Oakridge Bus Stop</option>
-            <option value="Airport">Airport Terminal</option>
+            {% for cat_key, cat_label in categories %}
+              <option value="{{ cat_label }}" {% if selected_category == cat_key or selected_category == cat_label %}selected{% endif %}>{{ cat_label }}</option>
+            {% endfor %}
           </select>
 
           <select id="filter-sort" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
@@ -91,254 +78,91 @@
 
       <div class="flex items-center gap-2 pt-1 overflow-x-auto text-[11px]">
         <span class="text-slate-400 font-semibold shrink-0">Popular:</span>
-        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Backpack</button>
-        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Earbuds</button>
-        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Chronograph Watch</button>
-        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Student ID</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Electronics</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Laptop</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Phone</button>
         <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Keys</button>
-        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Leather Wallet</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Wallet</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Bag</button>
+        <button type="button" class="tag-btn px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-600 font-medium shrink-0 transition-colors">Documents</button>
       </div>
 
     </div>
 
     <div class="flex items-center justify-between text-xs text-slate-500 px-1">
-      <span id="results-count-text"><strong id="results-count" class="text-navy font-bold">6</strong> reports matching your criteria</span>
-      <span class="text-[11px] text-slate-400"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Real-time AI cross-indexing enabled</span>
+      <span id="results-count-text"><strong id="results-count" class="text-navy font-bold">{{ items.count|default:0 }}</strong> reports matching your criteria</span>
+      <span class="text-[11px] text-slate-400"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Real-time catalog search</span>
     </div>
 
-    <div id="results-grid" data-results class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Bags" data-status="lost" data-location="Metro" data-name="Matte Black Backpack">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/backpack.jpg' %}" alt="Backpack" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
-              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Bags
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">Matte Black Backpack</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Water-resistant commuter backpack with 15" laptop sleeve and distinct yellow paracord zipper pull.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
-                <span class="truncate">Central Metro Station, Line 2</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>Reported 2 hours ago</span>
+    <div id="results-grid" data-results class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 {% if not items %}hidden{% endif %}">
+      {% for item in items %}
+        <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="{{ item.get_category_display }}" data-status="{{ item.item_type|lower }}" data-location="{{ item.location }}" data-name="{{ item.title }}">
+          <div>
+            <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              {% else %}
+                <div class="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400">
+                  <i class="fa-solid fa-box-open text-3xl mb-1 text-slate-300"></i>
+                  <span class="text-[10px] font-semibold text-slate-400">No Image</span>
+                </div>
+              {% endif %}
+              <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md {% if item.item_type == 'LOST' %}bg-rose-500{% else %}bg-emerald-500{% endif %} text-white shadow-md">
+                {% if item.item_type == 'LOST' %}
+                  <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
+                {% else %}
+                  <i class="fa-solid fa-check text-[10px]"></i> Found
+                {% endif %}
+              </span>
+              <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+                {{ item.get_category_display }}
+              </span>
+            </div>
+            <div class="p-5">
+              <h3 class="text-base font-bold text-navy mb-1 truncate" title="{{ item.title }}">{{ item.title }}</h3>
+              <p class="text-xs text-text-secondary line-clamp-2 mb-3">
+                {{ item.description }}
+              </p>
+              <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                <div class="flex items-center gap-2 truncate">
+                  <i class="fa-solid fa-location-dot {% if item.item_type == 'LOST' %}text-rose-500{% else %}text-emerald-500{% endif %} w-3.5 text-center"></i>
+                  <span class="truncate">{{ item.location }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                  <span>{{ item.date_occurred|date:"M d, Y" }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/backpack/" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Electronics" data-status="found" data-location="Coffee" data-name="Blue Wireless Earbuds">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/earbuds.jpg' %}" alt="Earbuds" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
-              <i class="fa-solid fa-check text-[10px]"></i> Found
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Electronics
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">Blue Wireless Earbuds</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Navy blue charging case with golden hinge. Found left on a corner booth at downtown cafe.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
-                <span class="truncate">Downtown Coffee Lab, Table 7</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>Today, 11:30 AM</span>
-              </div>
-            </div>
+          <div class="px-5 pb-5 pt-1">
+            <a href="{% url 'item_details_id' id=item.id %}" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
+              <span>View Details</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
           </div>
         </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/earbuds/" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Jewelry" data-status="lost" data-location="Park" data-name="Silver Chronograph Watch">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/watch.jpg' %}" alt="Watch" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
-              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Jewelry
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">Silver Chronograph Watch</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Stainless steel mesh strap with blue sunburst dial. Heirloom gift with back casing engraving.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
-                <span class="truncate">City Park South Promenade</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>Yesterday afternoon</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/watch/" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Documents" data-status="found" data-location="Library" data-name="Student ID Card">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/id_card.jpg' %}" alt="Student ID" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
-              <i class="fa-solid fa-check text-[10px]"></i> Found
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Documents
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">Student ID Card (State Univ)</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Clear lanyard badge holder with university magnetic keycard. Identity protected for privacy.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
-                <span class="truncate">University Main Library, 2nd Fl</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>Yesterday, 5:45 PM</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/id_card/" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group" data-category="Keys" data-status="lost" data-location="Oakridge" data-name="House Keys with Leather Fob">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/keys.jpg' %}" alt="Keys" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-rose-500 text-white shadow-md">
-              <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i> Lost
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Keys
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">House Keys with Leather Fob</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Set of 3 brass house keys attached to a distinctive tan stitched leather keychain fob.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-rose-500 w-3.5 text-center"></i>
-                <span class="truncate">Oakridge Boulevard Bus Stop</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>2 days ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/keys/" class="w-full py-2 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="item-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between group" data-category="Wallets" data-status="found" data-location="Airport" data-name="Brown Bi-Fold Leather Wallet">
-        <div>
-          <div class="h-48 bg-slate-100 relative overflow-hidden">
-            <img src="{% static 'images/wallet.jpg' %}" alt="Wallet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-emerald-500 text-white shadow-md">
-              <i class="fa-solid fa-check text-[10px]"></i> Found
-            </span>
-            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
-              Wallets
-            </span>
-          </div>
-          <div class="p-5">
-            <h3 class="text-base font-bold text-navy mb-1">Brown Bi-Fold Leather Wallet</h3>
-            <p class="text-xs text-text-secondary line-clamp-2 mb-3">
-              Distressed brown leather wallet. Handed over to terminal security desk for safe cataloging.
-            </p>
-            <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 truncate">
-                <i class="fa-solid fa-location-dot text-emerald-500 w-3.5 text-center"></i>
-                <span class="truncate">North Airport Terminal, Gate 14</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
-                <span>3 days ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="px-5 pb-5 pt-1">
-          <a href="/items/wallet/" class="w-full py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-1.5">
-            <span>View Details</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-      </div>
-
+      {% endfor %}
     </div>
 
-    <div id="empty-state" data-empty-state class="hidden bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-lg mx-auto my-8">
+    <div id="empty-state" data-empty-state class="{% if items %}hidden{% endif %} bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-lg mx-auto my-8">
       <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center text-2xl">
         <i class="fa-solid fa-magnifying-glass"></i>
       </div>
       <div>
         <h3 class="text-base font-bold text-navy">No matching reports found</h3>
         <p class="text-xs text-text-secondary mt-1">
-          Try changing your search terms, broadening your category selection, or clearing current filters.
+          No reports currently match your search criteria. You can submit a new report or adjust your search filters.
         </p>
       </div>
-      <button type="button" id="clear-filters-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-all shadow-xs">
-        Clear All Filters
-      </button>
+      <div class="pt-2 flex items-center justify-center gap-2.5">
+        <a href="{% url 'report_lost' %}" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-all">
+          Report Lost Item
+        </a>
+        <a href="{% url 'report_found' %}" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all">
+          Report Found Item
+        </a>
+      </div>
     </div>
 
   </main>

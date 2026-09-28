@@ -1,19 +1,11 @@
+/**
+ * FindBack Report Lost & Found Client Interactions
+ * Handles image drag-and-drop, client-side preview, AI auto-drafting, and submission states.
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  let currentStep = 1;
-  const totalSteps = 4;
-
-  const stepTabs = document.querySelectorAll('.step-tab');
-  const stepPanels = document.querySelectorAll('.step-panel');
-  const prevBtn = document.getElementById('prev-step-btn');
-  const nextBtn = document.getElementById('next-step-btn');
-  const submitBtn = document.getElementById('submit-report-btn');
-  const saveDraftBtn = document.getElementById('save-draft-btn');
-  const reportLostForm = document.getElementById('report-lost-form');
-  const reportFoundForm = document.getElementById('report-found-form');
+  // Mobile drawer navigation
   const mobileToggle = document.getElementById('mobile-menu-btn');
   const mobileDrawer = document.getElementById('mobile-drawer');
-  const aiGenerateBtn = document.getElementById('ai-generate-desc-btn');
-  const descInput = document.getElementById('item-description');
 
   if (mobileToggle && mobileDrawer) {
     mobileToggle.addEventListener('click', () => {
@@ -21,108 +13,162 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updateStepUI(step) {
-    currentStep = step;
-
-    stepPanels.forEach((panel, idx) => {
-      if (idx + 1 === step) {
-        panel.classList.remove('hidden');
-      } else {
-        panel.classList.add('hidden');
-      }
-    });
-
-    stepTabs.forEach((tab) => {
-      const tabStep = parseInt(tab.getAttribute('data-step'));
-      const badge = tab.querySelector('.step-badge');
-      const title = tab.querySelector('span:last-child');
-      const isFound = reportFoundForm !== null;
-      const activeColor = isFound ? 'bg-emerald-600' : 'bg-primary';
-
-      if (tabStep === step) {
-        badge.className = `step-badge w-8 h-8 rounded-full ${activeColor} text-white text-xs font-bold flex items-center justify-center shadow-md`;
-        title.className = 'text-[11px] sm:text-xs font-bold text-navy mt-1.5 block';
-      } else if (tabStep < step) {
-        badge.className = 'step-badge w-8 h-8 rounded-full bg-emerald-500 text-white text-xs font-bold flex items-center justify-center';
-        badge.innerHTML = '<i class="fa-solid fa-check"></i>';
-        title.className = 'text-[11px] sm:text-xs font-semibold text-slate-600 mt-1.5 block';
-      } else {
-        badge.className = 'step-badge w-8 h-8 rounded-full bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center';
-        badge.textContent = `0${tabStep}`;
-        title.className = 'text-[11px] sm:text-xs font-semibold text-slate-400 mt-1.5 block';
-      }
-    });
-
-    if (step === 1) {
-      if (prevBtn) prevBtn.classList.add('hidden');
-    } else {
-      if (prevBtn) prevBtn.classList.remove('hidden');
+  // Smooth scroll anchors for the top step progress badges
+  const stepBadges = document.querySelectorAll('.step-badge');
+  stepBadges.forEach(badge => {
+    const parentLink = badge.closest('a');
+    if (parentLink && parentLink.getAttribute('href').startsWith('#')) {
+      parentLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = parentLink.getAttribute('href');
+        const targetElem = document.querySelector(targetId);
+        if (targetElem) {
+          targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
     }
-
-    if (step === totalSteps) {
-      if (nextBtn) nextBtn.classList.add('hidden');
-      if (submitBtn) submitBtn.classList.remove('hidden');
-    } else {
-      if (nextBtn) nextBtn.classList.remove('hidden');
-      if (submitBtn) submitBtn.classList.add('hidden');
-    }
-  }
-
-  stepTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = parseInt(tab.getAttribute('data-step'));
-      updateStepUI(target);
-    });
   });
 
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (currentStep < totalSteps) updateStepUI(currentStep + 1);
-    });
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      if (currentStep > 1) updateStepUI(currentStep - 1);
-    });
-  }
-
-  if (saveDraftBtn) {
-    saveDraftBtn.addEventListener('click', () => {
-      showToast('Draft report saved to your local session.', 'info');
-    });
-  }
+  // AI Description Generator Button
+  const aiGenerateBtn = document.getElementById('ai-generate-desc-btn');
+  const titleInput = document.getElementById('item-title');
+  const categorySelect = document.getElementById('item-category');
+  const descInput = document.getElementById('item-description');
 
   if (aiGenerateBtn && descInput) {
     aiGenerateBtn.addEventListener('click', () => {
-      descInput.value = 'Commuter backpack in matte black ballistic nylon with padded 15-inch laptop compartment, ergonomic mesh straps, and custom high-visibility yellow paracord zipper pull. Clean exterior with minor scuff on base.';
+      const titleVal = titleInput ? titleInput.value.trim() : '';
+      const categoryVal = categorySelect ? categorySelect.options[categorySelect.selectedIndex]?.text : '';
+      
+      let generatedText = '';
+      if (titleVal) {
+        generatedText = `${titleVal}. In good condition with distinct personal traits. Features durable build and standard finish. Clean exterior with minor visible signs of use.`;
+      } else {
+        generatedText = `Commuter backpack in matte black ballistic nylon with padded 15-inch laptop compartment, ergonomic mesh straps, and custom high-visibility yellow paracord zipper pull. Clean exterior with minor scuff on base.`;
+      }
+      descInput.value = generatedText;
       showToast('AI synthesized an optimized product description from your title and category attributes.', 'success');
     });
   }
 
-  if (reportLostForm) {
-    reportLostForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      showToast('Report submitted! AI matching engine initiated...', 'success');
-      setTimeout(() => {
-        window.location.href = '/matches/';
-      }, 1200);
+  // Image Upload, Drag-and-Drop & Vanilla JS Preview
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input');
+  const uploadPrompt = document.getElementById('upload-prompt');
+  const previewCard = document.getElementById('image-preview-card');
+  const previewImg = document.getElementById('preview-img');
+  const previewName = document.getElementById('preview-name');
+  const previewSize = document.getElementById('preview-size');
+  const removeImgBtn = document.getElementById('remove-img-btn');
+
+  function handleFile(file) {
+    if (!file) return;
+
+    // Check if image
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (JPG, PNG, or WebP).', 'info');
+      return;
+    }
+
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Image file size must be under 10MB.', 'info');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (previewImg) previewImg.src = e.target.result;
+      if (previewName) previewName.textContent = file.name;
+      if (previewSize) {
+        const sizeKb = Math.round(file.size / 1024);
+        previewSize.textContent = `${sizeKb} KB · Ready to upload`;
+      }
+      if (uploadPrompt) uploadPrompt.classList.add('hidden');
+      if (previewCard) previewCard.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (dropzone && fileInput) {
+    dropzone.addEventListener('click', (e) => {
+      if (e.target.closest('#remove-img-btn')) return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files[0]) {
+        handleFile(fileInput.files[0]);
+      }
+    });
+
+    // Drag-and-Drop listeners
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('border-primary', 'bg-blue-50/50');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('border-primary', 'bg-blue-50/50');
+      });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt && dt.files && dt.files[0]) {
+        fileInput.files = dt.files;
+        handleFile(dt.files[0]);
+      }
     });
   }
 
-  if (reportFoundForm) {
-    reportFoundForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      showToast('Found report submitted! Scanning registered lost items for instant matches...', 'success');
-      setTimeout(() => {
-        window.location.href = '/matches/';
-      }, 1200);
+  if (removeImgBtn && fileInput) {
+    removeImgBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.value = '';
+      if (previewImg) previewImg.src = '#';
+      if (previewCard) previewCard.classList.add('hidden');
+      if (uploadPrompt) uploadPrompt.classList.remove('hidden');
     });
   }
 
+  // Submit button loading indicator (prevents duplicate submission)
+  const reportForms = [
+    document.getElementById('report-lost-form'),
+    document.getElementById('report-found-form')
+  ];
+
+  reportForms.forEach(form => {
+    if (form) {
+      form.addEventListener('submit', () => {
+        const submitBtn = form.querySelector('#submit-report-btn');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+          submitBtn.innerHTML = `
+            <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+            <span>Submitting Report...</span>
+          `;
+        }
+      });
+    }
+  });
+
+  // Toast Notification helper
   function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
+      document.body.appendChild(container);
+    }
 
     const toast = document.createElement('div');
     toast.className = 'pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-xs font-semibold max-w-sm transition-all duration-300 transform translate-y-4 opacity-0 bg-white';
