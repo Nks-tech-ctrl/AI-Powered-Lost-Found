@@ -34,6 +34,68 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Desktop Navbar Dropdowns (Report Menu & User Profile Menu)
+  const navReportBtn = document.getElementById('nav-report-btn');
+  const navReportMenu = document.getElementById('nav-report-menu');
+  const navReportChevron = document.getElementById('nav-report-chevron');
+
+  const navUserBtn = document.getElementById('nav-user-menu-btn');
+  const navUserMenu = document.getElementById('nav-user-menu');
+  const navUserChevron = document.getElementById('nav-user-chevron');
+
+  function closeAllNavDropdowns() {
+    if (navReportMenu && !navReportMenu.classList.contains('hidden')) {
+      navReportMenu.classList.add('hidden');
+      if (navReportBtn) navReportBtn.setAttribute('aria-expanded', 'false');
+      if (navReportChevron) navReportChevron.classList.remove('rotate-180');
+    }
+    if (navUserMenu && !navUserMenu.classList.contains('hidden')) {
+      navUserMenu.classList.add('hidden');
+      if (navUserBtn) navUserBtn.setAttribute('aria-expanded', 'false');
+      if (navUserChevron) navUserChevron.classList.remove('rotate-180');
+    }
+  }
+
+  if (navReportBtn && navReportMenu) {
+    navReportBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = navReportMenu.classList.contains('hidden');
+      closeAllNavDropdowns();
+      if (isHidden) {
+        navReportMenu.classList.remove('hidden');
+        navReportBtn.setAttribute('aria-expanded', 'true');
+        if (navReportChevron) navReportChevron.classList.add('rotate-180');
+      }
+    });
+  }
+
+  if (navUserBtn && navUserMenu) {
+    navUserBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = navUserMenu.classList.contains('hidden');
+      closeAllNavDropdowns();
+      if (isHidden) {
+        navUserMenu.classList.remove('hidden');
+        navUserBtn.setAttribute('aria-expanded', 'true');
+        if (navUserChevron) navUserChevron.classList.add('rotate-180');
+      }
+    });
+  }
+
+  // Close dropdowns on click outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#nav-report-dropdown-wrapper') && !e.target.closest('#nav-user-dropdown-wrapper')) {
+      closeAllNavDropdowns();
+    }
+  });
+
+  // Close dropdowns on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllNavDropdowns();
+    }
+  });
+
   const revealElements = document.querySelectorAll('.reveal-elem');
   const observerOptions = {
     threshold: 0.12,
