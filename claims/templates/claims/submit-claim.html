@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Claim Item — {{ item.title }} — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'public-item-detail' item.pk %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Back to Item">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
+
+    <!-- Top Navigation / Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-slate-400">
+        <a href="{% url 'search' %}" class="hover:text-primary transition-colors">Catalog</a>
+        <span>/</span>
+        <a href="{% url 'public-item-detail' item.pk %}" class="hover:text-primary transition-colors truncate max-w-[150px] sm:max-w-xs">{{ item.title }}</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">Submit Ownership Claim</span>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400">Item:</span>
+        <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">#FB-{{ item.pk }}</span>
+      </div>
+    </div>
+
+    <!-- Header Section -->
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Submit Ownership Claim</h1>
+      <p class="text-xs sm:text-sm text-text-secondary mt-1">
+        You are claiming this item as its owner. Provide details to help the reporter verify your ownership.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left Column: Item Summary Card -->
+      <div class="lg:col-span-5 space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="h-48 sm:h-56 bg-slate-50 relative flex items-center justify-center overflow-hidden">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+            {% else %}
+              <div class="flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                <i class="fa-solid fa-box-open text-3xl mb-1 text-slate-300"></i>
+                <span class="text-xs font-semibold">No Image Attached</span>
+              </div>
+            {% endif %}
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 text-xs font-extrabold uppercase rounded-lg shadow-sm bg-emerald-500 text-white">
+              Found Item
+            </span>
+          </div>
+
+          <div class="p-5 space-y-3">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-primary">{{ item.get_category_display }}</span>
+              <h2 class="text-base font-bold text-navy mt-0.5">{{ item.title }}</h2>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-emerald-500 w-4 text-center"></i>
+                <span>Found at: <strong class="text-slate-800">{{ item.location }}</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-calendar text-slate-400 w-4 text-center"></i>
+                <span>Date reported: <strong class="text-slate-800">{{ item.date_occurred|date:"M d, Y" }}</strong></span>
+              </div>
+              {% if item.brand %}
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-tag text-slate-400 w-4 text-center"></i>
+                  <span>Brand: <strong class="text-slate-800">{{ item.brand }}</strong></span>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="border-t border-slate-100 pt-3">
+              <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Public Description</span>
+              <p class="text-xs text-slate-600 line-clamp-4 leading-relaxed">{{ item.description }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning Card -->
+        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200/80 space-y-2 text-xs">
+          <div class="flex items-center gap-2 text-amber-900 font-bold">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm shrink-0"></i>
+            <span>Privacy & Safety Warning</span>
+          </div>
+          <p class="text-amber-800 text-[11px] leading-relaxed">
+            Only provide information necessary to help verify ownership. Never share passwords, payment information, PINs, or other highly sensitive personal information.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Column: Claim Form -->
+      <div class="lg:col-span-7">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+
+          <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-base font-bold text-navy">Ownership Verification Details</h2>
+            <p class="text-xs text-text-secondary mt-0.5">
+              The reporter will review these answers to confirm you are the true owner.
+            </p>
+          </div>
+
+          <form method="POST" action="{% url 'submit-claim' item.pk %}" class="space-y-5" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 space-y-1">
+                {% for err in form.non_field_errors %}
+                  <p class="flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> {{ err }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <!-- Reason Field -->
+            <div class="space-y-1.5">
+              <label for="{{ form.reason.id_for_label }}" class="block text-xs font-bold text-navy">
+                Why do you believe this item belongs to you? <span class="text-rose-500">*</span>
+              </label>
+              {{ form.reason }}
+              {% if form.reason.errors %}
+                <p class="text-[11px] font-semibold text-rose-600 mt-1">
+                  {{ form.reason.errors.0 }}
+                </p>
+              {% endif %}
+              <p class="text-[11px] text-slate-400">
+                Describe when and where you lost it, any identifying features, or circumstances matching the item.
+              </p>
+            </div>
+
+            <!-- Verification Answer Field -->
+            <div class="space-y-1.5">
+              <label for="{{ form.verification_answer.id_for_label }}" class="block text-xs font-bold text-navy">
+                Verification Details <span class="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              {{ form.verification_answer }}
+              {% if form.verification_answer.errors %}
+                <p class="text-[11px] font-semibold text-rose-600 mt-1">
+                  {{ form.verification_answer.errors.0 }}
+                </p>
+              {% endif %}
+              <p class="text-[11px] text-slate-400">
+                Specific clues like concealed scratches, lockscreen description, or contents not mentioned in the public report.
+              </p>
+            </div>
+
+            <!-- Submission Notice -->
+            <div class="p-3.5 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-slate-600 flex items-start gap-2.5">
+              <i class="fa-solid fa-circle-info text-primary text-xs mt-0.5 shrink-0"></i>
+              <span class="text-[11px] leading-relaxed">
+                By submitting this claim, you confirm that you are the lawful owner of this item. False claims violate the platform terms of service.
+              </span>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <button type="submit"
+                      id="submit-claim-btn"
+                      class="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+                <span>Submit Claim</span>
+              </button>
+
+              <a href="{% url 'public-item-detail' item.pk %}"
+                 id="cancel-claim-btn"
+                 class="w-full sm:w-auto px-5 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2">
+                <span>Cancel</span>
+              </a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

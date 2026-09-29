@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review Claim #{{ claim.pk }} — {{ item.title }} — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'claims-to-review' %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Claims to Review">
+          <i class="fa-solid fa-clipboard-check text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-6">
+
+    <!-- Top Navigation / Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-slate-400">
+        <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
+        <span>/</span>
+        <a href="{% url 'claims-to-review' %}" class="hover:text-primary transition-colors">Claims to Review</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">Claim #{{ claim.pk }}</span>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400">Status:</span>
+        <span class="px-2.5 py-1 text-xs font-bold rounded-lg
+          {% if claim.status == 'PENDING' %}bg-amber-100 text-amber-800 border border-amber-200
+          {% elif claim.status == 'APPROVED' %}bg-emerald-100 text-emerald-800 border border-emerald-200
+          {% elif claim.status == 'REJECTED' %}bg-rose-100 text-rose-800 border border-rose-200
+          {% else %}bg-slate-100 text-slate-700 border border-slate-200{% endif %}">
+          {{ claim.get_status_display }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Review Ownership Claim</h1>
+        <p class="text-xs sm:text-sm text-text-secondary mt-1">
+          Review the answers provided by the claimant to verify their ownership before approving.
+        </p>
+      </div>
+
+      <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        <span>All Incoming Claims</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left Column: Item Information -->
+      <div class="lg:col-span-5 space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <span class="text-xs font-bold text-navy uppercase tracking-wider">Your Reported Item</span>
+            <span class="font-mono text-xs text-slate-400">#FB-{{ item.pk }}</span>
+          </div>
+
+          <div class="h-48 bg-slate-50 relative flex items-center justify-center overflow-hidden">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+            {% else %}
+              <div class="flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                <i class="fa-solid fa-box-open text-3xl mb-1 text-slate-300"></i>
+                <span class="text-xs font-semibold">No Image Attached</span>
+              </div>
+            {% endif %}
+
+            <span class="absolute top-3 right-3 px-2.5 py-0.5 text-xs font-bold rounded-lg shadow-sm backdrop-blur-md
+              {% if item.status == 'ACTIVE' %}bg-amber-500/90 text-white
+              {% elif item.status == 'CLAIMED' %}bg-cyan-600/90 text-white
+              {% else %}bg-slate-700/90 text-white{% endif %}">
+              {{ item.get_status_display }}
+            </span>
+          </div>
+
+          <div class="p-5 space-y-4">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-primary">{{ item.get_category_display }}</span>
+              <h2 class="text-base font-bold text-navy mt-0.5">{{ item.title }}</h2>
+            </div>
+
+            <!-- Traits Grid -->
+            <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+              <div>
+                <span class="text-[10px] text-slate-400 block uppercase">Brand</span>
+                <span class="font-bold text-navy">{{ item.brand|default:"—" }}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block uppercase">Color</span>
+                <span class="font-bold text-navy">{{ item.color|default:"—" }}</span>
+              </div>
+              <div class="col-span-2 pt-1 border-t border-slate-200/60">
+                <span class="text-[10px] text-slate-400 block uppercase">Found Location</span>
+                <span class="font-bold text-navy">{{ item.location }}</span>
+              </div>
+              <div class="col-span-2">
+                <span class="text-[10px] text-slate-400 block uppercase">Date Found</span>
+                <span class="font-bold text-navy">{{ item.date_occurred|date:"d F Y" }}</span>
+              </div>
+            </div>
+
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Public Description</span>
+              <p class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                {{ item.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Guidance Card -->
+        <div class="p-4 bg-blue-50/70 rounded-2xl border border-blue-100 space-y-2 text-xs">
+          <div class="flex items-center gap-2 text-primary font-bold">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Reporter Verification Tips</span>
+          </div>
+          <ul class="text-slate-600 space-y-1 list-disc list-inside text-[11px] leading-relaxed">
+            <li>Compare claimant's explanation with private details only the true owner would know.</li>
+            <li>Approving this claim will change the item status to <strong>Claimed</strong>.</li>
+            <li>Any other pending claims on this item will automatically be rejected.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right Column: Claim Details & Review Decisions -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Claimant Submission Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                {% if claim.claimant.first_name %}
+                  {{ claim.claimant.first_name|first|upper }}{{ claim.claimant.last_name|first|upper }}
+                {% else %}
+                  {{ claim.claimant.username|slice:":2"|upper }}
+                {% endif %}
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-navy">
+                  {{ claim.claimant.get_full_name|default:claim.claimant.username }}
+                </h3>
+                <span class="text-[11px] text-slate-400">Claimant Member</span>
+              </div>
+            </div>
+
+            <div class="text-right text-xs text-slate-400">
+              <span class="block text-[10px] uppercase font-semibold text-slate-400">Submitted</span>
+              <span class="font-medium text-slate-700">{{ claim.created_at|date:"d M Y, H:i" }}</span>
+            </div>
+          </div>
+
+          <!-- Claim Reason Section -->
+          <div class="space-y-1.5">
+            <span class="text-xs font-bold text-navy block">
+              Claimant's Explanation & Reason
+            </span>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+              {{ claim.reason }}
+            </div>
+          </div>
+
+          <!-- Verification Details Section -->
+          <div class="space-y-1.5">
+            <span class="text-xs font-bold text-navy block">
+              Verification Proof / Identifying Details
+            </span>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+              {% if claim.verification_answer %}
+                {{ claim.verification_answer }}
+              {% else %}
+                <span class="text-slate-400 italic">No additional verification clues were provided by the claimant.</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Decision Outcome / Review Audit -->
+          {% if claim.status != 'PENDING' %}
+            <div class="p-4 rounded-xl border text-xs space-y-2
+              {% if claim.status == 'APPROVED' %}bg-emerald-50 border-emerald-200 text-emerald-800
+              {% elif claim.status == 'REJECTED' %}bg-rose-50 border-rose-200 text-rose-800
+              {% else %}bg-slate-100 border-slate-200 text-slate-700{% endif %}">
+              <div class="flex items-center justify-between font-bold">
+                <span class="flex items-center gap-1.5">
+                  {% if claim.status == 'APPROVED' %}<i class="fa-solid fa-circle-check text-emerald-600"></i> Claim Approved
+                  {% elif claim.status == 'REJECTED' %}<i class="fa-solid fa-circle-xmark text-rose-600"></i> Claim Rejected
+                  {% else %}<i class="fa-solid fa-ban text-slate-500"></i> Claim Cancelled{% endif %}
+                </span>
+                {% if claim.reviewed_at %}
+                  <span class="text-[11px] font-normal text-slate-500">
+                    Reviewed: {{ claim.reviewed_at|date:"d M Y, H:i" }}
+                  </span>
+                {% endif %}
+              </div>
+              {% if claim.reviewer_note %}
+                <div class="pt-1 border-t border-slate-200/50">
+                  <span class="font-semibold block text-[11px]">Reviewer Note:</span>
+                  <p class="text-[11px] mt-0.5 whitespace-pre-line">{{ claim.reviewer_note }}</p>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+        </div>
+
+        <!-- Action Panel (Only if claim is PENDING and item is ACTIVE) -->
+        {% if claim.status == 'PENDING' and item.status == 'ACTIVE' %}
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+            <div class="border-b border-slate-100 pb-3">
+              <h3 class="text-sm font-bold text-navy">Review Decision</h3>
+              <p class="text-xs text-text-secondary mt-0.5">
+                Choose whether to verify this claimant as the true owner or reject the claim.
+              </p>
+            </div>
+
+            <!-- Approve Section -->
+            <div class="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200/80 space-y-3">
+              <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                <span>Approve Ownership Claim</span>
+              </div>
+              <p class="text-xs text-emerald-800 leading-relaxed">
+                Approve if the claimant's answers accurately describe the item. This marks the item as <strong>Claimed</strong> and rejects other pending claims.
+              </p>
+              <form method="POST" action="{% url 'approve-claim' claim.pk %}" onsubmit="return confirm('Are you sure you want to APPROVE this claim? This action will set the item status to CLAIMED and reject any other pending claims.');">
+                {% csrf_token %}
+                <button type="submit"
+                        id="approve-claim-btn"
+                        class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-xs transition-colors flex items-center gap-2">
+                  <i class="fa-solid fa-check text-xs"></i>
+                  <span>Approve Claim</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Reject Section -->
+            <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-200/80 space-y-3">
+              <div class="flex items-center gap-2 text-rose-900 font-bold text-xs sm:text-sm">
+                <i class="fa-solid fa-circle-xmark text-rose-600"></i>
+                <span>Reject Ownership Claim</span>
+              </div>
+              <p class="text-xs text-rose-800 leading-relaxed">
+                Reject if the details do not match your found item. The item will remain Active for other claims.
+              </p>
+
+              <form method="POST" action="{% url 'reject-claim' claim.pk %}" class="space-y-3">
+                {% csrf_token %}
+                <div class="space-y-1">
+                  <label for="{{ reject_form.reviewer_note.id_for_label }}" class="block text-xs font-semibold text-rose-950">
+                    Reason for rejection <span class="text-slate-400 font-normal">(optional)</span>
+                  </label>
+                  {{ reject_form.reviewer_note }}
+                </div>
+                <button type="submit"
+                        id="reject-claim-btn"
+                        class="px-5 py-2.5 bg-white hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-300 hover:border-rose-600 rounded-xl font-bold text-xs transition-all flex items-center gap-2">
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                  <span>Reject Claim</span>
+                </button>
+              </form>
+            </div>
+
+          </div>
+        {% elif claim.status == 'PENDING' and item.status != 'ACTIVE' %}
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
+            <span>This item is no longer active (status: {{ item.get_status_display }}). This claim can no longer be approved.</span>
+          </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

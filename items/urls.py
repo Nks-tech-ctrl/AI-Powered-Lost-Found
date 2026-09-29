@@ -16,6 +16,10 @@ urlpatterns = [
     path('<int:pk>/edit/', views.item_edit, name='item-edit'),
     path('<int:pk>/delete/', views.item_delete, name='item-delete'),
 
+    # Public Item Detail routes
+    path('public/<int:pk>/', views.public_item_detail, name='public-item-detail'),
+    path('<int:pk>/public/', views.public_item_detail, name='public-item-detail-alt'),
+
     # Compatibility aliases
     path('<int:id>/detail/', views.item_detail, name='item_details_id'),
     path('details/', views.my_reports, name='item_details'),

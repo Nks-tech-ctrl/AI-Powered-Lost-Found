@@ -39,11 +39,22 @@
                         <span>Matches</span>
                         <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">3</span>
                     </a>
-                    <a href="{% url 'claims' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'my-claims' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
                         <i class="fa-solid fa-shield-halved text-xs text-cyan-600"></i>
                         <span>My Claims</span>
-                        <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">2</span>
+                        {% if user_pending_claims_count %}
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">{{ user_pending_claims_count }}</span>
+                        {% endif %}
                     </a>
+                    {% if has_found_reports %}
+                    <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-check text-xs text-indigo-600"></i>
+                        <span>Claims to Review</span>
+                        {% if pending_review_count %}
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">{{ pending_review_count }}</span>
+                        {% endif %}
+                    </a>
+                    {% endif %}
                 {% else %}
                     <a href="/#how-it-works" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">How It Works</a>
                     <a href="/#features" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Features</a>
@@ -157,13 +168,26 @@
                                     </div>
                                     <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">3</span>
                                 </a>
-                                <a href="{% url 'claims' %}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 transition-colors">
+                                <a href="{% url 'my-claims' %}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 transition-colors">
                                     <div class="flex items-center gap-3">
                                         <i class="fa-solid fa-shield-halved text-sm text-cyan-600 w-4 text-center"></i>
                                         <span>My Claims</span>
                                     </div>
-                                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">2</span>
+                                    {% if user_pending_claims_count %}
+                                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">{{ user_pending_claims_count }}</span>
+                                    {% endif %}
                                 </a>
+                                {% if has_found_reports %}
+                                <a href="{% url 'claims-to-review' %}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-clipboard-check text-sm text-indigo-600 w-4 text-center"></i>
+                                        <span>Claims to Review</span>
+                                    </div>
+                                    {% if pending_review_count %}
+                                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">{{ pending_review_count }}</span>
+                                    {% endif %}
+                                </a>
+                                {% endif %}
                             </div>
 
                             <div class="border-t border-slate-100 my-1"></div>
@@ -264,13 +288,26 @@
                     </div>
                     <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">3</span>
                 </a>
-                <a href="{% url 'claims' %}" class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">
+                <a href="{% url 'my-claims' %}" class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-shield-halved text-sm text-cyan-600 w-4 text-center"></i>
                         <span>My Claims</span>
                     </div>
-                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">2</span>
+                    {% if user_pending_claims_count %}
+                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">{{ user_pending_claims_count }}</span>
+                    {% endif %}
                 </a>
+                {% if has_found_reports %}
+                <a href="{% url 'claims-to-review' %}" class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-clipboard-check text-sm text-indigo-600 w-4 text-center"></i>
+                        <span>Claims to Review</span>
+                    </div>
+                    {% if pending_review_count %}
+                    <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">{{ pending_review_count }}</span>
+                    {% endif %}
+                </a>
+                {% endif %}
                 <a href="{% url 'profile' %}" class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-primary transition-colors">
                     <div class="flex items-center gap-3">
                         <i class="fa-regular fa-user text-sm text-slate-400 w-4 text-center"></i>

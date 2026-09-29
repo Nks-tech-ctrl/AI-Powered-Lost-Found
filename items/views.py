@@ -20,6 +20,15 @@ def dashboard_view(request):
     active_reports = user_items.filter(status=Item.ItemStatus.ACTIVE).count()
     recent_items = user_items[:5]
 
+    from claims.models import Claim
+    my_claims_pending = Claim.objects.filter(claimant=request.user, status=Claim.Status.PENDING).count()
+    my_claims_approved = Claim.objects.filter(claimant=request.user, status=Claim.Status.APPROVED).count()
+    my_claims_rejected = Claim.objects.filter(claimant=request.user, status=Claim.Status.REJECTED).count()
+    my_claims_total = Claim.objects.filter(claimant=request.user).count()
+
+    claims_to_review_pending = Claim.objects.filter(item__user=request.user, status=Claim.Status.PENDING).count()
+    claims_to_review_total = Claim.objects.filter(item__user=request.user).count()
+
     context = {
         'user_items': user_items,
         'recent_items': recent_items,
@@ -33,6 +42,13 @@ def dashboard_view(request):
         'lost_count': lost_reports,
         'found_count': found_reports,
         'active_count': active_reports,
+        # Claims counts
+        'my_claims_pending': my_claims_pending,
+        'my_claims_approved': my_claims_approved,
+        'my_claims_rejected': my_claims_rejected,
+        'my_claims_total': my_claims_total,
+        'claims_to_review_pending': claims_to_review_pending,
+        'claims_to_review_total': claims_to_review_total,
     }
     return render(request, 'items/dashboard.html', context)
 
@@ -285,4 +301,36 @@ def item_details_view(request, id=None):
         except (ValueError, TypeError):
             pass
     return redirect('my-reports')
+
+
+def public_item_detail(request, pk):
+    """
+    Displays the public details of an item (LOST or FOUND).
+    Never exposes identification_details or private personal data.
+    Provides ownership claim action for eligible users on FOUND items.
+    """
+    item = get_object_or_404(Item, pk=pk)
+
+    user_claim = None
+    has_pending_claim = False
+    has_approved_claim = False
+    is_owner = False
+
+    if request.user.is_authenticated:
+        from claims.models import Claim
+        is_owner = (item.user == request.user)
+        user_claim = Claim.objects.filter(item=item, claimant=request.user).first()
+        if user_claim:
+            has_pending_claim = (user_claim.status == Claim.Status.PENDING)
+            has_approved_claim = (user_claim.status == Claim.Status.APPROVED)
+
+    context = {
+        'item': item,
+        'is_owner': is_owner,
+        'user_claim': user_claim,
+        'has_pending_claim': has_pending_claim,
+        'has_approved_claim': has_approved_claim,
+    }
+    return render(request, 'items/public-item-detail.html', context)
+
 

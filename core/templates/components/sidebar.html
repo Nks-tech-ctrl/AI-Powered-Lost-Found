@@ -59,13 +59,27 @@
             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">3</span>
         </a>
 
-        <a href="/claims/" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+        <a href="{% url 'my-claims' %}" data-sidebar-link="claims" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-shield-halved text-cyan-600 w-4 text-center"></i>
                 <span>My Claims</span>
             </div>
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">2</span>
+            {% if user_pending_claims_count %}
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-100 text-cyan-800">{{ user_pending_claims_count }}</span>
+            {% endif %}
         </a>
+
+        {% if has_found_reports %}
+        <a href="{% url 'claims-to-review' %}" data-sidebar-link="claims-to-review" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-clipboard-check text-indigo-600 w-4 text-center"></i>
+                <span>Claims to Review</span>
+            </div>
+            {% if pending_review_count %}
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">{{ pending_review_count }}</span>
+            {% endif %}
+        </a>
+        {% endif %}
 
         <a href="{% url 'profile' %}" data-sidebar-link="profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
             <i class="fa-regular fa-user text-slate-400 w-4 text-center"></i>
