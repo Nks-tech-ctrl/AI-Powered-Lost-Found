@@ -1,45 +1,45 @@
 {% load static %}
 <header id="navbar" class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+    <div class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20 gap-2 xl:gap-4">
 
             <!-- Logo -->
-            <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-primary rounded-xl p-1">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-                    <i class="fa-solid fa-satellite-dish text-lg group-hover:rotate-12 transition-transform"></i>
+            <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}" class="flex items-center gap-2.5 xl:gap-3 group focus:outline-none focus:ring-2 focus:ring-primary rounded-xl p-1 shrink-0">
+                <div class="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 shrink-0">
+                    <i class="fa-solid fa-satellite-dish text-base xl:text-lg group-hover:rotate-12 transition-transform"></i>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
+                        <span class="text-lg xl:text-xl font-extrabold tracking-tight font-heading text-navy">Find<span class="text-primary">Back</span></span>
                         <span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>
                     </div>
-                    <span class="text-[10px] font-semibold text-primary uppercase tracking-wider hidden sm:inline-block">
+                    <span class="text-[9px] xl:text-[10px] font-semibold text-primary uppercase tracking-wider hidden xl:inline-block">
                         {% if user.is_authenticated %}Recovery Portal{% else %}AI-Powered Recovery{% endif %}
                     </span>
                 </div>
             </a>
 
             <!-- Desktop Center Navigation -->
-            <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+            <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1.5 2xl:gap-2 shrink-0" aria-label="Main Navigation">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'dashboard' %}" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'dashboard_alt' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-chart-pie text-xs text-primary"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="{% url 'my-reports' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'my-reports' %}" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'my-reports' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-list-check text-xs text-primary"></i>
                         <span>My Reports</span>
                     </a>
-                    <a href="/items/search/" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="/items/search/" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'search' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
                         <span>Browse Catalog</span>
                     </a>
-                    <a href="{% url 'matches' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'matches' %}" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'matches' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-bolt text-xs text-amber-500"></i>
                         <span>Matches</span>
                         <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">3</span>
                     </a>
-                    <a href="{% url 'my-claims' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'my-claims' %}" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'my-claims' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-shield-halved text-xs text-cyan-600"></i>
                         <span>My Claims</span>
                         {% if user_pending_claims_count %}
@@ -47,7 +47,7 @@
                         {% endif %}
                     </a>
                     {% if has_found_reports %}
-                    <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-blue-50/70 rounded-xl transition-colors flex items-center gap-2">
+                    <a href="{% url 'claims-to-review' %}" class="whitespace-nowrap px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-semibold rounded-xl transition-colors flex items-center gap-1.5 xl:gap-2 {% if request.resolver_match.url_name == 'claims-to-review' %}bg-blue-50 text-primary font-bold{% else %}text-slate-700 hover:text-primary hover:bg-blue-50/70{% endif %}">
                         <i class="fa-solid fa-clipboard-check text-xs text-indigo-600"></i>
                         <span>Claims to Review</span>
                         {% if pending_review_count %}
@@ -56,24 +56,24 @@
                     </a>
                     {% endif %}
                 {% else %}
-                    <a href="/#how-it-works" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">How It Works</a>
-                    <a href="/#features" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Features</a>
-                    <a href="/#ai-matching" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors flex items-center gap-1.5">
+                    <a href="/#how-it-works" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">How It Works</a>
+                    <a href="/#features" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Features</a>
+                    <a href="/#ai-matching" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors flex items-center gap-1.5">
                         <span>AI Matching</span>
                         <span class="px-1.5 py-0.5 text-[10px] font-bold bg-cyan/15 text-cyan-700 rounded-md border border-cyan/30">Demo</span>
                     </a>
-                    <a href="/items/search/" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Browse Items</a>
-                    <a href="/#safety" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Safety & Trust</a>
-                    <a href="/#testimonials" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Stories</a>
+                    <a href="/items/search/" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Browse Items</a>
+                    <a href="/#safety" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Safety & Trust</a>
+                    <a href="/#testimonials" class="whitespace-nowrap px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary hover:bg-blue-50/70 rounded-lg transition-colors">Stories</a>
                 {% endif %}
             </nav>
 
             <!-- Desktop Right Area -->
-            <div class="hidden md:flex items-center gap-3">
+            <div class="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
                 {% if user.is_authenticated %}
                     <!-- Quick Report Dropdown -->
                     <div class="relative" id="nav-report-dropdown-wrapper">
-                        <button id="nav-report-btn" type="button" aria-expanded="false" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-sm hover:shadow-md hover:shadow-blue-500/20 active:scale-95 transition-all">
+                        <button id="nav-report-btn" type="button" aria-expanded="false" class="inline-flex items-center gap-2 px-3 xl:px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-sm hover:shadow-md hover:shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap">
                             <i class="fa-solid fa-circle-plus text-xs"></i>
                             <span>Report Item</span>
                             <i class="fa-solid fa-chevron-down text-[9px] opacity-75 ml-0.5 transition-transform duration-200" id="nav-report-chevron"></i>
@@ -104,7 +104,7 @@
 
                     <!-- User Profile Dropdown -->
                     <div class="relative" id="nav-user-dropdown-wrapper">
-                        <button id="nav-user-menu-btn" type="button" aria-expanded="false" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl hover:bg-slate-100/90 border border-transparent hover:border-slate-200 transition-all group focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <button id="nav-user-menu-btn" type="button" aria-expanded="false" class="flex items-center gap-2 xl:gap-2.5 p-1.5 pr-2.5 xl:pr-3 rounded-xl hover:bg-slate-100/90 border border-transparent hover:border-slate-200 transition-all group focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0">
                             {% if user.profile.profile_picture %}
                                 <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0">
                             {% else %}
@@ -118,9 +118,9 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-                            <div class="flex flex-col text-left max-w-[120px]">
+                            <div class="flex flex-col text-left max-w-[80px] xl:max-w-[120px]">
                                 <span class="text-xs font-bold text-navy truncate">{{ user.first_name|default:user.username }}</span>
-                                <span class="text-[10px] text-slate-400 truncate">@{{ user.username }}</span>
+                                <span class="text-[10px] text-slate-400 truncate hidden xl:inline">@{{ user.username }}</span>
                             </div>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-primary transition-transform duration-200" id="nav-user-chevron"></i>
                         </button>
@@ -202,10 +202,10 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'login' %}" id="nav-login-btn" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors">
+                    <a href="{% url 'login' %}" id="nav-login-btn" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors whitespace-nowrap">
                         Login
                     </a>
-                    <a href="{% url 'register' %}" id="nav-get-started-btn" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-95 transition-all duration-200">
+                    <a href="{% url 'register' %}" id="nav-get-started-btn" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/25 active:scale-95 transition-all duration-200 whitespace-nowrap">
                         Get Started
                         <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                     </a>
@@ -213,7 +213,7 @@
             </div>
 
             <!-- Mobile Hamburger Button -->
-            <div class="flex md:hidden items-center">
+            <div class="flex lg:hidden items-center">
                 <button id="mobile-menu-toggle" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle Navigation Menu" class="p-2.5 rounded-xl text-slate-600 hover:text-navy hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary transition-colors">
                     <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
                 </button>
@@ -223,7 +223,7 @@
     </div>
 
     <!-- Mobile Menu Drawer -->
-    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-3 shadow-xl">
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-3 shadow-xl">
         {% if user.is_authenticated %}
             <!-- Authenticated Mobile User Header -->
             <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
