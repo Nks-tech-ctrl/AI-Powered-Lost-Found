@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -10,23 +11,158 @@ from .forms import ItemForm
 @login_required
 def dashboard_view(request):
     """
-    Renders the authenticated user's personal dashboard with live reports.
+    Renders the authenticated user's personal dashboard with live reports, real counts, and quick actions.
     """
-    user_items = request.user.items.all().order_by('-created_at')
-    active_count = user_items.filter(status=Item.ItemStatus.ACTIVE).count()
-    lost_count = user_items.filter(item_type=Item.ItemType.LOST).count()
-    found_count = user_items.filter(item_type=Item.ItemType.FOUND).count()
-    recovered_count = user_items.filter(status=Item.ItemStatus.RETURNED).count()
+    user_items = Item.objects.filter(user=request.user).order_by('-created_at')
+    total_reports = user_items.count()
+    lost_reports = user_items.filter(item_type=Item.ItemType.LOST).count()
+    found_reports = user_items.filter(item_type=Item.ItemType.FOUND).count()
+    active_reports = user_items.filter(status=Item.ItemStatus.ACTIVE).count()
+    recent_items = user_items[:5]
 
     context = {
-        'items': user_items,
-        'active_count': active_count,
-        'total_count': user_items.count(),
-        'lost_count': lost_count,
-        'found_count': found_count,
-        'recovered_count': recovered_count,
+        'user_items': user_items,
+        'recent_items': recent_items,
+        'items': recent_items,  # Backwards compatibility
+        'total_reports': total_reports,
+        'lost_reports': lost_reports,
+        'found_reports': found_reports,
+        'active_reports': active_reports,
+        # Backwards compatibility keys
+        'total_count': total_reports,
+        'lost_count': lost_reports,
+        'found_count': found_reports,
+        'active_count': active_reports,
     }
     return render(request, 'items/dashboard.html', context)
+
+
+dashboard = dashboard_view
+
+
+@login_required
+def my_reports(request):
+    """
+    Displays all items reported by the logged-in user with type filtering (all, lost, found).
+    """
+    filter_type = request.GET.get('type', 'all').lower().strip()
+    if filter_type not in ['all', 'lost', 'found']:
+        filter_type = 'all'
+
+    user_items = Item.objects.filter(user=request.user).order_by('-created_at')
+
+    if filter_type == 'lost':
+        items = user_items.filter(item_type=Item.ItemType.LOST)
+    elif filter_type == 'found':
+        items = user_items.filter(item_type=Item.ItemType.FOUND)
+    else:
+        items = user_items
+
+    total_count = user_items.count()
+    lost_count = user_items.filter(item_type=Item.ItemType.LOST).count()
+    found_count = user_items.filter(item_type=Item.ItemType.FOUND).count()
+
+    context = {
+        'items': items,
+        'filter_type': filter_type,
+        'total_count': total_count,
+        'lost_count': lost_count,
+        'found_count': found_count,
+    }
+    return render(request, 'items/my-reports.html', context)
+
+
+@login_required
+def item_detail(request, pk=None, id=None):
+    """
+    Displays the details of a single item report owned by the authenticated user.
+    Prevents IDOR by strictly requiring user=request.user.
+    """
+    pk = pk or id
+    item = get_object_or_404(Item, pk=pk, user=request.user)
+    return render(request, 'items/item-details.html', {'item': item})
+
+
+@login_required
+def item_edit(request, pk):
+    """
+    Allows the owner to edit their own item report.
+    Item type, status, and owner cannot be altered.
+    Safely handles image replacement and removal.
+    """
+    item = get_object_or_404(Item, pk=pk, user=request.user)
+    original_item_type = item.item_type
+    original_status = item.status
+    old_image = item.image
+
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES, instance=item)
+        remove_image = request.POST.get('remove_image') == '1'
+
+        if form.is_valid():
+            updated_item = form.save(commit=False)
+
+            # Strict server-side security: locked fields cannot be altered
+            updated_item.user = request.user
+            updated_item.item_type = original_item_type
+            updated_item.status = original_status
+
+            # Handle explicit image removal
+            if remove_image and not request.FILES.get('image'):
+                if old_image:
+                    try:
+                        old_image.delete(save=False)
+                    except Exception:
+                        pass
+                updated_item.image = None
+            elif request.FILES.get('image'):
+                # New image uploaded: remove previous image file if it exists and differs
+                if old_image and old_image != updated_item.image:
+                    try:
+                        old_image.delete(save=False)
+                    except Exception:
+                        pass
+
+            updated_item.save()
+            form.save_m2m()
+
+            messages.success(
+                request,
+                "Your item report has been updated successfully."
+            )
+            return redirect('item-detail', pk=updated_item.pk)
+    else:
+        form = ItemForm(instance=item)
+
+    context = {
+        'form': form,
+        'item': item,
+    }
+    return render(request, 'items/item-edit.html', context)
+
+
+@login_required
+def item_delete(request, pk):
+    """
+    Deletes an item report owned by the authenticated user.
+    Requires POST to execute deletion; GET displays confirmation UI.
+    Cleans up associated media image safely.
+    """
+    item = get_object_or_404(Item, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        # Safely clean up associated image file if it exists
+        if item.image:
+            try:
+                item.image.delete(save=False)
+            except Exception:
+                pass
+
+        item.delete()
+        messages.success(request, "Your item report has been deleted.")
+        return redirect('my-reports')
+
+    return render(request, 'items/item-delete.html', {'item': item})
 
 
 @login_required
@@ -139,25 +275,14 @@ def search_view(request):
 
 def item_details_view(request, id=None):
     """
-    Renders detailed information for a specific item report.
-    Retrieves item by ID or falls back to latest item if no ID specified.
+    Compatibility wrapper for item details routing.
     """
-    item = None
     requested_id = id or request.GET.get('id')
-
     if requested_id:
         try:
-            item = Item.objects.select_related('user').get(pk=requested_id)
-        except (Item.DoesNotExist, ValueError):
-            item = None
-    else:
-        # Fallback only when no specific ID was requested
-        if request.user.is_authenticated:
-            item = request.user.items.order_by('-created_at').first()
-        if not item:
-            item = Item.objects.order_by('-created_at').first()
+            pk = int(requested_id)
+            return item_detail(request, pk)
+        except (ValueError, TypeError):
+            pass
+    return redirect('my-reports')
 
-    return render(request, 'items/item-details.html', {
-        'item': item,
-        'item_id': requested_id or (item.id if item else None),
-    })

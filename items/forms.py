@@ -174,12 +174,14 @@ class ItemForm(forms.ModelForm):
 
             # Validate image binary content with Pillow
             try:
-                img = Image.open(image)
-                img.verify()
-                if img.format.lower() not in ['jpeg', 'png', 'webp']:
-                    raise ValidationError("Please upload a valid image file.")
+                with Image.open(image) as img:
+                    img.verify()
+                    if img.format.lower() not in ['jpeg', 'png', 'webp']:
+                        raise ValidationError("Please upload a valid image file.")
                 if hasattr(image, 'seek'):
                     image.seek(0)
+            except ValidationError:
+                raise
             except Exception:
                 raise ValidationError("Please upload a valid image file.")
 

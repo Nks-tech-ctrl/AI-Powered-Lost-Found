@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Report: {{ item.title }} — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'item-detail' item.pk %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Back to Details">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto w-full flex items-center justify-center">
+
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 w-full space-y-6 text-center">
+
+      <!-- Red Alert Icon -->
+      <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center text-2xl shadow-sm border border-rose-100">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+
+      <!-- Heading & Question -->
+      <div class="space-y-1.5">
+        <h1 class="text-xl sm:text-2xl font-extrabold font-heading text-navy">
+          Delete Item Report
+        </h1>
+        <p class="text-sm font-bold text-slate-700">
+          Are you sure you want to delete this report?
+        </p>
+        <p class="text-xs text-text-secondary max-w-md mx-auto leading-relaxed">
+          This action cannot be undone. This report and its associated media files will be permanently removed from your dashboard and the FindBack platform.
+        </p>
+      </div>
+
+      <!-- Item Preview Card -->
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left flex items-center gap-4">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0">
+        {% else %}
+          <div class="w-14 h-14 rounded-xl bg-slate-200/70 flex items-center justify-center text-slate-500 shrink-0 text-xl">
+            <i class="fa-solid fa-box-open"></i>
+          </div>
+        {% endif %}
+
+        <div class="min-w-0 flex-1 space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase rounded {% if item.item_type == 'LOST' %}bg-rose-100 text-rose-700{% else %}bg-emerald-100 text-emerald-700{% endif %}">
+              {{ item.item_type }}
+            </span>
+            <span class="text-xs text-slate-400 font-mono">#FB-{{ item.pk }}</span>
+          </div>
+          <h3 class="text-sm font-bold text-navy truncate">{{ item.title }}</h3>
+          <p class="text-xs text-slate-500 truncate">
+            <span>{{ item.get_category_display }}</span> •
+            <span>{{ item.location }}</span> •
+            <span>{{ item.date_occurred|date:"d M Y" }}</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Form Actions (POST required) -->
+      <form method="POST" class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+        {% csrf_token %}
+        <a href="{% url 'item-detail' item.pk %}"
+           class="w-full sm:w-auto px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs transition-colors text-center order-2 sm:order-1">
+          Cancel
+        </a>
+        <button type="submit"
+                class="w-full sm:w-auto px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 order-1 sm:order-2">
+          <i class="fa-regular fa-trash-can text-xs"></i>
+          <span>Delete Report</span>
+        </button>
+      </form>
+
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

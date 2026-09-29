@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Report: {{ item.title }} — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'item-detail' item.pk %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Back to Details">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto w-full space-y-6">
+
+    <!-- Breadcrumb & Top Bar -->
+    <div class="pb-3 border-b border-slate-200/80">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-slate-400 mb-1.5">
+        <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
+        <span>/</span>
+        <a href="{% url 'my-reports' %}" class="hover:text-primary transition-colors">My Reports</a>
+        <span>/</span>
+        <a href="{% url 'item-detail' item.pk %}" class="hover:text-primary transition-colors truncate max-w-[150px] sm:max-w-xs">{{ item.title }}</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">Edit</span>
+      </nav>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">
+            Edit Item Report
+          </h1>
+          <p class="text-xs sm:text-sm text-text-secondary mt-0.5">
+            Update the information for this report. Report type and status are locked to protect verification integrity.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Locked Type Badge -->
+          <span class="px-3 py-1 text-xs font-extrabold uppercase rounded-lg shadow-xs
+            {% if item.item_type == 'LOST' %}bg-rose-500 text-white{% else %}bg-emerald-500 text-white{% endif %}">
+            {{ item.item_type }}
+          </span>
+          <!-- Locked Status Badge -->
+          <span class="px-3 py-1 text-xs font-bold rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shadow-xs">
+            {{ item.get_status_display }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Form Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 space-y-1">
+            {% for error in form.non_field_errors %}
+              <p class="flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Locked Parameters Banner -->
+        <div class="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-xl text-xs text-slate-600 flex items-start gap-2.5">
+          <i class="fa-solid fa-lock text-primary text-sm mt-0.5 shrink-0"></i>
+          <div>
+            <span class="font-bold text-navy block">Report Type & Status Locked</span>
+            <span class="text-[11px] text-slate-500">
+              This report was submitted as a <strong>{{ item.item_type }}</strong> report with status <strong>{{ item.get_status_display }}</strong>. If you need to submit a report of the opposite type, please create a new report.
+            </span>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <label for="item-title" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+            Item Title <span class="text-rose-500">*</span>
+          </label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.title.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Category & Brand -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="item-category" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Category <span class="text-rose-500">*</span>
+            </label>
+            {{ form.category }}
+            {% if form.category.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.category.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="item-brand" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Brand / Manufacturer
+            </label>
+            {{ form.brand }}
+            {% if form.brand.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.brand.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Color & Location -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="item-color" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Primary Color
+            </label>
+            {{ form.color }}
+            {% if form.color.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.color.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="item-location" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Location <span class="text-rose-500">*</span>
+            </label>
+            {{ form.location }}
+            {% if form.location.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.location.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="item-date" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Date Occurred <span class="text-rose-500">*</span>
+            </label>
+            {{ form.date_occurred }}
+            {% if form.date_occurred.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.date_occurred.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="item-time" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+              Approximate Time
+            </label>
+            {{ form.time_occurred }}
+            {% if form.time_occurred.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.time_occurred.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="item-description" class="block text-xs font-bold text-navy uppercase tracking-wider mb-1.5">
+            Description <span class="text-rose-500">*</span>
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Item Image Management -->
+        <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-3">
+          <label class="block text-xs font-bold text-navy uppercase tracking-wider">
+            Item Photograph
+          </label>
+
+          {% if item.image %}
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 p-3 bg-white rounded-xl border border-slate-200">
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-20 h-20 object-cover rounded-lg border border-slate-200 shrink-0">
+              <div class="space-y-1 text-xs">
+                <span class="font-bold text-navy block">Current Image Attached</span>
+                <p class="text-slate-500 text-[11px]">Upload a new photo below to replace it, or check the box to remove it.</p>
+                <div class="pt-1 flex items-center gap-2">
+                  <input type="checkbox" name="remove_image" id="remove_image" value="1" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                  <label for="remove_image" class="text-rose-600 font-semibold cursor-pointer">Remove current image</label>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="space-y-1.5">
+            <span class="text-[11px] text-slate-500 block">{% if item.image %}Replace with a new image (optional):{% else %}Upload an image (optional):{% endif %}</span>
+            <input type="file" name="image" id="file-input" accept="image/jpeg,image/png,image/webp"
+                   class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-primary hover:file:bg-blue-100 cursor-pointer">
+            {% if form.image.errors %}
+              <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.image.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Private Identification Details -->
+        <div class="p-4 bg-amber-50/80 rounded-2xl border border-amber-200/90 space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="private-marks" class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-lock text-amber-700"></i>
+              <span>Private Identification Details (Owner Only)</span>
+            </label>
+            <span class="text-[10px] font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded">Confidential</span>
+          </div>
+          <p class="text-[11px] text-amber-800 leading-relaxed">
+            These details are strictly protected and never displayed in public catalogs. They are used for ownership verification when matching or claiming.
+          </p>
+          {{ form.identification_details }}
+          {% if form.identification_details.errors %}
+            <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.identification_details.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Submit & Cancel Actions -->
+        <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+          <a href="{% url 'item-detail' item.pk %}"
+             class="w-full sm:w-auto px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-50 transition-colors text-center">
+            Cancel
+          </a>
+          <button type="submit"
+                  class="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check text-xs"></i>
+            <span>Update Report</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

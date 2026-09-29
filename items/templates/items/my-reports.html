@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Reports — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'dashboard' %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Dashboard">
+          <i class="fa-solid fa-chart-pie text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- Breadcrumb & Top Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
+          <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
+          <span>/</span>
+          <span class="text-slate-600 font-semibold">My Reports</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">
+          My Reports
+        </h1>
+        <p class="text-xs sm:text-sm text-text-secondary mt-0.5">
+          View, edit, and track status for all items you have reported lost or found.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a href="{% url 'report-lost' %}" class="inline-flex items-center gap-2 px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-xs font-semibold text-xs transition-all">
+          <i class="fa-solid fa-circle-exclamation text-xs"></i>
+          <span>Report Lost Item</span>
+        </a>
+        <a href="{% url 'report-found' %}" class="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs font-semibold text-xs transition-all">
+          <i class="fa-solid fa-hand-holding-heart text-xs"></i>
+          <span>Report Found Item</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex items-center justify-between gap-4 flex-wrap bg-white p-2 rounded-2xl border border-slate-200 shadow-xs">
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <a href="{% url 'my-reports' %}?type=all"
+           class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_type == 'all' %}
+             bg-primary text-white shadow-xs
+           {% else %}
+             text-slate-600 hover:bg-slate-100 hover:text-slate-900
+           {% endif %}">
+          <span>All Reports</span>
+          <span class="px-2 py-0.5 text-[10px] rounded-full {% if filter_type == 'all' %}bg-white/20 text-white{% else %}bg-slate-100 text-slate-600{% endif %}">
+            {{ total_count }}
+          </span>
+        </a>
+
+        <a href="{% url 'my-reports' %}?type=lost"
+           class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_type == 'lost' %}
+             bg-rose-500 text-white shadow-xs
+           {% else %}
+             text-slate-600 hover:bg-rose-50 hover:text-rose-700
+           {% endif %}">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
+          <span>Lost Items</span>
+          <span class="px-2 py-0.5 text-[10px] rounded-full {% if filter_type == 'lost' %}bg-white/20 text-white{% else %}bg-rose-100 text-rose-700{% endif %}">
+            {{ lost_count }}
+          </span>
+        </a>
+
+        <a href="{% url 'my-reports' %}?type=found"
+           class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_type == 'found' %}
+             bg-emerald-600 text-white shadow-xs
+           {% else %}
+             text-slate-600 hover:bg-emerald-50 hover:text-emerald-700
+           {% endif %}">
+          <i class="fa-solid fa-hand-holding-heart text-[10px]"></i>
+          <span>Found Items</span>
+          <span class="px-2 py-0.5 text-[10px] rounded-full {% if filter_type == 'found' %}bg-white/20 text-white{% else %}bg-emerald-100 text-emerald-700{% endif %}">
+            {{ found_count }}
+          </span>
+        </a>
+      </div>
+
+      <div class="text-xs text-slate-400 font-medium px-2">
+        Showing {{ items|length }} of {{ total_count }} reports
+      </div>
+    </div>
+
+    <!-- Items Grid or Empty State -->
+    {% if items %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for item in items %}
+          {% include 'components/item-card.html' with item=item %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-lg mx-auto my-8">
+        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-navy">You haven't submitted any reports yet.</h2>
+          <p class="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
+            {% if filter_type == 'lost' %}
+              You have no active lost item reports registered under your account.
+            {% elif filter_type == 'found' %}
+              You have not registered any found items under your account.
+            {% else %}
+              Report your lost or found items to begin automated AI matching and safe recovery.
+            {% endif %}
+          </p>
+        </div>
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="{% url 'report-lost' %}" class="w-full sm:w-auto px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation text-xs"></i>
+            <span>Report Lost Item</span>
+          </a>
+          <a href="{% url 'report-found' %}" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-hand-holding-heart text-xs"></i>
+            <span>Report Found Item</span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

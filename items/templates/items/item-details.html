@@ -1,307 +1,274 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if item %}{{ item.title }} (#FB-{{ item.id }}) — FindBack{% else %}Item Not Found — FindBack{% endif %}{% endblock %}
+{% block title %}{{ item.title }} — FindBack{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full" data-dynamic-item="true">
-{% include 'components/sidebar.html' %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
 
-  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-8">
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
 
-    <div class="flex items-center justify-between pb-3 border-b border-slate-200/80">
-      <div class="flex items-center gap-3">
-        <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-primary transition-colors">
-          <i class="fa-solid fa-arrow-left text-[11px]"></i>
-          <span>Dashboard</span>
-        </a>
-        <span class="text-slate-300">•</span>
-        <a href="/items/search/" class="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-primary transition-colors">
-          <span>Search Catalog</span>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'my-reports' %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="My Reports">
+          <i class="fa-solid fa-list-check text-sm"></i>
         </a>
       </div>
+    </div>
+  </div>
 
-      {% if item %}
-        <div class="flex items-center gap-2 text-xs">
-          <span class="text-slate-400">Report ID:</span>
-          <span class="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">#FB-{{ item.id }}</span>
-        </div>
-      {% endif %}
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full space-y-6">
+
+    <!-- Top Navigation / Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-slate-400">
+        <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors flex items-center gap-1">
+          <i class="fa-solid fa-chart-pie text-[11px]"></i>
+          <span>Dashboard</span>
+        </a>
+        <span>/</span>
+        <a href="{% url 'my-reports' %}" class="hover:text-primary transition-colors font-medium">
+          My Reports
+        </a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold truncate max-w-[200px] sm:max-w-xs">{{ item.title }}</span>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400">Report Reference:</span>
+        <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">#FB-{{ item.pk }}</span>
+      </div>
     </div>
 
-    {% if item %}
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        <!-- Left Column: Item Imagery & Privacy Badge -->
-        <div class="lg:col-span-6 space-y-4">
-
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
-            <div class="h-80 sm:h-96 w-full bg-slate-100 relative flex items-center justify-center">
-              {% if item.image %}
-                <img id="main-item-img" src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
-              {% else %}
-                <div class="flex flex-col items-center justify-center p-8 text-center text-slate-400">
-                  <div class="w-16 h-16 rounded-2xl bg-slate-200/70 flex items-center justify-center mb-3 text-slate-500">
-                    <i class="fa-solid fa-image text-2xl"></i>
-                  </div>
-                  <span class="text-xs font-bold text-slate-600">No Image Uploaded</span>
-                  <span class="text-[11px] text-slate-400 mt-0.5">Reporter did not attach a photograph</span>
-                </div>
-              {% endif %}
-
-              <!-- Status Badge -->
-              {% if item.item_type == 'LOST' %}
-                <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-rose-500 text-white shadow-md flex items-center gap-1.5">
-                  <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
-                  <span id="item-status-text">LOST</span>
-                </span>
-              {% else %}
-                <span id="item-status-badge" class="absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase rounded-lg bg-emerald-500 text-white shadow-md flex items-center gap-1.5">
-                  <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
-                  <span id="item-status-text">FOUND</span>
-                </span>
-              {% endif %}
-
-              <!-- Category Badge -->
-              <span id="item-category-badge" class="absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-900/80 text-white backdrop-blur-md">
-                {{ item.get_category_display }}
-              </span>
-            </div>
-          </div>
-
-          {% if item.image %}
-            <div class="flex items-center gap-3">
-              <div class="p-1 bg-white border-2 border-primary rounded-xl overflow-hidden shadow-xs w-20">
-                <img src="{{ item.image.url }}" alt="Primary view" class="w-full h-14 object-cover rounded-lg">
-              </div>
-              <span class="text-xs text-slate-400">Original uploaded item image</span>
-            </div>
-          {% endif %}
-
-          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
-            <i class="fa-solid fa-shield-halved text-emerald-600 text-sm shrink-0 mt-0.5"></i>
-            <div>
-              <span class="font-bold text-navy block">Privacy-First Protection</span>
-              <p class="mt-0.5 text-slate-500 leading-relaxed">
-                Contact information, private markings, and serial numbers are strictly secured. Claims must undergo challenge verification before physical custody is released.
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Right Column: Item Information & Actions -->
-        <div class="lg:col-span-6 space-y-6">
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-            <div>
-              <div class="flex items-center gap-2 text-xs text-slate-500 mb-1.5">
-                <span>Category: <strong id="detail-category" class="text-navy">{{ item.get_category_display }}</strong></span>
-                {% if item.brand %}
-                  <span>•</span>
-                  <span>Brand: <strong id="detail-brand" class="text-navy">{{ item.brand }}</strong></span>
-                {% endif %}
-              </div>
-              <h1 id="detail-title" class="text-2xl font-extrabold font-heading text-navy leading-tight">
-                {{ item.title }}
-              </h1>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
-              <div>
-                <span class="text-[10px] text-slate-400 font-semibold block">Primary Color</span>
-                <span class="font-bold text-navy truncate block">{{ item.color|default:"Not specified" }}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 font-semibold block">{% if item.item_type == 'LOST' %}Last Seen{% else %}Location Found{% endif %}</span>
-                <span class="font-bold text-navy truncate block" title="{{ item.location }}">{{ item.location }}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 font-semibold block">Incident Date</span>
-                <span class="font-bold text-navy">{{ item.date_occurred|date:"M d, Y" }}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 font-semibold block">Current Status</span>
-                <span class="font-bold text-primary">{{ item.get_status_display }}</span>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description</h3>
-              <p id="detail-desc" class="text-xs sm:text-sm text-text-secondary leading-relaxed whitespace-pre-line bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                {{ item.description }}
-              </p>
-            </div>
-
-            <!-- Ownership / Confidential Verification Details -->
-            {% if user.is_authenticated and user == item.user or user.is_staff %}
-              <div class="p-4 bg-amber-50/80 rounded-xl border border-amber-200 text-xs space-y-2">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-amber-800 font-bold">
-                    <i class="fa-solid fa-user-shield text-sm"></i>
-                    <span>Your Private Identification Markers</span>
-                  </div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200/70 text-amber-900">Only Visible to You</span>
-                </div>
-                {% if item.identification_details %}
-                  <p class="text-slate-800 bg-white p-3 rounded-lg border border-amber-200/60 font-mono text-[11px] leading-relaxed">
-                    {{ item.identification_details }}
-                  </p>
-                {% else %}
-                  <p class="text-slate-500 italic bg-white p-2.5 rounded-lg border border-amber-200/40">No private identification markers were entered for this report.</p>
-                {% endif %}
-                <p class="text-[10px] text-amber-700/80">
-                  <i class="fa-solid fa-lock mr-1"></i> These details are kept confidential to verify ownership when someone claims this item.
-                </p>
-              </div>
+      <!-- Left Column: Item Image & Meta Details -->
+      <div class="lg:col-span-6 space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm relative group">
+          <div class="h-80 sm:h-96 w-full bg-slate-50 relative flex items-center justify-center">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
             {% else %}
-              <div class="p-3.5 bg-blue-50/70 rounded-xl border border-blue-200/80 text-xs flex items-center justify-between">
-                <div class="flex items-center gap-2 text-primary">
-                  <i class="fa-solid fa-lock text-xs"></i>
-                  <span class="font-semibold">Hidden Verification Challenge Active</span>
+              <div class="flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-3 text-slate-400 text-3xl">
+                  <i class="fa-solid fa-box-open"></i>
                 </div>
-                <span class="text-[11px] text-slate-500 font-medium">Confidential markers shielded</span>
+                <span class="text-sm font-bold text-slate-600">No Image Attached</span>
+                <span class="text-xs text-slate-400 mt-0.5">No photograph was provided with this report</span>
               </div>
             {% endif %}
 
-            <!-- Interactive Action Area -->
-            <div class="pt-2 space-y-2.5">
-              {% if user.is_authenticated and user == item.user %}
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
-                  <span class="font-bold text-navy flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                    You submitted this report
-                  </span>
-                  <span class="text-[11px] text-slate-500">Submitted on {{ item.created_at|date:"M d, Y" }}</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                  <a href="{% url 'dashboard' %}" class="py-2.5 px-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                    <i class="fa-solid fa-table-columns text-xs"></i>
-                    <span>Back to Dashboard</span>
-                  </a>
-                  <a href="/items/search/" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                    <span>Browse All Reports</span>
-                  </a>
-                </div>
+            <!-- Report Type Badge -->
+            <span class="absolute top-4 left-4 px-3.5 py-1 text-xs font-extrabold uppercase rounded-xl shadow-md flex items-center gap-1.5
+              {% if item.item_type == 'LOST' %}
+                bg-rose-500 text-white
               {% else %}
-                <button type="button" id="claim-item-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md hover:shadow-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
-                  <span>I Think This is My Item (Claim Ownership)</span>
-                </button>
+                bg-emerald-500 text-white
+              {% endif %}">
+              <i class="fa-solid fa-circle-dot text-[8px]"></i>
+              <span>{{ item.item_type }}</span>
+            </span>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                  <button type="button" id="contact-reporter-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                    <i class="fa-regular fa-paper-plane text-xs"></i>
-                    <span>Message Reporter</span>
-                  </button>
-                  <button type="button" id="flag-btn" class="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-rose-600 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
-                    <i class="fa-regular fa-flag text-xs"></i>
-                    <span>Report Issue</span>
-                  </button>
+            <!-- Status Badge -->
+            <span class="absolute top-4 right-4 px-3.5 py-1 text-xs font-bold rounded-xl shadow-md backdrop-blur-md
+              {% if item.status == 'ACTIVE' %}
+                bg-amber-500/90 text-white
+              {% elif item.status == 'MATCHED' %}
+                bg-primary/90 text-white
+              {% elif item.status == 'CLAIMED' %}
+                bg-cyan-600/90 text-white
+              {% elif item.status == 'RETURNED' %}
+                bg-emerald-600/90 text-white
+              {% else %}
+                bg-slate-700/90 text-white
+              {% endif %}">
+              {{ item.get_status_display }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Audit Dates Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs text-xs space-y-2">
+          <div class="flex items-center justify-between text-slate-500">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-regular fa-clock text-slate-400"></i>
+              <span>Created At:</span>
+            </span>
+            <span class="font-semibold text-slate-800">{{ item.created_at|date:"d F Y, H:i" }}</span>
+          </div>
+          <div class="flex items-center justify-between text-slate-500 pt-2 border-t border-slate-100">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+              <span>Updated At:</span>
+            </span>
+            <span class="font-semibold text-slate-800">{{ item.updated_at|date:"d F Y, H:i" }}</span>
+          </div>
+        </div>
+
+        <!-- Potential Matches Section (Clean Empty State) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-blue-50 text-primary flex items-center justify-center text-xs">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <h3 class="text-xs font-bold text-navy">Potential Matches</h3>
+            </div>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Matching Engine</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Potential matches will appear here when matching is available.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Column: Item Information, Private Ownership Details, and Owner Actions -->
+      <div class="lg:col-span-6 space-y-6">
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+
+          <!-- Title and Category header -->
+          <div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 mb-1.5">
+              <span>Category: <strong class="text-navy font-semibold">{{ item.get_category_display }}</strong></span>
+              {% if item.brand %}
+                <span>•</span>
+                <span>Brand: <strong class="text-navy font-semibold">{{ item.brand }}</strong></span>
+              {% endif %}
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy leading-tight">
+              {{ item.title }}
+            </h1>
+          </div>
+
+          <!-- Metadata Key-Value Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Category</span>
+              <span class="font-bold text-navy truncate block mt-0.5">{{ item.get_category_display }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Brand</span>
+              <span class="font-bold text-navy truncate block mt-0.5">{{ item.brand|default:"—" }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Color</span>
+              <span class="font-bold text-navy truncate block mt-0.5">{{ item.color|default:"—" }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Status</span>
+              <span class="font-bold text-primary truncate block mt-0.5">{{ item.get_status_display }}</span>
+            </div>
+          </div>
+
+          <!-- Incident Details (Location, Date, Time) -->
+          <div class="p-4 bg-slate-50/60 rounded-xl border border-slate-100 space-y-2.5 text-xs">
+            <div class="flex items-start gap-2.5">
+              <i class="fa-solid fa-location-dot text-slate-400 text-xs mt-0.5 shrink-0"></i>
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Location</span>
+                <span class="font-bold text-navy">{{ item.location }}</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200/60">
+              <div class="flex items-start gap-2">
+                <i class="fa-regular fa-calendar text-slate-400 text-xs mt-0.5 shrink-0"></i>
+                <div>
+                  <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">
+                    {% if item.item_type == 'LOST' %}Date Lost{% else %}Date Found{% endif %}
+                  </span>
+                  <span class="font-bold text-navy">{{ item.date_occurred|date:"d F Y" }}</span>
+                </div>
+              </div>
+
+              {% if item.time_occurred %}
+                <div class="flex items-start gap-2">
+                  <i class="fa-regular fa-clock text-slate-400 text-xs mt-0.5 shrink-0"></i>
+                  <div>
+                    <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Time</span>
+                    <span class="font-bold text-navy">{{ item.time_occurred|time:"H:i" }}</span>
+                  </div>
                 </div>
               {% endif %}
             </div>
           </div>
 
-          <!-- AI Matches Preview Placeholder -->
-          <div class="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4 relative overflow-hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-blue-100">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs shadow-xs">
-                  <i class="fa-solid fa-bolt"></i>
-                </div>
-                <div>
-                  <h3 class="text-xs font-bold text-navy">AI Neural Match Candidate Hub</h3>
-                  <span class="text-[11px] text-slate-500">Multimodal similarity scanning</span>
-                </div>
+          <!-- Description Section -->
+          <div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</h3>
+            <div class="text-xs sm:text-sm text-text-secondary leading-relaxed whitespace-pre-line bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+              {{ item.description }}
+            </div>
+          </div>
+
+          <!-- Private Ownership Details Section (Authenticated Owner Only) -->
+          <div class="p-4 bg-amber-50/90 rounded-2xl border border-amber-200/90 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-amber-900 font-bold">
+                <i class="fa-solid fa-lock text-xs text-amber-700"></i>
+                <span>Private ownership details</span>
               </div>
-              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary text-white shadow-xs">Live Engine</span>
+              <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-200/70 text-amber-900">
+                Owner Only
+              </span>
             </div>
 
-            <p class="text-xs text-text-secondary leading-relaxed">
-              FindBack's automated matching engine periodically cross-analyzes this {{ item.get_item_type_display|lower }} report against incoming {% if item.item_type == 'LOST' %}found{% else %}lost{% endif %} items using visual embeddings and geolocation proximity.
+            <p class="text-[11px] text-amber-800 font-medium">
+              These details are kept private and should not be shared publicly.
             </p>
 
-            <a href="/matches/" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-blue-200 hover:border-primary text-primary rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2">
-              <span>View Potential Matches in Match Center</span>
-              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            <div class="bg-white p-3.5 rounded-xl border border-amber-200/80 font-mono text-[11px] text-slate-800 leading-relaxed whitespace-pre-line">
+              {% if item.identification_details %}
+                {{ item.identification_details }}
+              {% else %}
+                <span class="text-slate-400 font-sans italic">No private identification details were recorded for this report.</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Owner Actions: Edit, Delete, Back -->
+          <div class="pt-3 border-t border-slate-100 space-y-3">
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+              <a href="{% url 'item-edit' item.pk %}"
+                 class="w-full sm:w-1/2 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs">
+                <i class="fa-regular fa-pen-to-square text-xs"></i>
+                <span>Edit Report</span>
+              </a>
+
+              <a href="{% url 'item-delete' item.pk %}"
+                 class="w-full sm:w-1/2 py-2.5 px-4 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-rose-600 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs">
+                <i class="fa-regular fa-trash-can text-xs"></i>
+                <span>Delete Report</span>
+              </a>
+            </div>
+
+            <a href="{% url 'my-reports' %}"
+               class="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-2 border border-slate-200">
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              <span>Back to My Reports</span>
             </a>
           </div>
 
         </div>
 
       </div>
-    {% else %}
-      <!-- Empty State when item is not found -->
-      <div class="text-center py-16 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm max-w-lg mx-auto space-y-4">
-        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-2xl">
-          <i class="fa-solid fa-file-circle-question"></i>
-        </div>
-        <div>
-          <h2 class="text-lg font-bold text-navy">Item Report Not Found</h2>
-          <p class="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
-            The requested report ID could not be located in the database. It may have been resolved, removed, or the link may be incomplete.
-          </p>
-        </div>
-        <div class="pt-2 flex items-center justify-center gap-3">
-          <a href="{% url 'dashboard' %}" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-colors">
-            Go to My Dashboard
-          </a>
-          <a href="/items/search/" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
-            Search All Items
-          </a>
-        </div>
-      </div>
-    {% endif %}
+
+    </div>
 
   </main>
-
-  <!-- Claim Ownership Modal -->
-  <div id="claim-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <h3 class="text-sm font-bold text-navy">Ownership Challenge</h3>
-        </div>
-        <button type="button" id="close-claim-modal" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-text-secondary leading-relaxed">
-        To initiate an ownership claim for this item, answer the security questions established by the reporter or custodian:
-      </p>
-
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">What distinct items or markings are inside?</label>
-          <input type="text" placeholder="e.g. Unique sticker, engraving, contents" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Provide serial number last 4 digits or receipt proof (if applicable)</label>
-          <input type="text" placeholder="e.g. 4481 or Purchase order receipt" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary">
-        </div>
-      </div>
-
-      <div class="pt-2 flex items-center justify-end gap-2">
-        <button type="button" id="cancel-claim-btn" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50">Cancel</button>
-        <button type="button" id="submit-claim-btn" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-dark shadow-xs">Submit Verification</button>
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}
 
 {% block footer %}{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/items.js' %}"></script>
-{% endblock %}

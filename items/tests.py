@@ -430,26 +430,293 @@ class DashboardAndDetailsViewsTest(TestCase):
     def test_item_details_view_by_owner_shows_private_markers(self):
         """Verify owner can view their submitted report and its private identification markers."""
         self.client.force_login(self.user)
-        response = self.client.get(reverse('item_details_id', kwargs={'id': self.item.id}))
+        response = self.client.get(reverse('item-detail', kwargs={'pk': self.item.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'MacBook Pro 16 Space Gray')
         self.assertContains(response, 'Library 2nd Floor Study Room')
         self.assertContains(response, 'Serial C02X12345678 and blue skull sticker')
-        self.assertContains(response, 'Your Private Identification Markers')
-        self.assertContains(response, 'You submitted this report')
+        self.assertContains(response, 'Private ownership details')
+        self.assertContains(response, 'These details are kept private and should not be shared publicly.')
 
-    def test_item_details_view_by_other_user_shields_private_markers(self):
-        """Verify other users cannot see private identification markers."""
+    def test_item_details_idor_protection_returns_404_for_other_user(self):
+        """Verify IDOR prevention: User B cannot access User A's item report (returns 404)."""
         self.client.force_login(self.other_user)
-        response = self.client.get(reverse('item_details_id', kwargs={'id': self.item.id}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'MacBook Pro 16 Space Gray')
-        self.assertNotContains(response, 'Serial C02X12345678 and blue skull sticker')
-        self.assertContains(response, 'Hidden Verification Challenge Active')
+        response = self.client.get(reverse('item-detail', kwargs={'pk': self.item.pk}))
+        self.assertEqual(response.status_code, 404)
 
-    def test_item_details_nonexistent_id_renders_empty_state(self):
-        """Verify invalid or nonexistent ID renders friendly not found page."""
+    def test_item_details_nonexistent_id_returns_404(self):
+        """Verify nonexistent item returns 404 safe error."""
         self.client.force_login(self.user)
-        response = self.client.get(reverse('item_details_id', kwargs={'id': '999999'}))
+        response = self.client.get(reverse('item-detail', kwargs={'pk': 999999}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_unauthenticated_user_redirected_to_login(self):
+        """Verify unauthenticated user attempting to view item is redirected to login."""
+        response = self.client.get(reverse('item-detail', kwargs={'pk': self.item.pk}))
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('item-detail', kwargs={'pk': self.item.pk})}")
+
+
+class MyReportsViewTest(TestCase):
+    """Test suite for the My Reports page and filtering."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='alice', password='password123')
+        self.other_user = User.objects.create_user(username='bob', password='password123')
+        self.today = timezone.now().date()
+
+        self.lost_item = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.LOST,
+            title='Lost Blue Backpack',
+            category=Item.ItemCategory.BAG,
+            location='Campus Library',
+            date_occurred=self.today,
+            description='Blue backpack lost on Monday'
+        )
+        self.found_item = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.FOUND,
+            title='Found Silver Keys',
+            category=Item.ItemCategory.KEYS,
+            location='Cafeteria',
+            date_occurred=self.today,
+            description='Found silver keychain with 3 keys'
+        )
+        self.other_user_item = Item.objects.create(
+            user=self.other_user,
+            item_type=Item.ItemType.LOST,
+            title='Bob Secret Item',
+            category=Item.ItemCategory.OTHER,
+            location='Gym',
+            date_occurred=self.today,
+            description='Belongs to Bob'
+        )
+
+    def test_my_reports_requires_login(self):
+        """Verify unauthenticated access to my-reports redirects to login."""
+        response = self.client.get(reverse('my-reports'))
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('my-reports')}")
+
+    def test_my_reports_shows_only_current_user_items(self):
+        """Verify only the logged-in user's items are displayed in My Reports."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('my-reports'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Item Report Not Found')
+        self.assertContains(response, 'Lost Blue Backpack')
+        self.assertContains(response, 'Found Silver Keys')
+        self.assertNotContains(response, 'Bob Secret Item')
+
+    def test_my_reports_filter_lost(self):
+        """Verify filtering by type=lost only shows LOST items."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('my-reports') + '?type=lost')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Lost Blue Backpack')
+        self.assertNotContains(response, 'Found Silver Keys')
+
+    def test_my_reports_filter_found(self):
+        """Verify filtering by type=found only shows FOUND items."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('my-reports') + '?type=found')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Found Silver Keys')
+        self.assertNotContains(response, 'Lost Blue Backpack')
+
+    def test_my_reports_filter_invalid_type_falls_back_to_all(self):
+        """Verify invalid query parameter ?type=random safely falls back to all items."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('my-reports') + '?type=random')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Lost Blue Backpack')
+        self.assertContains(response, 'Found Silver Keys')
+
+    def test_my_reports_empty_state(self):
+        """Verify friendly empty state when user has no reports."""
+        new_user = User.objects.create_user(username='charlie', password='password123')
+        self.client.force_login(new_user)
+        response = self.client.get(reverse('my-reports'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You haven't submitted any reports yet.")
+        self.assertContains(response, reverse('report-lost'))
+        self.assertContains(response, reverse('report-found'))
+
+
+class ItemEditViewTest(TestCase):
+    """Test suite for the Item Edit functionality."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='alice', password='password123')
+        self.other_user = User.objects.create_user(username='bob', password='password123')
+        self.today = timezone.now().date()
+        self.item = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.LOST,
+            status=Item.ItemStatus.ACTIVE,
+            title='Black Leather Wallet',
+            category=Item.ItemCategory.WALLET,
+            brand='Fossil',
+            color='Black',
+            location='Library Hall',
+            date_occurred=self.today,
+            description='Lost near reception desk',
+            identification_details='Contains library card #8821'
+        )
+
+    def test_edit_get_renders_form_with_current_data(self):
+        """Verify owner GET /items/<id>/edit/ renders form pre-filled with item data."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('item-edit', kwargs={'pk': self.item.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Black Leather Wallet')
+        self.assertContains(response, 'Fossil')
+        self.assertContains(response, 'Library Hall')
+
+    def test_edit_post_success_updates_item(self):
+        """Verify valid POST successfully updates editable fields and redirects to item-detail."""
+        self.client.force_login(self.user)
+        post_data = {
+            'title': 'Updated Brown Leather Wallet',
+            'category': Item.ItemCategory.WALLET,
+            'brand': 'Fossil Vintage',
+            'color': 'Brown',
+            'location': 'Library 1st Floor',
+            'date_occurred': self.today.isoformat(),
+            'description': 'Updated description with more details',
+            'identification_details': 'Library card #8821 and driver license'
+        }
+        response = self.client.post(reverse('item-edit', kwargs={'pk': self.item.pk}), data=post_data)
+        self.assertRedirects(response, reverse('item-detail', kwargs={'pk': self.item.pk}))
+
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.title, 'Updated Brown Leather Wallet')
+        self.assertEqual(self.item.brand, 'Fossil Vintage')
+        self.assertEqual(self.item.color, 'Brown')
+        self.assertEqual(self.item.location, 'Library 1st Floor')
+
+        messages_list = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("Your item report has been updated successfully." in m.message for m in messages_list))
+
+    def test_edit_cannot_change_item_type_or_status_or_user(self):
+        """Verify server ignores any attempt to change item_type, status, or user during edit."""
+        self.client.force_login(self.user)
+        malicious_data = {
+            'title': 'Attempted Spoof',
+            'category': Item.ItemCategory.WALLET,
+            'location': 'Library',
+            'date_occurred': self.today.isoformat(),
+            'description': 'Attempting to change type to FOUND and status to CLOSED',
+            'item_type': 'FOUND',
+            'status': 'CLOSED',
+            'user': self.other_user.id
+        }
+        response = self.client.post(reverse('item-edit', kwargs={'pk': self.item.pk}), data=malicious_data)
+        self.assertRedirects(response, reverse('item-detail', kwargs={'pk': self.item.pk}))
+
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.item_type, Item.ItemType.LOST)
+        self.assertEqual(self.item.status, Item.ItemStatus.ACTIVE)
+        self.assertEqual(self.item.user, self.user)
+
+    def test_edit_idor_protection_returns_404_for_other_user(self):
+        """Verify User B cannot access or edit User A's item (returns 404)."""
+        self.client.force_login(self.other_user)
+        response_get = self.client.get(reverse('item-edit', kwargs={'pk': self.item.pk}))
+        self.assertEqual(response_get.status_code, 404)
+
+        response_post = self.client.post(reverse('item-edit', kwargs={'pk': self.item.pk}), data={'title': 'Hacked'})
+        self.assertEqual(response_post.status_code, 404)
+        self.item.refresh_from_db()
+        self.assertNotEqual(self.item.title, 'Hacked')
+
+    def test_edit_remove_image_safely_removes_file(self):
+        """Verify checking remove_image safely deletes the file and clears image field."""
+        import os
+        test_img = create_test_image()
+        self.item.image = test_img
+        self.item.save()
+        img_path = self.item.image.path
+        self.assertTrue(os.path.exists(img_path))
+
+        self.client.force_login(self.user)
+        post_data = {
+            'title': self.item.title,
+            'category': self.item.category,
+            'location': self.item.location,
+            'date_occurred': self.item.date_occurred.isoformat(),
+            'description': self.item.description,
+            'remove_image': '1',
+        }
+        response = self.client.post(reverse('item-edit', kwargs={'pk': self.item.pk}), data=post_data)
+        self.assertRedirects(response, reverse('item-detail', kwargs={'pk': self.item.pk}))
+
+        self.item.refresh_from_db()
+        self.assertFalse(bool(self.item.image))
+        self.assertFalse(os.path.exists(img_path))
+
+
+
+class ItemDeleteViewTest(TestCase):
+    """Test suite for the Item Delete functionality."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='alice', password='password123')
+        self.other_user = User.objects.create_user(username='bob', password='password123')
+        self.today = timezone.now().date()
+        self.item = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.LOST,
+            title='Delete Me Item',
+            category=Item.ItemCategory.BAG,
+            location='Cafeteria',
+            date_occurred=self.today,
+            description='To be deleted'
+        )
+
+    def test_delete_get_renders_confirmation_without_deleting(self):
+        """Verify GET /items/<id>/delete/ shows confirmation UI and does NOT delete item."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('item-delete', kwargs={'pk': self.item.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Are you sure you want to delete this report?')
+        self.assertTrue(Item.objects.filter(pk=self.item.pk).exists())
+
+    def test_delete_post_deletes_item_and_redirects(self):
+        """Verify POST /items/<id>/delete/ successfully removes item and redirects to my-reports."""
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('item-delete', kwargs={'pk': self.item.pk}))
+        self.assertRedirects(response, reverse('my-reports'))
+        self.assertFalse(Item.objects.filter(pk=self.item.pk).exists())
+
+        messages_list = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("Your item report has been deleted." in m.message for m in messages_list))
+
+    def test_delete_idor_protection_returns_404_for_other_user(self):
+        """Verify User B cannot delete User A's item (returns 404)."""
+        self.client.force_login(self.other_user)
+        response = self.client.post(reverse('item-delete', kwargs={'pk': self.item.pk}))
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(Item.objects.filter(pk=self.item.pk).exists())
+
+    def test_delete_cleans_up_associated_image_file(self):
+        """Verify deleting an item with an image deletes the file from disk safely."""
+        import os
+        test_img = create_test_image()
+        item_with_img = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.LOST,
+            title='Item With Image File',
+            category=Item.ItemCategory.ELECTRONICS,
+            location='Library',
+            date_occurred=self.today,
+            description='Has an image file',
+            image=test_img
+        )
+        img_path = item_with_img.image.path
+        self.assertTrue(os.path.exists(img_path))
+
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('item-delete', kwargs={'pk': item_with_img.pk}))
+        self.assertRedirects(response, reverse('my-reports'))
+        self.assertFalse(os.path.exists(img_path))
+
+
