@@ -152,15 +152,67 @@ def claims_to_review(request):
 
 
 @login_required
+def admin_claims_list(request):
+    """
+    Staff-only moderation dashboard to review and manage all platform ownership claims.
+    Accessible only to staff/superusers directly on the website (without Django /admin/).
+    """
+    if not request.user.is_staff:
+        messages.error(request, "Access restricted to administrators.")
+        return redirect('dashboard')
+
+    filter_status = request.GET.get('status', 'all').upper().strip()
+    search_query = request.GET.get('q', '').strip()
+
+    all_claims = Claim.objects.select_related('item', 'claimant', 'item__user', 'reviewed_by').order_by(
+        models.Case(
+            models.When(status=Claim.Status.PENDING, then=0),
+            default=1
+        ),
+        '-created_at'
+    )
+
+    if search_query:
+        all_claims = all_claims.filter(
+            models.Q(item__title__icontains=search_query) |
+            models.Q(claimant__username__icontains=search_query) |
+            models.Q(claimant__email__icontains=search_query) |
+            models.Q(item__user__username__icontains=search_query)
+        )
+
+    if filter_status in Claim.Status.values:
+        claims = all_claims.filter(status=filter_status)
+    else:
+        claims = all_claims
+        filter_status = 'ALL'
+
+    base_unfiltered = Claim.objects.all()
+    counts = {
+        'all': base_unfiltered.count(),
+        'pending': base_unfiltered.filter(status=Claim.Status.PENDING).count(),
+        'approved': base_unfiltered.filter(status=Claim.Status.APPROVED).count(),
+        'rejected': base_unfiltered.filter(status=Claim.Status.REJECTED).count(),
+        'cancelled': base_unfiltered.filter(status=Claim.Status.CANCELLED).count(),
+    }
+
+    context = {
+        'claims': claims,
+        'filter_status': filter_status,
+        'search_query': search_query,
+        'counts': counts,
+    }
+    return render(request, 'claims/admin-claims.html', context)
+
+
+@login_required
 def review_claim(request, pk):
     """
-    Allows the reporter of a FOUND item to review an individual claim.
-    Strictly verifies item ownership to prevent IDOR / unauthorized access.
+    Allows the reporter of a FOUND item or a site administrator to review an individual claim.
     """
-    claim = get_object_or_404(Claim.objects.select_related('item', 'claimant'), pk=pk)
+    claim = get_object_or_404(Claim.objects.select_related('item', 'claimant', 'item__user', 'reviewed_by'), pk=pk)
 
-    # Only reporter/owner of the item may access this review page
-    if claim.item.user != request.user:
+    # Only reporter/owner of the item OR a staff/admin user may access this review page
+    if claim.item.user != request.user and not request.user.is_staff:
         messages.error(request, "You are not allowed to review this claim.")
         return redirect('claims-to-review')
 
@@ -170,6 +222,7 @@ def review_claim(request, pk):
         'claim': claim,
         'item': claim.item,
         'reject_form': reject_form,
+        'is_admin_reviewer': request.user.is_staff and claim.item.user != request.user,
     }
     return render(request, 'claims/review-claim.html', context)
 
@@ -182,7 +235,7 @@ def approve_claim(request, pk):
     1. Sets claim to APPROVED with reviewer and timestamp
     2. Rejects any other PENDING claims for this item
     3. Changes item status to CLAIMED
-    Strictly requires POST and reporter authorization.
+    Strictly requires POST and reporter/admin authorization.
     """
     if request.method != 'POST':
         messages.error(request, "Invalid request method.")
@@ -190,8 +243,8 @@ def approve_claim(request, pk):
 
     claim = get_object_or_404(Claim.objects.select_related('item'), pk=pk)
 
-    # Security check: Only the reporter can approve
-    if claim.item.user != request.user:
+    # Security check: Only the reporter or staff/admin can approve
+    if claim.item.user != request.user and not request.user.is_staff:
         messages.error(request, "You are not allowed to review this claim.")
         return redirect('claims-to-review')
 
@@ -204,6 +257,8 @@ def approve_claim(request, pk):
     if claim.item.item_type != Item.ItemType.FOUND or claim.item.status != Item.ItemStatus.ACTIVE:
         messages.error(request, "This item is not active or cannot be claimed.")
         return redirect('review-claim', pk=claim.pk)
+
+    is_admin = request.user.is_staff and claim.item.user != request.user
 
     with transaction.atomic():
         item = Item.objects.select_for_update().get(pk=claim.item.pk)
@@ -225,6 +280,11 @@ def approve_claim(request, pk):
         c.save()
 
         # 2. Reject other pending claims for this item
+        rejection_note = (
+            "Another ownership claim was approved for this item by site administration."
+            if is_admin
+            else "Another ownership claim was approved for this item."
+        )
         Claim.objects.filter(
             item=item,
             status=Claim.Status.PENDING
@@ -232,14 +292,15 @@ def approve_claim(request, pk):
             status=Claim.Status.REJECTED,
             reviewed_by=request.user,
             reviewed_at=now,
-            reviewer_note="Another ownership claim was approved for this item."
+            reviewer_note=rejection_note
         )
 
         # 3. Update item status to CLAIMED
         item.status = Item.ItemStatus.CLAIMED
         item.save()
 
-    messages.success(request, "Claim approved successfully.")
+    success_msg = "Claim approved successfully as administrator." if is_admin else "Claim approved successfully."
+    messages.success(request, success_msg)
     return redirect('review-claim', pk=claim.pk)
 
 
@@ -248,7 +309,7 @@ def reject_claim(request, pk):
     """
     Rejects a pending claim.
     Item remains ACTIVE.
-    Strictly requires POST and reporter authorization.
+    Strictly requires POST and reporter/admin authorization.
     """
     if request.method != 'POST':
         messages.error(request, "Invalid request method.")
@@ -256,8 +317,8 @@ def reject_claim(request, pk):
 
     claim = get_object_or_404(Claim.objects.select_related('item'), pk=pk)
 
-    # Security check: Only the reporter can reject
-    if claim.item.user != request.user:
+    # Security check: Only the reporter or staff/admin can reject
+    if claim.item.user != request.user and not request.user.is_staff:
         messages.error(request, "You are not allowed to review this claim.")
         return redirect('claims-to-review')
 
@@ -266,6 +327,7 @@ def reject_claim(request, pk):
         messages.error(request, "This claim can no longer be processed.")
         return redirect('review-claim', pk=claim.pk)
 
+    is_admin = request.user.is_staff and claim.item.user != request.user
     reviewer_note = request.POST.get('reviewer_note', '').strip()[:2000]
 
     claim.status = Claim.Status.REJECTED
@@ -274,9 +336,10 @@ def reject_claim(request, pk):
     claim.reviewer_note = reviewer_note
     claim.save()
 
-    # Item remains ACTIVE!
-    messages.success(request, "Claim rejected.")
+    success_msg = "Claim rejected by administrator." if is_admin else "Claim rejected."
+    messages.success(request, success_msg)
     return redirect('review-claim', pk=claim.pk)
+
 
 
 @login_required

@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Platform Claims Administration — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'dashboard' %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Dashboard">
+          <i class="fa-solid fa-chart-pie text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- Top Bar / Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
+          <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
+          <span>/</span>
+          <span class="text-indigo-600 font-semibold">Staff Administration</span>
+          <span>/</span>
+          <span class="text-slate-600 font-semibold">Platform Claims</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Platform Claims Administration</h1>
+          <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+            Admin Portal
+          </span>
+        </div>
+        <p class="text-xs sm:text-sm text-text-secondary mt-0.5">
+          Global moderation queue to inspect, approve, or reject ownership claims across all platform items.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-check text-slate-400 text-xs"></i>
+          <span>My Incoming Claims</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Summary Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-sm shrink-0">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold font-heading text-navy block leading-none">{{ counts.all }}</span>
+          <span class="text-[11px] text-slate-500 font-medium">Total Claims</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-amber-200 bg-amber-50/20 shadow-xs flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shrink-0">
+          <i class="fa-regular fa-clock"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold font-heading text-amber-700 block leading-none">{{ counts.pending }}</span>
+          <span class="text-[11px] text-amber-900 font-medium">Pending Moderation</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-emerald-200 bg-emerald-50/20 shadow-xs flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold font-heading text-emerald-700 block leading-none">{{ counts.approved }}</span>
+          <span class="text-[11px] text-emerald-900 font-medium">Approved Claims</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-rose-200 bg-rose-50/20 shadow-xs flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-sm shrink-0">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold font-heading text-rose-700 block leading-none">{{ counts.rejected }}</span>
+          <span class="text-[11px] text-rose-900 font-medium">Rejected Claims</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter and Search Toolbar -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+      <!-- Status Filter Tabs -->
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <a href="{% url 'admin-claims' %}?status=all{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_status == 'ALL' %}bg-primary text-white shadow-xs{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+          <span>All Claims</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-full {% if filter_status == 'ALL' %}bg-white/20 text-white{% else %}bg-slate-100 text-slate-600{% endif %}">
+            {{ counts.all }}
+          </span>
+        </a>
+
+        <a href="{% url 'admin-claims' %}?status=pending{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_status == 'PENDING' %}bg-amber-500 text-white shadow-xs{% else %}text-slate-600 hover:bg-amber-50 hover:text-amber-700{% endif %}">
+          <span>Pending</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-full {% if filter_status == 'PENDING' %}bg-white/20 text-white{% else %}bg-amber-100 text-amber-800{% endif %}">
+            {{ counts.pending }}
+          </span>
+        </a>
+
+        <a href="{% url 'admin-claims' %}?status=approved{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_status == 'APPROVED' %}bg-emerald-600 text-white shadow-xs{% else %}text-slate-600 hover:bg-emerald-50 hover:text-emerald-700{% endif %}">
+          <span>Approved</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-full {% if filter_status == 'APPROVED' %}bg-white/20 text-white{% else %}bg-emerald-100 text-emerald-800{% endif %}">
+            {{ counts.approved }}
+          </span>
+        </a>
+
+        <a href="{% url 'admin-claims' %}?status=rejected{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_status == 'REJECTED' %}bg-rose-600 text-white shadow-xs{% else %}text-slate-600 hover:bg-rose-50 hover:text-rose-700{% endif %}">
+          <span>Rejected</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-full {% if filter_status == 'REJECTED' %}bg-white/20 text-white{% else %}bg-rose-100 text-rose-800{% endif %}">
+            {{ counts.rejected }}
+          </span>
+        </a>
+
+        <a href="{% url 'admin-claims' %}?status=cancelled{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2
+           {% if filter_status == 'CANCELLED' %}bg-slate-700 text-white shadow-xs{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+          <span>Cancelled</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-full {% if filter_status == 'CANCELLED' %}bg-white/20 text-white{% else %}bg-slate-100 text-slate-600{% endif %}">
+            {{ counts.cancelled }}
+          </span>
+        </a>
+      </div>
+
+      <!-- Search Input Form -->
+      <form method="GET" action="{% url 'admin-claims' %}" class="flex items-center gap-2">
+        {% if filter_status != 'ALL' %}
+          <input type="hidden" name="status" value="{{ filter_status|lower }}">
+        {% endif %}
+        <div class="relative flex-1 sm:w-64">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text"
+                 name="q"
+                 value="{{ search_query }}"
+                 placeholder="Search item, claimant, finder..."
+                 class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+        </div>
+        <button type="submit" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors">
+          Search
+        </button>
+        {% if search_query %}
+          <a href="{% url 'admin-claims' %}?status={{ filter_status|lower }}" class="p-1.5 text-slate-400 hover:text-rose-600 text-xs" title="Clear Search">
+            <i class="fa-solid fa-xmark"></i>
+          </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- Claims List -->
+    {% if claims %}
+      <div class="space-y-4">
+        {% for claim in claims %}
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:border-slate-300 transition-all space-y-4">
+
+            <!-- Card Header: Item info + Status badge + Action Button -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+
+              <div class="flex items-start gap-3.5 min-w-0 flex-1">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                  {% if claim.item.image %}
+                    <img src="{{ claim.item.image.url }}" alt="{{ claim.item.title }}" class="w-full h-full object-cover">
+                  {% else %}
+                    <i class="fa-solid fa-box-open text-slate-300 text-lg"></i>
+                  {% endif %}
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                      {{ claim.item.get_category_display }}
+                    </span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-[11px] text-slate-500 font-mono">
+                      Item #FB-{{ claim.item.pk }}
+                    </span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-[11px] text-slate-500">
+                      Reported by <strong>@{{ claim.item.user.username }}</strong>
+                    </span>
+                  </div>
+
+                  <h3 class="text-base font-bold text-navy truncate" title="{{ claim.item.title }}">
+                    <a href="{% url 'public-item-detail' claim.item.pk %}" class="hover:text-primary transition-colors">
+                      {{ claim.item.title }}
+                    </a>
+                  </h3>
+
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 mt-0.5">
+                    <span><i class="fa-solid fa-location-dot text-slate-400 text-[10px] mr-1"></i>{{ claim.item.location }}</span>
+                    <span><i class="fa-regular fa-calendar text-slate-400 text-[10px] mr-1"></i>Found: {{ claim.item.date_occurred|date:"d M Y" }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Badge & CTA -->
+              <div class="flex items-center gap-2.5 self-end md:self-center shrink-0">
+                <span class="px-3 py-1 text-xs font-bold rounded-xl shadow-xs inline-flex items-center gap-1.5
+                  {% if claim.status == 'PENDING' %}
+                    bg-amber-100 text-amber-800 border border-amber-200
+                  {% elif claim.status == 'APPROVED' %}
+                    bg-emerald-100 text-emerald-800 border border-emerald-200
+                  {% elif claim.status == 'REJECTED' %}
+                    bg-rose-100 text-rose-800 border border-rose-200
+                  {% else %}
+                    bg-slate-100 text-slate-700 border border-slate-200
+                  {% endif %}">
+                  {% if claim.status == 'PENDING' %}
+                    <i class="fa-regular fa-clock text-[10px] animate-pulse"></i>
+                  {% elif claim.status == 'APPROVED' %}
+                    <i class="fa-solid fa-circle-check text-[10px]"></i>
+                  {% elif claim.status == 'REJECTED' %}
+                    <i class="fa-solid fa-circle-xmark text-[10px]"></i>
+                  {% else %}
+                    <i class="fa-solid fa-ban text-[10px]"></i>
+                  {% endif %}
+                  <span>{{ claim.get_status_display }}</span>
+                </span>
+
+                <a href="{% url 'review-claim' claim.pk %}"
+                   class="px-4 py-2 text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-xs
+                   {% if claim.status == 'PENDING' %}
+                     bg-indigo-600 hover:bg-indigo-700 text-white
+                   {% else %}
+                     bg-slate-100 hover:bg-slate-200 text-slate-700
+                   {% endif %}">
+                  <i class="fa-solid fa-gavel text-xs"></i>
+                  <span>{% if claim.status == 'PENDING' %}Review & Decide{% else %}View Audit Details{% endif %}</span>
+                </a>
+              </div>
+
+            </div>
+
+            <!-- Card Body: Claimant Information & Statement -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
+
+              <!-- Claimant Metadata -->
+              <div class="md:col-span-4 p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Claimant Details</span>
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo text-white font-bold text-xs flex items-center justify-center shrink-0">
+                    {% if claim.claimant.first_name %}
+                      {{ claim.claimant.first_name|first|upper }}{{ claim.claimant.last_name|first|upper }}
+                    {% else %}
+                      {{ claim.claimant.username|slice:":2"|upper }}
+                    {% endif %}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-bold text-navy truncate">{{ claim.claimant.get_full_name|default:claim.claimant.username }}</p>
+                    <p class="text-[11px] text-slate-500 truncate">@{{ claim.claimant.username }} · {{ claim.claimant.email }}</p>
+                  </div>
+                </div>
+                <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-200/60">
+                  <span>Filed: {{ claim.created_at|date:"d M Y, H:i" }}</span>
+                </div>
+              </div>
+
+              <!-- Reason and Verification Snippet -->
+              <div class="md:col-span-8 space-y-2">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Claimant Reason</span>
+                  <p class="text-xs text-slate-700 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 line-clamp-2">
+                    {{ claim.reason }}
+                  </p>
+                </div>
+
+                {% if claim.verification_answer %}
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Verification Answer</span>
+                    <p class="text-xs text-slate-700 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 line-clamp-2">
+                      {{ claim.verification_answer }}
+                    </p>
+                  </div>
+                {% endif %}
+
+                {% if claim.reviewed_by %}
+                  <div class="p-2 bg-slate-100/70 rounded-lg text-[11px] text-slate-600 flex items-center justify-between flex-wrap gap-2">
+                    <span>
+                      Reviewed by: <strong>@{{ claim.reviewed_by.username }}</strong> on {{ claim.reviewed_at|date:"d M Y, H:i" }}
+                    </span>
+                    {% if claim.reviewer_note %}
+                      <span class="text-slate-500 italic truncate max-w-xs">"{{ claim.reviewer_note }}"</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-lg mx-auto my-8">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-navy">No claims match the selected criteria</h2>
+          <p class="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
+            {% if search_query %}
+              No results found for query "{{ search_query }}". Try refining your search terms.
+            {% elif filter_status == 'PENDING' %}
+              No pending claims requiring administrative review.
+            {% else %}
+              There are currently no claims under this status category.
+            {% endif %}
+          </p>
+        </div>
+        <div class="pt-2">
+          <a href="{% url 'admin-claims' %}" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-rotate-left text-xs"></i>
+            <span>Reset Filters</span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

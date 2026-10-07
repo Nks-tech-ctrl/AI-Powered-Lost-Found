@@ -19,13 +19,21 @@ def claims_context(request):
             claimant=request.user,
             status=Claim.Status.PENDING
         ).count()
-        return {
+        data = {
             'has_found_reports': has_found_reports,
             'pending_review_count': pending_review_count,
             'user_pending_claims_count': user_pending_claims_count,
+            'admin_pending_claims_count': 0,
         }
+        if request.user.is_staff:
+            data['admin_pending_claims_count'] = Claim.objects.filter(
+                status=Claim.Status.PENDING
+            ).count()
+        return data
     return {
         'has_found_reports': False,
         'pending_review_count': 0,
         'user_pending_claims_count': 0,
+        'admin_pending_claims_count': 0,
     }
+

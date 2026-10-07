@@ -471,3 +471,157 @@ class SecurityPrivacyAndAdminTest(TestCase):
         self.assertContains(response, 'My Claims')
         self.assertEqual(response.context['claims_to_review_pending'], 1)
         self.assertEqual(response.context['my_claims_pending'], 0)
+
+
+class AdminClaimApprovalWorkflowTest(TestCase):
+    """
+    Tests for staff/admin claim moderation and approval directly from the website (frontend).
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.staff_admin = User.objects.create_user(
+            username='staff_admin',
+            email='admin@example.com',
+            password='Password123!',
+            is_staff=True
+        )
+        self.regular_user = User.objects.create_user(
+            username='regular_member',
+            email='member@example.com',
+            password='Password123!',
+            is_staff=False
+        )
+        self.reporter = User.objects.create_user(
+            username='finder_reporter',
+            email='finder@example.com',
+            password='Password123!'
+        )
+        self.claimant_1 = User.objects.create_user(
+            username='claimant_first',
+            email='claimant1@example.com',
+            password='Password123!'
+        )
+        self.claimant_2 = User.objects.create_user(
+            username='claimant_second',
+            email='claimant2@example.com',
+            password='Password123!'
+        )
+
+        self.found_item = Item.objects.create(
+            user=self.reporter,
+            item_type=Item.ItemType.FOUND,
+            title='Found MacBook Pro 16-inch Space Black',
+            description='Found at the campus coffee shop.',
+            category=Item.ItemCategory.LAPTOP,
+            location='Campus Coffee Shop',
+            date_occurred=timezone.now().date(),
+            identification_details='Serial: C02X1234TEST; sticker of Linux penguin on bottom right',
+            status=Item.ItemStatus.ACTIVE
+        )
+
+        self.claim_1 = Claim.objects.create(
+            item=self.found_item,
+            claimant=self.claimant_1,
+            reason='I left my laptop at the table next to the window while ordering.',
+            verification_answer='It has a Linux penguin sticker on the bottom casing.',
+            status=Claim.Status.PENDING
+        )
+
+        self.claim_2 = Claim.objects.create(
+            item=self.found_item,
+            claimant=self.claimant_2,
+            reason='Lost similar macbook.',
+            status=Claim.Status.PENDING
+        )
+
+    def test_admin_claims_list_requires_staff_access(self):
+        """Anonymous and regular users cannot access the admin claims moderation queue."""
+        admin_url = reverse('admin-claims')
+
+        # Anonymous user -> redirected to login
+        response = self.client.get(admin_url)
+        self.assertRedirects(response, f"{reverse('login')}?next={admin_url}")
+
+        # Regular user -> redirected to dashboard with error
+        self.client.force_login(self.regular_user)
+        response_user = self.client.get(admin_url)
+        self.assertRedirects(response_user, reverse('dashboard'))
+
+    def test_staff_can_view_all_claims_in_admin_list(self):
+        """Staff user can view all platform claims, search, and filter by status on the website."""
+        self.client.force_login(self.staff_admin)
+        response = self.client.get(reverse('admin-claims'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Platform Claims Administration')
+        self.assertContains(response, 'Found MacBook Pro 16-inch Space Black')
+        self.assertContains(response, 'claimant_first')
+        self.assertContains(response, 'finder_reporter')
+
+        # Test status filter
+        filter_resp = self.client.get(reverse('admin-claims') + '?status=pending')
+        self.assertEqual(filter_resp.status_code, 200)
+        self.assertEqual(len(filter_resp.context['claims']), 2)
+
+        # Test search query
+        search_resp = self.client.get(reverse('admin-claims') + '?q=MacBook')
+        self.assertEqual(search_resp.status_code, 200)
+        self.assertEqual(len(search_resp.context['claims']), 2)
+
+    def test_staff_can_open_review_page_with_admin_privileges(self):
+        """Staff can open claim review page for any item and inspect private verification clues."""
+        self.client.force_login(self.staff_admin)
+        review_url = reverse('review-claim', kwargs={'pk': self.claim_1.pk})
+        response = self.client.get(review_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['is_admin_reviewer'])
+        self.assertContains(response, 'Administrator Moderation Mode')
+        # Admin can see private verification reference
+        self.assertContains(response, 'C02X1234TEST')
+        self.assertContains(response, 'Linux penguin on bottom right')
+
+    def test_staff_can_approve_claim_from_website(self):
+        """Staff can approve a pending claim on the website: item becomes CLAIMED, other claims REJECTED."""
+        self.client.force_login(self.staff_admin)
+        approve_url = reverse('approve-claim', kwargs={'pk': self.claim_1.pk})
+        response = self.client.post(approve_url)
+        self.assertRedirects(response, reverse('review-claim', kwargs={'pk': self.claim_1.pk}))
+
+        self.claim_1.refresh_from_db()
+        self.claim_2.refresh_from_db()
+        self.found_item.refresh_from_db()
+
+        self.assertEqual(self.claim_1.status, Claim.Status.APPROVED)
+        self.assertEqual(self.claim_1.reviewed_by, self.staff_admin)
+        self.assertEqual(self.found_item.status, Item.ItemStatus.CLAIMED)
+
+        # Competing pending claim is atomically rejected with admin notice
+        self.assertEqual(self.claim_2.status, Claim.Status.REJECTED)
+        self.assertIn('administration', self.claim_2.reviewer_note.lower())
+
+    def test_staff_can_reject_claim_from_website(self):
+        """Staff can reject a pending claim on the website: claim becomes REJECTED, item remains ACTIVE."""
+        self.client.force_login(self.staff_admin)
+        reject_url = reverse('reject-claim', kwargs={'pk': self.claim_2.pk})
+        response = self.client.post(reject_url, data={'reviewer_note': 'Verification answers do not match.'})
+        self.assertRedirects(response, reverse('review-claim', kwargs={'pk': self.claim_2.pk}))
+
+        self.claim_2.refresh_from_db()
+        self.found_item.refresh_from_db()
+
+        self.assertEqual(self.claim_2.status, Claim.Status.REJECTED)
+        self.assertEqual(self.claim_2.reviewed_by, self.staff_admin)
+        self.assertEqual(self.claim_2.reviewer_note, 'Verification answers do not match.')
+        self.assertEqual(self.found_item.status, Item.ItemStatus.ACTIVE)
+
+    def test_context_processor_admin_pending_badge_count(self):
+        """Context processor calculates admin_pending_claims_count for staff users."""
+        self.client.force_login(self.staff_admin)
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['admin_pending_claims_count'], 2)
+
+        self.client.force_login(self.regular_user)
+        response_reg = self.client.get(reverse('dashboard'))
+        self.assertEqual(response_reg.context['admin_pending_claims_count'], 0)
+

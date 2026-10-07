@@ -13,6 +13,9 @@ urlpatterns = [
     path('<int:pk>/approve/', views.approve_claim, name='approve-claim'),
     path('<int:pk>/reject/', views.reject_claim, name='reject-claim'),
 
+    # Admin review & moderation views (website frontend)
+    path('admin-review/', views.admin_claims_list, name='admin-claims'),
+
     # Backwards-compatibility aliases
     path('my/', views.my_claims, name='claims'),
 ]

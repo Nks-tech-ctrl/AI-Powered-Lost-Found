@@ -34,7 +34,11 @@
       <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-slate-400">
         <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
         <span>/</span>
-        <a href="{% url 'claims-to-review' %}" class="hover:text-primary transition-colors">Claims to Review</a>
+        {% if is_admin_reviewer %}
+          <a href="{% url 'admin-claims' %}" class="hover:text-primary transition-colors text-indigo-600 font-semibold">Admin Claims Queue</a>
+        {% else %}
+          <a href="{% url 'claims-to-review' %}" class="hover:text-primary transition-colors">Claims to Review</a>
+        {% endif %}
         <span>/</span>
         <span class="text-slate-800 font-semibold">Claim #{{ claim.pk }}</span>
       </nav>
@@ -51,6 +55,27 @@
       </div>
     </div>
 
+    <!-- Admin Moderation Banner -->
+    {% if is_admin_reviewer %}
+      <div class="p-4 bg-indigo-50 border border-indigo-200/90 rounded-2xl flex items-center justify-between gap-4 shadow-xs">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <div>
+            <h2 class="text-xs sm:text-sm font-bold text-indigo-950">Administrator Moderation Mode</h2>
+            <p class="text-[11px] text-indigo-800 mt-0.5">
+              You are reviewing this ownership claim with site administrator privileges. You can verify and approve or reject this claim directly from the website.
+            </p>
+          </div>
+        </div>
+        <a href="{% url 'admin-claims' %}" class="px-3 py-1.5 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold shrink-0 transition-colors hidden sm:inline-flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Admin Queue</span>
+        </a>
+      </div>
+    {% endif %}
+
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
@@ -60,10 +85,17 @@
         </p>
       </div>
 
-      <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto">
-        <i class="fa-solid fa-arrow-left text-xs"></i>
-        <span>All Incoming Claims</span>
-      </a>
+      {% if is_admin_reviewer %}
+        <a href="{% url 'admin-claims' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Admin Claims Queue</span>
+        </a>
+      {% else %}
+        <a href="{% url 'claims-to-review' %}" class="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>All Incoming Claims</span>
+        </a>
+      {% endif %}
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -72,7 +104,9 @@
       <div class="lg:col-span-5 space-y-5">
         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-            <span class="text-xs font-bold text-navy uppercase tracking-wider">Your Reported Item</span>
+            <span class="text-xs font-bold text-navy uppercase tracking-wider">
+              {% if is_admin_reviewer %}Reported Item (by @{{ item.user.username }}){% else %}Your Reported Item{% endif %}
+            </span>
             <span class="font-mono text-xs text-slate-400">#FB-{{ item.pk }}</span>
           </div>
 
@@ -126,6 +160,22 @@
                 {{ item.description }}
               </p>
             </div>
+
+            <!-- Confidential Clue Reference (Visible only to reporter and site staff reviewers) -->
+            {% if item.identification_details %}
+              <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs space-y-1">
+                <span class="text-[10px] font-bold uppercase text-amber-900 flex items-center gap-1.5">
+                  <i class="fa-solid fa-lock text-[10px] text-amber-700"></i>
+                  <span>Private Verification Reference {% if is_admin_reviewer %}(Admin Inspection){% else %}(Your Private Clues){% endif %}</span>
+                </span>
+                <p class="text-xs text-amber-950 font-mono bg-white/90 p-2.5 rounded-lg border border-amber-200/70 whitespace-pre-line leading-relaxed">
+                  {{ item.identification_details }}
+                </p>
+                <p class="text-[10px] text-amber-800 italic">
+                  Compare the claimant's submitted proof with these confidential details to confirm genuine ownership.
+                </p>
+              </div>
+            {% endif %}
           </div>
         </div>
 
@@ -133,15 +183,19 @@
         <div class="p-4 bg-blue-50/70 rounded-2xl border border-blue-100 space-y-2 text-xs">
           <div class="flex items-center gap-2 text-primary font-bold">
             <i class="fa-solid fa-lightbulb"></i>
-            <span>Reporter Verification Tips</span>
+            <span>{% if is_admin_reviewer %}Admin Verification Protocol{% else %}Reporter Verification Tips{% endif %}</span>
           </div>
           <ul class="text-slate-600 space-y-1 list-disc list-inside text-[11px] leading-relaxed">
             <li>Compare claimant's explanation with private details only the true owner would know.</li>
             <li>Approving this claim will change the item status to <strong>Claimed</strong>.</li>
             <li>Any other pending claims on this item will automatically be rejected.</li>
+            {% if is_admin_reviewer %}
+              <li class="text-indigo-700 font-medium">As an administrator, your decision is logged under your username in the audit trail.</li>
+            {% endif %}
           </ul>
         </div>
       </div>
+
 
       <!-- Right Column: Claim Details & Review Decisions -->
       <div class="lg:col-span-7 space-y-6">
@@ -249,7 +303,7 @@
                         id="approve-claim-btn"
                         class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-xs transition-colors flex items-center gap-2">
                   <i class="fa-solid fa-check text-xs"></i>
-                  <span>Approve Claim</span>
+                  <span>Approve Claim{% if is_admin_reviewer %} (as Admin){% endif %}</span>
                 </button>
               </form>
             </div>
@@ -261,7 +315,7 @@
                 <span>Reject Ownership Claim</span>
               </div>
               <p class="text-xs text-rose-800 leading-relaxed">
-                Reject if the details do not match your found item. The item will remain Active for other claims.
+                Reject if the details do not match the found item. The item will remain Active for other claims.
               </p>
 
               <form method="POST" action="{% url 'reject-claim' claim.pk %}" class="space-y-3">
@@ -276,7 +330,7 @@
                         id="reject-claim-btn"
                         class="px-5 py-2.5 bg-white hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-300 hover:border-rose-600 rounded-xl font-bold text-xs transition-all flex items-center gap-2">
                   <i class="fa-solid fa-xmark text-xs"></i>
-                  <span>Reject Claim</span>
+                  <span>Reject Claim{% if is_admin_reviewer %} (as Admin){% endif %}</span>
                 </button>
               </form>
             </div>
