@@ -1,0 +1,23 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>New Ownership Claim Submitted</h2>
+  <p>Hello {{ user.first_name|default:user.username }},</p>
+  <p>A community member has submitted an ownership claim regarding the found item you reported:</p>
+
+  <div class="details-box">
+    <p><strong>Item:</strong> {{ item.title }}</p>
+    <p><strong>Reported On:</strong> {{ item.created_at|date:"M d, Y" }}</p>
+    <p><strong>Claim Status:</strong> Under Review (Pending)</p>
+  </div>
+
+  <p>Please log in to your FindBack account to review the claim justification and verify the claimant's answers in your private review portal.</p>
+
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/claims/review/" class="btn">Review Incoming Claims</a>
+  </div>
+
+  <p style="font-size: 13px; color: #64748b;">
+    For privacy and security, verification details are kept strictly within your encrypted account portal.
+  </p>
+{% endblock %}

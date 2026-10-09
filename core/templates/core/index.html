@@ -43,18 +43,22 @@
                         community-powered reporting, and a simple, secure recovery process.
                     </p>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                        <button id="hero-report-lost-btn" type="button"
-                            class="w-full sm:w-auto px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 group">
-                            <span>Report a Lost Item</span>
-                            <i
-                                class="fa-solid fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
-                        </button>
-                        <button id="hero-found-item-btn" type="button"
-                            class="w-full sm:w-auto px-6 py-3.5 text-base font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2">
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                        <a href="{% url 'report-lost' %}" id="hero-report-lost-btn"
+                            class="w-full sm:w-auto px-5 py-3.5 text-sm sm:text-base font-semibold text-white bg-gradient-to-r from-primary to-indigo hover:from-primary-dark hover:to-indigo rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 group">
+                            <span>Report Lost Item</span>
+                            <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                        <a href="{% url 'report-found' %}" id="hero-found-item-btn"
+                            class="w-full sm:w-auto px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2">
                             <i class="fa-solid fa-hand-holding-heart text-cyan text-sm"></i>
-                            <span>I Found Something</span>
-                        </button>
+                            <span>Report Found Item</span>
+                        </a>
+                        <a href="{% url 'browse-items' %}" id="hero-browse-btn"
+                            class="w-full sm:w-auto px-5 py-3.5 text-sm sm:text-base font-semibold text-primary bg-blue-50/70 hover:bg-blue-100 border border-blue-200/80 rounded-xl shadow-xs hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            <span>Browse Items</span>
+                        </a>
                     </div>
 
                     <div class="pt-2 border-t border-slate-200/70 space-y-3">
@@ -389,6 +393,85 @@
 
             </div>
 
+        </div>
+    </section>
+
+    <!-- Recently Reported Items Section (Live Database Integration) -->
+    <section id="recent-reports" class="py-20 bg-slate-50/70 border-t border-slate-200/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-primary border border-blue-200 mb-3">
+                        <i class="fa-solid fa-satellite-dish"></i> Live Community Reports
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-navy font-heading tracking-tight">
+                        Recently Reported Items
+                    </h2>
+                    <p class="text-sm text-text-secondary mt-1">
+                        Active community listings recently lost or discovered. Help reunite owners today.
+                    </p>
+                </div>
+                <a href="{% url 'browse-items' %}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-primary font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0">
+                    <span>View Entire Catalog</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+
+            {% if recent_items %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for item in recent_items %}
+                        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group">
+                            <div>
+                                <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    {% else %}
+                                        <div class="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400">
+                                            <i class="fa-solid fa-box-open text-3xl mb-1 text-slate-300"></i>
+                                            <span class="text-[10px] font-semibold text-slate-400">No Image</span>
+                                        </div>
+                                    {% endif %}
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-md
+                                        {% if item.item_type == 'LOST' %}bg-rose-500 text-white{% else %}bg-emerald-500 text-white{% endif %}">
+                                        {% if item.item_type == 'LOST' %}Lost{% else %}Found{% endif %}
+                                    </span>
+                                    <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/70 text-white backdrop-blur-sm">
+                                        {{ item.get_category_display }}
+                                    </span>
+                                </div>
+                                <div class="p-5">
+                                    <h3 class="text-base font-bold text-navy mb-1 truncate" title="{{ item.title }}">{{ item.title }}</h3>
+                                    <p class="text-xs text-text-secondary line-clamp-2 mb-3">{{ item.description }}</p>
+                                    <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                                        <div class="flex items-center gap-2 truncate">
+                                            <i class="fa-solid fa-location-dot {% if item.item_type == 'LOST' %}text-rose-500{% else %}text-emerald-500{% endif %} w-3.5 text-center"></i>
+                                            <span class="truncate">{{ item.location }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-regular fa-clock text-slate-400 w-3.5 text-center"></i>
+                                            <span>{{ item.date_occurred|date:"M d, Y" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-5 pb-5 pt-1">
+                                <a href="{% url 'public-item-detail' item.pk %}" class="w-full py-2.5 text-xs font-bold text-primary bg-blue-50 hover:bg-primary hover:text-white rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-1.5">
+                                    <span>View Details</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center max-w-md mx-auto">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-navy">No active reports yet</h3>
+                    <p class="text-xs text-text-secondary mt-1">Be the first to report a lost or found item in your community.</p>
+                </div>
+            {% endif %}
         </div>
     </section>
 

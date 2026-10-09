@@ -1,0 +1,18 @@
+<div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-md mx-auto my-8">
+  <div class="w-16 h-16 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-2xl">
+    <i class="{{ icon|default:'fa-solid fa-inbox' }}"></i>
+  </div>
+  <div>
+    <h3 class="text-base font-bold text-navy">{{ title|default:'No records found' }}</h3>
+    <p class="text-xs text-text-secondary mt-1">
+      {{ message|default:'There are no items to display at this time.' }}
+    </p>
+  </div>
+  {% if action_url and action_label %}
+    <div class="pt-2">
+      <a href="{{ action_url }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-colors">
+        <span>{{ action_label }}</span>
+      </a>
+    </div>
+  {% endif %}
+</div>

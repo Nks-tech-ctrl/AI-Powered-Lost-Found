@@ -1,0 +1,21 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>Update on Your Ownership Claim</h2>
+  <p>Hello {{ user.first_name|default:user.username }},</p>
+  <p>The ownership claim you submitted for the item below was reviewed and has not been approved at this time:</p>
+
+  <div class="details-box">
+    <p><strong>Item:</strong> {{ item.title }}</p>
+    {% if reviewer_note %}
+    <p><strong>Reviewer Note:</strong> {{ reviewer_note }}</p>
+    {% endif %}
+    <p><strong>Status:</strong> Not Approved</p>
+  </div>
+
+  <p>If you believe this was an error or you have additional distinguishing details, you can submit a new inquiry or check other reported found items in the public catalog.</p>
+
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/items/" class="btn">Browse Community Items</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>Your Claim Has Been Approved!</h2>
+  <p>Hello {{ user.first_name|default:user.username }},</p>
+  <p>Great news! Your ownership claim has been verified and approved:</p>
+
+  <div class="details-box">
+    <p><strong>Item:</strong> {{ item.title }}</p>
+    <p><strong>Category:</strong> {{ item.get_category_display }}</p>
+    <p><strong>Status:</strong> Approved</p>
+  </div>
+
+  <p>You can view the full details and claim confirmation in your claims dashboard.</p>
+
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/claims/" class="btn">View My Claims</a>
+  </div>
+
+  <p style="font-size: 13px; color: #64748b;">
+    Thank you for using FindBack to recover your lost belongings.
+  </p>
+{% endblock %}

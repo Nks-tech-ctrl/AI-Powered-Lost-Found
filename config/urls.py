@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from items import views as item_views
+from admin_dashboard import views as admin_views
 
 urlpatterns = [
     # Universal wildcard redirects for any relative or legacy .html paths (checked first)
@@ -17,6 +18,7 @@ urlpatterns = [
     re_path(r'.*item-details\.html$', RedirectView.as_view(url='/items/details/', permanent=False)),
     re_path(r'.*matches\.html$', RedirectView.as_view(url='/matches/', permanent=False)),
     re_path(r'.*claims\.html$', RedirectView.as_view(url='/claims/', permanent=False)),
+    re_path(r'.*notifications\.html$', RedirectView.as_view(url='/notifications/', permanent=False)),
     re_path(r'.*index\.html$', RedirectView.as_view(url='/', permanent=False)),
 
     # Core and App routing
@@ -27,6 +29,9 @@ urlpatterns = [
     path('items/', include('items.urls')),
     path('matches/', include('matches.urls')),
     path('claims/', include('claims.urls')),
+    path('notifications/', include('notifications.urls')),
+    path('admin-dashboard/', include('admin_dashboard.urls')),
+    path('api/updates/', admin_views.poll_updates_api, name='api-poll-updates'),
 ]
 
 if settings.DEBUG:

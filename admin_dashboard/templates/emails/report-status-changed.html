@@ -1,0 +1,21 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>Status Update on Your Report</h2>
+  <p>Hello {{ user.first_name|default:user.username }},</p>
+  <p>There has been an update regarding your item report on FindBack:</p>
+
+  <div class="details-box">
+    <p><strong>Item:</strong> {{ item.title }}</p>
+    <p><strong>Status:</strong> {{ status_label|default:item.get_status_display }}</p>
+    {% if reason %}
+    <p><strong>Notes:</strong> {{ reason }}</p>
+    {% endif %}
+  </div>
+
+  <p>You can review your updated report anytime in your reports portal.</p>
+
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/items/my-reports/" class="btn">View My Reports</a>
+  </div>
+{% endblock %}

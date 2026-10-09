@@ -1,0 +1,236 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header & Date Filters -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight font-heading">Platform Overview</h1>
+      <p class="text-sm text-slate-500">Live metrics, community reports, verification status, and audit activity.</p>
+    </div>
+
+    <!-- Date Range Filter Tabs -->
+    <div class="inline-flex rounded-lg bg-slate-200 p-1 text-xs font-semibold text-slate-600">
+      <a href="?date_range=all" class="px-3 py-1.5 rounded-md transition {% if filter_date == 'all' %}bg-white text-blue-600 shadow-sm{% endif %}">All Time</a>
+      <a href="?date_range=today" class="px-3 py-1.5 rounded-md transition {% if filter_date == 'today' %}bg-white text-blue-600 shadow-sm{% endif %}">Today</a>
+      <a href="?date_range=7days" class="px-3 py-1.5 rounded-md transition {% if filter_date == '7days' %}bg-white text-blue-600 shadow-sm{% endif %}">Last 7 Days</a>
+      <a href="?date_range=30days" class="px-3 py-1.5 rounded-md transition {% if filter_date == '30days' %}bg-white text-blue-600 shadow-sm{% endif %}">Last 30 Days</a>
+    </div>
+  </div>
+
+  <!-- Priority Alert if Moderation Queue Has Items -->
+  {% if pending_moderation_items > 0 %}
+  <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-sm font-semibold text-amber-900">Items Pending Staff Moderation</h4>
+        <p class="text-xs text-amber-700">{{ pending_moderation_items }} report(s) are currently flagged, pending review, or hidden from the catalog.</p>
+      </div>
+    </div>
+    <a href="{% url 'admin_dashboard:moderation-queue' %}" class="px-3 py-1.5 text-xs font-semibold text-amber-900 bg-amber-200 hover:bg-amber-300 rounded-lg transition">
+      Inspect Queue &rarr;
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Primary Metric Cards (4 Grid) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Total Registered Users -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Users</span>
+        <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-users"></i>
+        </span>
+      </div>
+      <div class="mt-3 flex items-baseline justify-between">
+        <span class="text-2xl font-bold font-heading text-slate-900">{{ total_users }}</span>
+        <span class="text-xs text-slate-500">{{ active_users }} active</span>
+      </div>
+    </div>
+
+    <!-- Active Reports -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Reports</span>
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </span>
+      </div>
+      <div class="mt-3 flex items-baseline justify-between">
+        <span class="text-2xl font-bold font-heading text-slate-900">{{ active_items }}</span>
+        <span class="text-xs text-slate-500">{{ total_lost }} Lost / {{ total_found }} Found</span>
+      </div>
+    </div>
+
+    <!-- Claims Pending Review -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pending Claims</span>
+        <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-hand-holding-hand"></i>
+        </span>
+      </div>
+      <div class="mt-3 flex items-baseline justify-between">
+        <span class="text-2xl font-bold font-heading text-slate-900">{{ pending_claims }}</span>
+        <span class="text-xs text-slate-500">{{ approved_claims }} approved</span>
+      </div>
+    </div>
+
+    <!-- Email Notifications -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Email Dispatches</span>
+        <span class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-envelope"></i>
+        </span>
+      </div>
+      <div class="mt-3 flex items-baseline justify-between">
+        <span class="text-2xl font-bold font-heading text-slate-900">{{ emails_total }}</span>
+        <span class="text-xs {% if emails_failed > 0 %}text-rose-600 font-bold{% else %}text-slate-500{% endif %}">
+          {{ emails_failed }} failed
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Report Breakdown & Claim Stats -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Report Status Breakdown -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <h3 class="text-base font-bold font-heading text-slate-900 mb-4">Report Status Breakdown</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>Active Listings</span>
+          </span>
+          <span class="font-bold text-slate-900">{{ active_items }}</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+            <span>Potential Match</span>
+          </span>
+          <span class="font-bold text-slate-900">{{ matched_items }}</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span>Claimed &amp; Verified</span>
+          </span>
+          <span class="font-bold text-slate-900">{{ claimed_items }}</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <span>Returned to Owner</span>
+          </span>
+          <span class="font-bold text-slate-900">{{ returned_items }}</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <span>Closed</span>
+          </span>
+          <span class="font-bold text-slate-900">{{ closed_items }}</span>
+        </div>
+      </div>
+      <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between text-xs text-slate-500">
+        <span>Total Reports Filed:</span>
+        <span class="font-bold text-slate-800">{{ total_lost|add:total_found }}</span>
+      </div>
+    </div>
+
+    <!-- Recent Audit Logs Stream -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-bold font-heading text-slate-900">Recent Administrative Actions</h3>
+          <a href="{% url 'admin_dashboard:audit-logs-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">View Full Ledger &rarr;</a>
+        </div>
+        <div class="divide-y divide-slate-100 text-sm">
+          {% for log in recent_audits %}
+          <div class="py-2.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3 truncate">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="font-medium text-slate-800">{{ log.get_action_type_display }}</span>
+              <span class="text-xs text-slate-400 truncate">({{ log.target_model }}: {{ log.target_repr|default:log.target_object_id }})</span>
+            </div>
+            <div class="flex items-center space-x-2 text-xs text-slate-500 flex-shrink-0">
+              <span class="font-medium text-slate-700">{{ log.actor.username|default:"System" }}</span>
+              <span>&bull;</span>
+              <span>{{ log.timestamp|timesince }} ago</span>
+            </div>
+          </div>
+          {% empty %}
+          <p class="py-4 text-center text-xs text-slate-400">No administrative actions logged yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Items & Claims Tables -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Latest Reports -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Newly Reported Items</h3>
+        <a href="{% url 'admin_dashboard:items-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All Items &rarr;</a>
+      </div>
+      <div class="divide-y divide-slate-100 text-sm">
+        {% for item in recent_items %}
+        <div class="py-3 flex items-center justify-between">
+          <div>
+            <a href="{% url 'admin_dashboard:item-detail' item.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition">{{ item.title }}</a>
+            <div class="text-xs text-slate-500 flex items-center space-x-2 mt-0.5">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {% if item.item_type == 'LOST' %}bg-rose-50 text-rose-700{% else %}bg-emerald-50 text-emerald-700{% endif %}">{{ item.item_type }}</span>
+              <span>{{ item.location }}</span>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400">{{ item.created_at|date:"M d" }}</span>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-400 text-center py-4">No recent reports.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Latest Claims -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Recent Ownership Claims</h3>
+        <a href="{% url 'admin_dashboard:claims-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All Claims &rarr;</a>
+      </div>
+      <div class="divide-y divide-slate-100 text-sm">
+        {% for claim in recent_claims %}
+        <div class="py-3 flex items-center justify-between">
+          <div>
+            <a href="{% url 'admin_dashboard:claim-detail' claim.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition">{{ claim.item.title }}</a>
+            <div class="text-xs text-slate-500 flex items-center space-x-2 mt-0.5">
+              <span>By: <strong>{{ claim.claimant.username }}</strong></span>
+              <span>&bull;</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold
+                {% if claim.status == 'PENDING' %}bg-amber-50 text-amber-700
+                {% elif claim.status == 'APPROVED' %}bg-emerald-50 text-emerald-700
+                {% else %}bg-slate-100 text-slate-600{% endif %}">{{ claim.status }}</span>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400">{{ claim.created_at|date:"M d" }}</span>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-400 text-center py-4">No claims recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

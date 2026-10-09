@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>Hello, {{ user.first_name|default:user.username }}</h2>
+  <p>{{ message|default:"You have received a new notification on your FindBack account." }}</p>
+
+  {% if item %}
+  <div class="details-box">
+    <p><strong>Item:</strong> {{ item.title }}</p>
+    <p><strong>Category:</strong> {{ item.get_category_display }}</p>
+    <p><strong>Location:</strong> {{ item.location }}</p>
+  </div>
+  {% endif %}
+
+  <div style="text-align: center;">
+    <a href="{{ action_url|default:site_url }}" class="btn">View on FindBack</a>
+  </div>
+
+  <p style="font-size: 13px; color: #64748b;">
+    If you did not perform this action, please log in to your account and review your security settings.
+  </p>
+{% endblock %}

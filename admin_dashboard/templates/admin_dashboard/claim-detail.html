@@ -1,0 +1,140 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Claim #{{ claim.id }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Breadcrumb -->
+  <div class="flex items-center space-x-2 text-sm text-slate-500">
+    <a href="{% url 'admin_dashboard:claims-list' %}" class="hover:text-blue-600">&larr; Back to Claims</a>
+    <span>/</span>
+    <span class="font-semibold text-slate-800">Claim #{{ claim.id }}</span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left 2 Cols: Claim Proof & Item Comparison -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Claim Status Banner -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Ownership Claim #{{ claim.id }}</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+            {% if claim.status == 'PENDING' %}bg-amber-100 text-amber-800
+            {% elif claim.status == 'APPROVED' %}bg-emerald-100 text-emerald-800
+            {% elif claim.status == 'REJECTED' %}bg-rose-100 text-rose-800
+            {% else %}bg-slate-100 text-slate-700{% endif %}">
+            Status: {{ claim.get_status_display }}
+          </span>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-xl space-y-2 border border-slate-200">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Claimant Justification &amp; Statements</h4>
+          <p class="text-sm text-slate-800 whitespace-pre-line">{{ claim.reason }}</p>
+        </div>
+
+        <!-- Verification Answer -->
+        {% if claim.verification_answer %}
+        <div class="p-4 bg-blue-50/60 rounded-xl space-y-2 border border-blue-200">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-blue-900">Claimant Verification Answers / Distinguishing Marks</h4>
+          <p class="text-sm text-blue-950 whitespace-pre-line font-mono">{{ claim.verification_answer }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Reviewer Information if already reviewed -->
+        {% if claim.reviewed_by %}
+        <div class="pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+          <p><strong>Reviewed by:</strong> {{ claim.reviewed_by.username }} on {{ claim.reviewed_at|date:"M d, Y H:i" }}</p>
+          {% if claim.reviewer_note %}
+          <p><strong>Reviewer Note:</strong> {{ claim.reviewer_note }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Associated Item Context -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Found Item Being Claimed</h3>
+
+        <div class="flex items-start space-x-4">
+          {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-20 h-20 rounded-xl object-cover border border-slate-200 flex-shrink-0">
+          {% endif %}
+          <div class="space-y-1">
+            <h4 class="text-base font-semibold text-slate-900">{{ item.title }}</h4>
+            <div class="text-xs text-slate-500 flex flex-wrap gap-2">
+              <span>Category: <strong>{{ item.get_category_display }}</strong></span>
+              <span>&bull;</span>
+              <span>Location: <strong>{{ item.location }}</strong></span>
+              <span>&bull;</span>
+              <span>Reported by: <strong>{{ item.user.username }}</strong></span>
+            </div>
+            <p class="text-xs text-slate-600 line-clamp-2 mt-1">{{ item.description }}</p>
+          </div>
+        </div>
+
+        <!-- Confidential Item Markers (Staff verification check) -->
+        <div class="p-4 bg-amber-50/60 rounded-xl border border-amber-200 text-xs">
+          <span class="font-bold text-amber-900 block mb-1">Reporter's Private Clues / Serial Numbers:</span>
+          <span class="font-mono text-amber-800">{{ item.identification_details|default:"No confidential markers recorded." }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Col: Administrative Intervention -->
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Administrative Intervention</h3>
+        <p class="text-xs text-slate-500">Normally, the original finder verifies incoming claims. If intervention is required to resolve a dispute, you may execute an administrative decision below.</p>
+
+        {% if claim.status == 'PENDING' %}
+        <form method="POST" class="space-y-4">
+          {% csrf_token %}
+          <input type="hidden" name="claim_intervention" value="1">
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Decision</label>
+            {{ form.action }}
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Mandatory Administrative Reason</label>
+            {{ form.reason }}
+          </div>
+
+          <button type="submit" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition">
+            Execute Claim Decision
+          </button>
+        </form>
+        {% else %}
+        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 text-center">
+          <i class="fa-solid fa-lock text-slate-400 mb-1 block"></i>
+          This claim has reached a final state ({{ claim.get_status_display }}). Further interventions are locked.
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Audit History -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Intervention History</h4>
+        <div class="text-xs space-y-3">
+          {% for a in audits %}
+          <div class="pb-2 border-b border-slate-100 last:border-0">
+            <div class="flex items-center justify-between font-semibold text-slate-800">
+              <span>{{ a.actor.username|default:"System" }}</span>
+              <span class="text-slate-400 font-normal">{{ a.timestamp|timesince }} ago</span>
+            </div>
+            <p class="text-slate-600 mt-0.5">{{ a.reason }}</p>
+          </div>
+          {% empty %}
+          <p class="text-slate-400">No intervention history recorded.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

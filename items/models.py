@@ -31,6 +31,12 @@ class Item(models.Model):
         RETURNED = 'RETURNED', 'Returned'
         CLOSED = 'CLOSED', 'Closed'
 
+    class ModerationStatus(models.TextChoices):
+        APPROVED = 'APPROVED', 'Approved'
+        PENDING_REVIEW = 'PENDING_REVIEW', 'Pending Review'
+        FLAGGED = 'FLAGGED', 'Flagged'
+        REJECTED = 'REJECTED', 'Rejected'
+
     class ItemCategory(models.TextChoices):
         ELECTRONICS = 'ELECTRONICS', 'Electronics'
         MOBILE = 'MOBILE', 'Mobile Phone'
@@ -115,6 +121,34 @@ class Item(models.Model):
         blank=True
     )
 
+    # Moderation & Visibility
+    is_hidden = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="If True, hides item from public catalog and search results."
+    )
+    moderation_status = models.CharField(
+        max_length=20,
+        choices=ModerationStatus.choices,
+        default=ModerationStatus.APPROVED,
+        db_index=True
+    )
+    moderation_notes = models.TextField(
+        blank=True,
+        help_text="Internal staff notes regarding moderation."
+    )
+    moderated_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='moderated_items'
+    )
+    moderated_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     # Audit timestamps
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -132,6 +166,8 @@ class Item(models.Model):
             models.Index(fields=['location']),
             models.Index(fields=['date_occurred']),
             models.Index(fields=['created_at']),
+            models.Index(fields=['is_hidden']),
+            models.Index(fields=['moderation_status']),
         ]
 
     def clean(self):

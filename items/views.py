@@ -1,8 +1,10 @@
 import os
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .models import Item
 from .forms import ItemForm
@@ -29,6 +31,11 @@ def dashboard_view(request):
     claims_to_review_pending = Claim.objects.filter(item__user=request.user, status=Claim.Status.PENDING).count()
     claims_to_review_total = Claim.objects.filter(item__user=request.user).count()
 
+    from notifications.models import Notification
+    user_notifications = Notification.objects.filter(recipient=request.user)
+    unread_notifications_count = user_notifications.filter(is_read=False).count()
+    latest_notifications = user_notifications.order_by('-created_at')[:3]
+
     context = {
         'user_items': user_items,
         'recent_items': recent_items,
@@ -49,6 +56,9 @@ def dashboard_view(request):
         'my_claims_total': my_claims_total,
         'claims_to_review_pending': claims_to_review_pending,
         'claims_to_review_total': claims_to_review_total,
+        # Notification counts & records
+        'unread_notifications_count': unread_notifications_count,
+        'latest_notifications': latest_notifications,
     }
     return render(request, 'items/dashboard.html', context)
 
@@ -254,15 +264,23 @@ report_found_view = report_found
 
 def search_view(request):
     """
-    Renders the Lost & Found search catalog with filter and query support.
-    Queries real items from the database.
+    Public Lost & Found catalog browsing and search.
+    Accessible to anonymous and authenticated users.
+    Starts with active reports only: Item.objects.filter(status=Item.ItemStatus.ACTIVE).
+    Supports:
+      - Search query 'q' across title, description, brand, color, location
+      - Filters: item_type (All, Lost, Found), category, location, date_from, date_to
+      - Sorting: newest, oldest, recently_updated via fixed mapping
+      - Pagination: 12 items per page with preserved GET parameters
     """
+    items = Item.objects.filter(
+        status=Item.ItemStatus.ACTIVE,
+        is_hidden=False,
+        moderation_status=Item.ModerationStatus.APPROVED
+    ).select_related('user')
+
+    # Search query across title, description, brand, color, location
     query = request.GET.get('q', '').strip()
-    category = request.GET.get('category', '').strip()
-    item_type = request.GET.get('type', '').strip().upper()
-
-    items = Item.objects.select_related('user').all().order_by('-created_at')
-
     if query:
         items = items.filter(
             Q(title__icontains=query) |
@@ -272,19 +290,85 @@ def search_view(request):
             Q(color__icontains=query)
         )
 
-    if category and category != 'all':
-        items = items.filter(category=category)
-
+    # Item Type filter (All, Lost, Found)
+    item_type = request.GET.get('type', '').strip().upper()
     if item_type in [Item.ItemType.LOST, Item.ItemType.FOUND]:
         items = items.filter(item_type=item_type)
+    else:
+        item_type = ''
+
+    # Category filter
+    category = request.GET.get('category', '').strip()
+    if category and category.lower() != 'all':
+        matching_cat = None
+        for cat_val, cat_label in Item.ItemCategory.choices:
+            if category.upper() == cat_val.upper() or category.lower() == cat_label.lower():
+                matching_cat = cat_val
+                break
+        if matching_cat:
+            items = items.filter(category=matching_cat)
+
+    # Location filter
+    location = request.GET.get('location', '').strip()
+    if location:
+        items = items.filter(location__icontains=location)
+
+    # Date from filter
+    date_from = request.GET.get('date_from', '').strip()
+    if date_from:
+        try:
+            parsed_date_from = datetime.date.fromisoformat(date_from)
+            items = items.filter(date_occurred__gte=parsed_date_from)
+        except ValueError:
+            date_from = ''
+
+    # Date to filter
+    date_to = request.GET.get('date_to', '').strip()
+    if date_to:
+        try:
+            parsed_date_to = datetime.date.fromisoformat(date_to)
+            items = items.filter(date_occurred__lte=parsed_date_to)
+        except ValueError:
+            date_to = ''
+
+    # Sorting with fixed mapping (never pass arbitrary user-provided ordering)
+    sort_param = request.GET.get('sort', 'newest').strip().lower()
+    SORT_MAPPING = {
+        'newest': '-created_at',
+        'oldest': 'created_at',
+        'recently_updated': '-updated_at',
+        'recent': '-created_at',
+        'name': 'title',
+    }
+    order_field = SORT_MAPPING.get(sort_param, '-created_at')
+    items = items.order_by(order_field)
+
+    total_results = items.count()
+
+    # Pagination: 12 items per page
+    paginator = Paginator(items, 12)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # Preserve GET parameters for pagination links
+    params = request.GET.copy()
+    if 'page' in params:
+        del params['page']
+    query_string = params.urlencode()
 
     context = {
-        'items': items,
+        'items': page_obj,
+        'page_obj': page_obj,
         'query': query,
         'selected_category': category,
         'selected_type': item_type,
-        'total_results': items.count(),
+        'selected_location': location,
+        'date_from': date_from,
+        'date_to': date_to,
+        'selected_sort': sort_param,
+        'total_results': total_results,
         'categories': Item.ItemCategory.choices,
+        'query_string': query_string,
     }
     return render(request, 'items/search.html', context)
 
@@ -310,6 +394,9 @@ def public_item_detail(request, pk):
     Provides ownership claim action for eligible users on FOUND items.
     """
     item = get_object_or_404(Item, pk=pk)
+    if item.is_hidden and (not request.user.is_authenticated or (request.user != item.user and not request.user.is_staff)):
+        from django.http import Http404
+        raise Http404("This item is not available.")
 
     user_claim = None
     has_pending_claim = False

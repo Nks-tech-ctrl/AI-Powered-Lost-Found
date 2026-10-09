@@ -1,0 +1,234 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}User: {{ target_user.username }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Breadcrumb & Top Bar -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-2 text-sm text-slate-500">
+      <a href="{% url 'admin_dashboard:users-list' %}" class="hover:text-blue-600">&larr; Back to Users</a>
+      <span>/</span>
+      <span class="font-semibold text-slate-800">{{ target_user.username }}</span>
+    </div>
+  </div>
+
+  <!-- User Profile Header Card -->
+  <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="flex items-center space-x-4">
+      {% if target_user.profile.profile_picture %}
+      <img src="{{ target_user.profile.profile_picture.url }}" alt="{{ target_user.username }}" class="w-16 h-16 rounded-full object-cover border border-slate-200">
+      {% else %}
+      <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-2xl font-heading">
+        {{ target_user.username|make_list|first|upper }}
+      </div>
+      {% endif %}
+      <div>
+        <h2 class="text-xl font-bold font-heading text-slate-900">{{ target_user.get_full_name|default:target_user.username }}</h2>
+        <div class="flex items-center space-x-3 text-xs text-slate-500 mt-1">
+          <span>@{{ target_user.username }}</span>
+          <span>&bull;</span>
+          <span>{{ target_user.email|default:"No email provided" }}</span>
+          <span>&bull;</span>
+          <span>Joined {{ target_user.date_joined|date:"M d, Y" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Badge & Quick Action -->
+    <div class="flex items-center space-x-3">
+      {% if target_user.is_active %}
+      <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 flex items-center space-x-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Account Active</span>
+      </span>
+      {% else %}
+      <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 flex items-center space-x-1">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        <span>Account Suspended</span>
+      </span>
+      {% endif %}
+
+      <!-- Deactivate / Activate Button triggers modal -->
+      <button onclick="document.getElementById('status-modal').classList.remove('hidden')" class="px-4 py-2 text-xs font-semibold rounded-lg border transition {% if target_user.is_active %}border-rose-300 text-rose-700 hover:bg-rose-50{% else %}border-emerald-300 text-emerald-700 hover:bg-emerald-50{% endif %}">
+        {% if target_user.is_active %}
+        <i class="fa-solid fa-user-xmark mr-1"></i> Suspend Account
+        {% else %}
+        <i class="fa-solid fa-user-check mr-1"></i> Reactivate Account
+        {% endif %}
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Details & Preferences Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold font-heading uppercase text-slate-400 tracking-wider">Contact &amp; Metadata</h3>
+      <div class="text-sm space-y-2">
+        <div>
+          <span class="text-xs text-slate-400 block">Phone</span>
+          <span class="text-slate-800">{{ target_user.profile.phone|default:"Not specified" }}</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 block">Location</span>
+          <span class="text-slate-800">{{ target_user.profile.location|default:"Not specified" }}</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 block">Bio</span>
+          <span class="text-slate-800">{{ target_user.profile.bio|default:"No bio recorded" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold font-heading uppercase text-slate-400 tracking-wider">Notification Preferences</h3>
+      <div class="text-sm space-y-2 text-slate-700">
+        <div class="flex items-center justify-between">
+          <span>Claim Notifications:</span>
+          <span class="font-bold {% if target_user.profile.claim_notifications %}text-emerald-600{% else %}text-slate-400{% endif %}">
+            {% if target_user.profile.claim_notifications %}Enabled{% else %}Disabled{% endif %}
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Report Notifications:</span>
+          <span class="font-bold {% if target_user.profile.report_notifications %}text-emerald-600{% else %}text-slate-400{% endif %}">
+            {% if target_user.profile.report_notifications %}Enabled{% else %}Disabled{% endif %}
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Match Notifications:</span>
+          <span class="font-bold {% if target_user.profile.match_notifications %}text-emerald-600{% else %}text-slate-400{% endif %}">
+            {% if target_user.profile.match_notifications %}Enabled{% else %}Disabled{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold font-heading uppercase text-slate-400 tracking-wider">Security &amp; Permissions</h3>
+      <div class="text-sm space-y-2 text-slate-700">
+        <div class="flex items-center justify-between">
+          <span>Is Staff Administrator:</span>
+          <span class="font-bold {% if target_user.is_staff %}text-blue-600{% else %}text-slate-400{% endif %}">
+            {{ target_user.is_staff|yesno:"Yes,No" }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Is Superuser:</span>
+          <span class="font-bold {% if target_user.is_superuser %}text-purple-600{% else %}text-slate-400{% endif %}">
+            {{ target_user.is_superuser|yesno:"Yes,No" }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Last Login:</span>
+          <span class="text-slate-600">{{ target_user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports & Claims Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Reports Filed by User -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <h3 class="text-base font-bold font-heading text-slate-900 mb-4">Item Reports by User ({{ user_items.count }})</h3>
+      <div class="divide-y divide-slate-100 text-sm">
+        {% for item in user_items %}
+        <div class="py-3 flex items-center justify-between">
+          <div>
+            <a href="{% url 'admin_dashboard:item-detail' item.pk %}" class="font-semibold text-slate-900 hover:text-blue-600">
+              {{ item.title }}
+            </a>
+            <div class="text-xs text-slate-500 mt-0.5 flex items-center space-x-2">
+              <span class="font-bold {% if item.item_type == 'LOST' %}text-rose-600{% else %}text-emerald-600{% endif %}">{{ item.item_type }}</span>
+              <span>&bull;</span>
+              <span>{{ item.location }}</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700">{{ item.status }}</span>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-400 text-center py-4">No reports submitted by this user.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Claims Filed by User -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <h3 class="text-base font-bold font-heading text-slate-900 mb-4">Claims Submitted by User ({{ user_claims.count }})</h3>
+      <div class="divide-y divide-slate-100 text-sm">
+        {% for claim in user_claims %}
+        <div class="py-3 flex items-center justify-between">
+          <div>
+            <a href="{% url 'admin_dashboard:claim-detail' claim.pk %}" class="font-semibold text-slate-900 hover:text-blue-600">
+              {{ claim.item.title }}
+            </a>
+            <div class="text-xs text-slate-500 mt-0.5">Filed: {{ claim.created_at|date:"M d, Y" }}</div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-xs font-semibold
+            {% if claim.status == 'PENDING' %}bg-amber-100 text-amber-800
+            {% elif claim.status == 'APPROVED' %}bg-emerald-100 text-emerald-800
+            {% else %}bg-slate-100 text-slate-600{% endif %}">{{ claim.status }}</span>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-400 text-center py-4">No claims submitted by this user.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- User Audit History -->
+  <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+    <h3 class="text-base font-bold font-heading text-slate-900 mb-4">Administrative Action History for this Account</h3>
+    <div class="divide-y divide-slate-100 text-sm">
+      {% for audit in user_audits %}
+      <div class="py-3 flex items-center justify-between">
+        <div>
+          <span class="font-semibold text-slate-800">{{ audit.get_action_type_display }}</span>
+          <span class="text-xs text-slate-500 block mt-0.5">Reason: {{ audit.reason }}</span>
+        </div>
+        <div class="text-xs text-slate-400 text-right">
+          <span>By: {{ audit.actor.username|default:"System" }}</span>
+          <span class="block">{{ audit.timestamp|date:"M d, Y H:i" }}</span>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-xs text-slate-400 text-center py-4">No administrative actions logged on this user.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Status Toggle Modal -->
+<div id="status-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+    <h3 class="text-lg font-bold font-heading text-slate-900 mb-2">
+      Confirm {% if target_user.is_active %}Suspension{% else %}Reactivation{% endif %}
+    </h3>
+    <p class="text-sm text-slate-600 mb-4">
+      {% if target_user.is_active %}
+      Suspending this account will immediately revoke login access, hide active reports, and send a security notice to the user.
+      {% else %}
+      Reactivating this account will restore full user capabilities.
+      {% endif %}
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="toggle_status" value="1">
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Administrative Reason (Required)</label>
+        {{ form.reason }}
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" onclick="document.getElementById('status-modal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold text-white rounded-lg transition {% if target_user.is_active %}bg-rose-600 hover:bg-rose-700{% else %}bg-emerald-600 hover:bg-emerald-700{% endif %}">
+          Confirm Action
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -720,3 +720,129 @@ class ItemDeleteViewTest(TestCase):
         self.assertFalse(os.path.exists(img_path))
 
 
+class PublicSearchAndBrowseViewTest(TestCase):
+    """Test suite for public browsing, search filters, sorting, and pagination."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='reporter', password='Password123!', email='secret_owner@example.com')
+        today = timezone.now().date()
+        yesterday = today - datetime.timedelta(days=1)
+        two_days_ago = today - datetime.timedelta(days=2)
+
+        # Active item 1: Lost Blue Backpack
+        self.item1 = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.LOST,
+            status=Item.ItemStatus.ACTIVE,
+            title='Blue Travel Backpack',
+            description='Wildcraft backpack lost in subway.',
+            brand='Wildcraft',
+            color='Blue',
+            category=Item.ItemCategory.BAG,
+            location='Central Subway',
+            date_occurred=two_days_ago,
+            identification_details='Contains confidential work notebook'
+        )
+
+        # Active item 2: Found Apple iPhone
+        self.item2 = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.FOUND,
+            status=Item.ItemStatus.ACTIVE,
+            title='Black Apple iPhone 13',
+            description='Found on library second floor desk.',
+            brand='Apple',
+            color='Black',
+            category=Item.ItemCategory.MOBILE,
+            location='University Library',
+            date_occurred=yesterday,
+            identification_details='Custom engraving: To John with Love'
+        )
+
+        # Inactive item: Returned Watch (must be excluded from active browse)
+        self.inactive_item = Item.objects.create(
+            user=self.user,
+            item_type=Item.ItemType.FOUND,
+            status=Item.ItemStatus.RETURNED,
+            title='Returned Gold Watch',
+            description='Returned to owner last week',
+            category=Item.ItemCategory.WATCH,
+            location='Campus Gym',
+            date_occurred=two_days_ago,
+        )
+
+    def test_public_browse_accessible_anonymously(self):
+        """Anonymous visitors can access /items/ without logging in."""
+        response = self.client.get(reverse('browse-items'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Blue Travel Backpack')
+        self.assertContains(response, 'Black Apple iPhone 13')
+        # Inactive items must not be listed in public browse
+        self.assertNotContains(response, 'Returned Gold Watch')
+
+    def test_public_browse_excludes_private_details_and_owner_email(self):
+        """Public browse catalog must NEVER expose identification_details or reporter email."""
+        response = self.client.get(reverse('browse-items'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Contains confidential work notebook')
+        self.assertNotContains(response, 'Custom engraving: To John with Love')
+        self.assertNotContains(response, 'secret_owner@example.com')
+
+    def test_search_query_matches_title_brand_color_location(self):
+        """Search query 'q' matches across title, brand, color, and location."""
+        # Search by brand
+        resp_brand = self.client.get(reverse('browse-items') + '?q=wildcraft')
+        self.assertContains(resp_brand, 'Blue Travel Backpack')
+        self.assertNotContains(resp_brand, 'Black Apple iPhone 13')
+
+        # Search by location
+        resp_loc = self.client.get(reverse('browse-items') + '?q=Library')
+        self.assertContains(resp_loc, 'Black Apple iPhone 13')
+        self.assertNotContains(resp_loc, 'Blue Travel Backpack')
+
+        # Search by color
+        resp_color = self.client.get(reverse('browse-items') + '?q=Blue')
+        self.assertContains(resp_color, 'Blue Travel Backpack')
+        self.assertNotContains(resp_color, 'Black Apple iPhone 13')
+
+    def test_filter_by_item_type(self):
+        """Filter by item_type correctly isolates LOST vs FOUND."""
+        resp_lost = self.client.get(reverse('browse-items') + '?type=LOST')
+        self.assertContains(resp_lost, 'Blue Travel Backpack')
+        self.assertNotContains(resp_lost, 'Black Apple iPhone 13')
+
+        resp_found = self.client.get(reverse('browse-items') + '?type=FOUND')
+        self.assertContains(resp_found, 'Black Apple iPhone 13')
+        self.assertNotContains(resp_found, 'Blue Travel Backpack')
+
+    def test_filter_by_category(self):
+        """Filter by category isolates matching categories."""
+        resp_cat = self.client.get(reverse('browse-items') + '?category=BAG')
+        self.assertContains(resp_cat, 'Blue Travel Backpack')
+        self.assertNotContains(resp_cat, 'Black Apple iPhone 13')
+
+    def test_filter_by_date_range(self):
+        """Filter by date_from and date_to restricts items to the date range."""
+        today = timezone.now().date()
+        yesterday = today - datetime.timedelta(days=1)
+        resp_date = self.client.get(reverse('browse-items') + f"?date_from={yesterday.isoformat()}")
+        self.assertContains(resp_date, 'Black Apple iPhone 13')
+        self.assertNotContains(resp_date, 'Blue Travel Backpack')
+
+    def test_sorting_mapping(self):
+        """Sorting with allowed sort choices works cleanly."""
+        resp_newest = self.client.get(reverse('browse-items') + '?sort=newest')
+        self.assertEqual(resp_newest.status_code, 200)
+
+        resp_oldest = self.client.get(reverse('browse-items') + '?sort=oldest')
+        self.assertEqual(resp_oldest.status_code, 200)
+
+    def test_public_item_detail_view_never_exposes_private_details(self):
+        """Public item detail route /items/view/<pk>/ never exposes identification_details or owner email."""
+        response = self.client.get(reverse('public-item-detail', kwargs={'pk': self.item1.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Blue Travel Backpack')
+        self.assertNotContains(response, 'Contains confidential work notebook')
+        self.assertNotContains(response, 'secret_owner@example.com')
+
+

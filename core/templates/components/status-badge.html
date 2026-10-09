@@ -1,0 +1,20 @@
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-xl
+  {% if status == 'ACTIVE' %}bg-amber-50 text-amber-700 border border-amber-200
+  {% elif status == 'MATCHED' %}bg-blue-50 text-primary border border-blue-200
+  {% elif status == 'CLAIMED' %}bg-cyan-50 text-cyan-700 border border-cyan-200
+  {% elif status == 'RETURNED' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+  {% elif status == 'CLOSED' %}bg-slate-100 text-slate-600 border border-slate-200
+  {% elif status == 'PENDING' %}bg-amber-50 text-amber-700 border border-amber-200
+  {% elif status == 'APPROVED' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+  {% elif status == 'REJECTED' %}bg-rose-50 text-rose-700 border border-rose-200
+  {% elif status == 'CANCELLED' %}bg-slate-100 text-slate-600 border border-slate-200
+  {% else %}bg-slate-50 text-slate-600 border border-slate-200{% endif %}">
+  <span class="w-1.5 h-1.5 rounded-full
+    {% if status == 'ACTIVE' or status == 'PENDING' %}bg-amber-500
+    {% elif status == 'MATCHED' %}bg-primary
+    {% elif status == 'CLAIMED' %}bg-cyan-500
+    {% elif status == 'RETURNED' or status == 'APPROVED' %}bg-emerald-500
+    {% elif status == 'REJECTED' %}bg-rose-500
+    {% else %}bg-slate-400{% endif %}"></span>
+  <span>{{ label|default:status }}</span>
+</span>

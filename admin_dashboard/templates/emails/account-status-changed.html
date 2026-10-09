@@ -1,0 +1,24 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+  <h2>Security Notice: Account Status Update</h2>
+  <p>Hello {{ user.first_name|default:user.username }},</p>
+  <p>This is an important administrative notice regarding your FindBack account status:</p>
+
+  <div class="details-box">
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Account Status:</strong> {% if user.is_active %}Active / Restored{% else %}Suspended / Deactivated{% endif %}</p>
+    {% if reason %}
+    <p><strong>Reason:</strong> {{ reason }}</p>
+    {% endif %}
+  </div>
+
+  {% if user.is_active %}
+  <p>Your account is fully active and you can now log in and manage your reports and claims.</p>
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/accounts/login/" class="btn">Log In to Account</a>
+  </div>
+  {% else %}
+  <p>While your account is deactivated, you will not be able to sign in, report new items, or submit claims. If you believe this action was taken in error, please contact our support team.</p>
+  {% endif %}
+{% endblock %}

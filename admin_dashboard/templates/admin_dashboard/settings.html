@@ -1,0 +1,112 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}System Settings & Diagnostics{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight font-heading">System Diagnostics &amp; Settings</h1>
+      <p class="text-sm text-slate-500">Infrastructure configuration, Channels real-time routing, and mail gateway diagnostics.</p>
+    </div>
+  </div>
+
+  <!-- Diagnostics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Messaging & WebSockets -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center space-x-3 text-blue-600">
+        <i class="fa-solid fa-satellite-dish text-xl"></i>
+        <h3 class="text-base font-bold font-heading text-slate-900">Real-Time Infrastructure</h3>
+      </div>
+      <div class="text-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Channels Backend:</span>
+          <span class="font-mono text-xs font-semibold text-slate-800">{{ diagnostics.channel_layer }}</span>
+        </div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">ASGI Application:</span>
+          <span class="font-mono text-xs font-semibold text-slate-800">config.asgi.application</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">WebSocket Endpoint:</span>
+          <span class="font-mono text-xs font-semibold text-blue-600">/ws/updates/</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email Gateway -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center space-x-3 text-indigo-600">
+        <i class="fa-solid fa-envelope-open-text text-xl"></i>
+        <h3 class="text-base font-bold font-heading text-slate-900">Email Gateway Status</h3>
+      </div>
+      <div class="text-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Email Backend:</span>
+          <span class="font-mono text-xs font-semibold text-slate-800">{{ diagnostics.email_backend }}</span>
+        </div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Default Sender:</span>
+          <span class="font-mono text-xs font-semibold text-slate-800">{{ diagnostics.default_from_email }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">Site URL Base:</span>
+          <span class="font-mono text-xs font-semibold text-slate-800">{{ diagnostics.site_url }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Database & Records -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center space-x-3 text-emerald-600">
+        <i class="fa-solid fa-database text-xl"></i>
+        <h3 class="text-base font-bold font-heading text-slate-900">Database Record Counts</h3>
+      </div>
+      <div class="text-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Total Registered Users:</span>
+          <span class="font-bold text-slate-800">{{ diagnostics.total_users }}</span>
+        </div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Total Items in Catalog:</span>
+          <span class="font-bold text-slate-800">{{ diagnostics.total_items }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">Total Claims Processed:</span>
+          <span class="font-bold text-slate-800">{{ diagnostics.total_claims }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Server Environment -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center space-x-3 text-slate-700">
+        <i class="fa-solid fa-server text-xl"></i>
+        <h3 class="text-base font-bold font-heading text-slate-900">Server Environment</h3>
+      </div>
+      <div class="text-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Debug Mode:</span>
+          <span class="font-semibold {% if diagnostics.debug_mode %}text-amber-600{% else %}text-emerald-600{% endif %}">
+            {{ diagnostics.debug_mode|yesno:"Enabled,Disabled" }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-slate-500">Language Code:</span>
+          <span class="font-mono text-xs text-slate-800">{{ diagnostics.django_version }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">Current Server Time:</span>
+          <span class="font-mono text-xs text-slate-800">{{ diagnostics.server_time|date:"Y-m-d H:i:s T" }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

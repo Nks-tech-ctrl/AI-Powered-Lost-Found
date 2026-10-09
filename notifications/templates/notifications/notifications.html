@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications — FindBack{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex flex-col lg:flex-row min-h-screen w-full">
+  {% include 'components/sidebar.html' %}
+
+  <!-- Mobile Topbar -->
+  <div class="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <span class="text-lg font-extrabold font-heading text-navy">Find<span class="text-primary">Back</span></span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'dashboard' %}" class="p-2 text-slate-600 hover:text-navy rounded-lg" title="Dashboard">
+          <i class="fa-solid fa-chart-pie text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
+
+    <!-- Header & Actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-blue-50 text-primary flex items-center justify-center text-xl shadow-xs shrink-0">
+          <i class="fa-regular fa-bell"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-navy tracking-tight">Notification Center</h1>
+          <p class="text-xs sm:text-sm text-text-secondary mt-0.5">Stay updated on report matches, ownership claims, and verifications.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        {% if unread_count > 0 %}
+          <form method="POST" action="{% url 'notifications-read-all' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl shadow-xs font-semibold text-xs sm:text-sm transition-all">
+              <i class="fa-solid fa-check-double text-primary text-xs"></i>
+              <span>Mark All as Read</span>
+            </button>
+          </form>
+        {% endif %}
+        <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition-colors">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+        <a href="{% url 'notifications' %}?status=all" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {% if filter_status == 'all' %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}">
+          All ({{ total_count }})
+        </a>
+        <a href="{% url 'notifications' %}?status=unread" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {% if filter_status == 'unread' %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}">
+          Unread ({{ unread_count }})
+        </a>
+        <a href="{% url 'notifications' %}?status=read" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {% if filter_status == 'read' %}bg-white text-navy shadow-xs{% else %}text-slate-600 hover:text-navy{% endif %}">
+          Read ({{ read_count }})
+        </a>
+      </div>
+
+      <span class="text-xs text-slate-400">
+        Showing {{ notifications|length }} of {{ total_count }} notification{{ total_count|pluralize }}
+      </span>
+    </div>
+
+    <!-- Notifications List -->
+    {% if notifications %}
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 overflow-hidden">
+        {% for notification in notifications %}
+          <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition-colors {% if not notification.is_read %}bg-blue-50/20{% endif %}">
+            
+            <!-- Type Icon -->
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm shrink-0 mt-0.5
+              {% if notification.notification_type == 'CLAIM_APPROVED' %}bg-emerald-50 text-emerald-600 border border-emerald-200/80
+              {% elif notification.notification_type == 'CLAIM_REJECTED' %}bg-rose-50 text-rose-600 border border-rose-200/80
+              {% elif notification.notification_type == 'CLAIM_SUBMITTED' %}bg-blue-50 text-primary border border-blue-200/80
+              {% elif notification.notification_type == 'CLAIM_CANCELLED' %}bg-slate-100 text-slate-600 border border-slate-200
+              {% elif notification.notification_type == 'CLAIM_SUPERSEDED' %}bg-amber-50 text-amber-600 border border-amber-200/80
+              {% else %}bg-indigo-50 text-indigo-600 border border-indigo-200/80{% endif %}">
+              
+              {% if notification.notification_type == 'CLAIM_APPROVED' %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% elif notification.notification_type == 'CLAIM_REJECTED' %}
+                <i class="fa-solid fa-circle-xmark"></i>
+              {% elif notification.notification_type == 'CLAIM_SUBMITTED' %}
+                <i class="fa-solid fa-shield-halved"></i>
+              {% elif notification.notification_type == 'CLAIM_CANCELLED' %}
+                <i class="fa-solid fa-ban"></i>
+              {% elif notification.notification_type == 'CLAIM_SUPERSEDED' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-bell"></i>
+              {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0 space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-bold text-navy truncate {% if not notification.is_read %}font-extrabold{% endif %}">
+                    {{ notification.title }}
+                  </h3>
+                  {% if not notification.is_read %}
+                    <span class="w-2 h-2 rounded-full bg-primary shrink-0" title="Unread"></span>
+                  {% endif %}
+                </div>
+                <span class="text-[11px] text-slate-400 whitespace-nowrap shrink-0">
+                  <i class="fa-regular fa-clock mr-1"></i>{{ notification.created_at|timesince }} ago
+                </span>
+              </div>
+
+              <p class="text-xs text-text-secondary leading-relaxed">
+                {{ notification.message }}
+              </p>
+
+              <!-- Action Links -->
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                {% if notification.claim %}
+                  {% if notification.item and notification.item.user == request.user %}
+                    <a href="{% url 'review-claim' notification.claim.pk %}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                      <span>Review Claim</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'my-claims' %}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                      <span>View in My Claims</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                  {% endif %}
+                {% elif notification.item %}
+                  {% if notification.item.user == request.user %}
+                    <a href="{% url 'item-detail' notification.item.pk %}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                      <span>View Report</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'public-item-detail' notification.item.pk %}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                      <span>View Item</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Action buttons (Mark as read, delete) -->
+            <div class="flex items-center gap-1 shrink-0 ml-2">
+              {% if not notification.is_read %}
+                <form method="POST" action="{% url 'notification-read' notification.pk %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="p-2 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Mark as read">
+                    <i class="fa-solid fa-check text-xs"></i>
+                  </button>
+                </form>
+              {% endif %}
+
+              <form method="POST" action="{% url 'notification-delete' notification.pk %}" onsubmit="return confirm('Delete this notification?');">
+                {% csrf_token %}
+                <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete notification">
+                  <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
+              </form>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <div class="flex items-center justify-between pt-4">
+          <div>
+            {% if page_obj.has_previous %}
+              <a href="?status={{ filter_status }}&page={{ page_obj.previous_page_number }}" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                <span>Previous</span>
+              </a>
+            {% endif %}
+          </div>
+          <span class="text-xs font-semibold text-slate-500">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+          <div>
+            {% if page_obj.has_next %}
+              <a href="?status={{ filter_status }}&page={{ page_obj.next_page_number }}" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                <span>Next</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm space-y-4 max-w-md mx-auto my-8">
+        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-primary mx-auto flex items-center justify-center text-2xl">
+          <i class="fa-regular fa-bell-slash"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-navy">No notifications</h3>
+          <p class="text-xs text-text-secondary mt-1">
+            {% if filter_status == 'unread' %}
+              You have caught up with all your notifications!
+            {% else %}
+              You don't have any notifications right now.
+            {% endif %}
+          </p>
+        </div>
+        <div class="pt-2">
+          <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold transition-colors">
+            <span>Back to Dashboard</span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </main>
+</div>
+{% endblock %}

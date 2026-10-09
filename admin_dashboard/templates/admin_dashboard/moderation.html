@@ -1,0 +1,88 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Moderation Queue{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight font-heading">Moderation Action Queue</h1>
+      <p class="text-sm text-slate-500">Reports currently flagged by users, awaiting staff review, or hidden from community view.</p>
+    </div>
+  </div>
+
+  <!-- Queue Table -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <tr>
+            <th class="px-6 py-3.5">Report</th>
+            <th class="px-6 py-3.5">Reporter</th>
+            <th class="px-6 py-3.5">Moderation Status</th>
+            <th class="px-6 py-3.5">Catalog Visibility</th>
+            <th class="px-6 py-3.5">Last Updated</th>
+            <th class="px-6 py-3.5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          {% for itm in page_obj %}
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-6 py-4">
+              <a href="{% url 'admin_dashboard:item-detail' itm.pk %}" class="font-semibold text-slate-900 hover:text-blue-600 block">
+                {{ itm.title }}
+              </a>
+              <span class="text-xs text-slate-500">{{ itm.item_type }} &bull; {{ itm.location }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <a href="{% url 'admin_dashboard:user-detail' itm.user.pk %}" class="text-slate-700 hover:text-blue-600 font-medium">
+                {{ itm.user.username }}
+              </a>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded text-xs font-bold
+                {% if itm.moderation_status == 'FLAGGED' %}bg-amber-100 text-amber-800
+                {% elif itm.moderation_status == 'REJECTED' %}bg-rose-100 text-rose-800
+                {% else %}bg-blue-100 text-blue-800{% endif %}">
+                {{ itm.get_moderation_status_display }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if itm.is_hidden %}
+              <span class="text-xs text-rose-600 font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-eye-slash"></i>
+                <span>Hidden</span>
+              </span>
+              {% else %}
+              <span class="text-xs text-emerald-600 font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-eye"></i>
+                <span>Public</span>
+              </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
+              {{ itm.updated_at|timesince }} ago
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <a href="{% url 'admin_dashboard:item-detail' itm.pk %}" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                Review Report &rarr;
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="px-6 py-12 text-center text-slate-500 text-sm">
+              <i class="fa-solid fa-circle-check text-3xl text-emerald-500 mb-2 block"></i>
+              Moderation queue is clean. No items currently flagged or hidden.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

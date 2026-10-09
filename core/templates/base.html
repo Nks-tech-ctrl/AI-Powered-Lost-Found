@@ -74,6 +74,9 @@
 
   <!-- Core Scripts -->
   <script src="{% static 'js/main.js' %}"></script>
+  {% if user.is_authenticated %}
+  <script src="{% static 'js/realtime.js' %}"></script>
+  {% endif %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

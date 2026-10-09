@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,12 +39,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Channels
+    'channels',
+
     # FindBack applications
     'core',
     'accounts',
     'items',
     'matches',
     'claims',
+    'notifications',
+    'admin_dashboard',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'claims.context_processors.claims_context',
+                'notifications.context_processors.notifications_context',
             ],
         },
     },
@@ -126,6 +133,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -140,3 +148,37 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+# ASGI & Channels Configuration
+ASGI_APPLICATION = 'config.asgi.application'
+
+import os
+
+# Channel Layer Configuration (In-Memory for dev/test; Redis configured via REDIS_URL for production)
+REDIS_URL = os.environ.get('REDIS_URL', '')
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+
+# Email Configuration
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 't')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FindBack <noreply@findback.local>')
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+

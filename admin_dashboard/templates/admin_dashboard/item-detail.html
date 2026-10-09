@@ -1,0 +1,173 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Report #{{ item.id }}: {{ item.title }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Breadcrumb -->
+  <div class="flex items-center space-x-2 text-sm text-slate-500">
+    <a href="{% url 'admin_dashboard:items-list' %}" class="hover:text-blue-600">&larr; Back to Item Reports</a>
+    <span>/</span>
+    <span class="font-semibold text-slate-800">Report #{{ item.id }}</span>
+  </div>
+
+  <!-- Item Summary & Moderation Actions -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left 2 Cols: Item Details -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center space-x-2 mb-2">
+              <span class="px-2.5 py-0.5 rounded text-xs font-bold {% if item.item_type == 'LOST' %}bg-rose-100 text-rose-800{% else %}bg-emerald-100 text-emerald-800{% endif %}">
+                {{ item.item_type }} REPORT
+              </span>
+              <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700">
+                Status: {{ item.status }}
+              </span>
+            </div>
+            <h1 class="text-2xl font-bold font-heading text-slate-900">{{ item.title }}</h1>
+            <p class="text-xs text-slate-500 mt-1">
+              Reported by <a href="{% url 'admin_dashboard:user-detail' item.user.pk %}" class="font-semibold text-blue-600 hover:underline">{{ item.user.username }}</a>
+              on {{ item.created_at|date:"M d, Y H:i" }} &bull; Last updated {{ item.updated_at|timesince }} ago
+            </p>
+          </div>
+
+          <!-- Public Link -->
+          <a href="{% url 'public-item-detail' item.pk %}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 flex items-center space-x-1 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-50">
+            <span>Public View</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
+
+        {% if item.image %}
+        <div class="rounded-xl overflow-hidden border border-slate-200 max-h-80 bg-slate-50 flex items-center justify-center">
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="max-h-80 object-contain">
+        </div>
+        {% endif %}
+
+        <!-- Public Description -->
+        <div>
+          <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Public Description</h3>
+          <p class="text-sm text-slate-700 whitespace-pre-line leading-relaxed">{{ item.description }}</p>
+        </div>
+
+        <!-- Metadata Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100 text-xs">
+          <div>
+            <span class="text-slate-400 block font-medium">Category</span>
+            <span class="font-semibold text-slate-800">{{ item.get_category_display }}</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-medium">Location</span>
+            <span class="font-semibold text-slate-800">{{ item.location }}</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-medium">Date Occurred</span>
+            <span class="font-semibold text-slate-800">{{ item.date_occurred|date:"M d, Y" }}</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-medium">Brand &amp; Color</span>
+            <span class="font-semibold text-slate-800">{{ item.brand|default:"—" }} ({{ item.color|default:"—" }})</span>
+          </div>
+        </div>
+
+        <!-- Confidential Verification Markers (Staff Only) -->
+        <div class="p-4 bg-amber-50/60 border border-amber-200 rounded-xl space-y-1">
+          <div class="flex items-center space-x-2 text-xs font-bold text-amber-900 uppercase tracking-wider">
+            <i class="fa-solid fa-lock"></i>
+            <span>Confidential Identification Details (Staff Access Only)</span>
+          </div>
+          <p class="text-xs text-amber-800 font-mono mt-1">
+            {{ item.identification_details|default:"No confidential identification markers entered by reporter." }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Associated Claims on this Item -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-base font-bold font-heading text-slate-900 mb-4">Ownership Claims on this Item ({{ claims.count }})</h3>
+        <div class="divide-y divide-slate-100 text-sm">
+          {% for claim in claims %}
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <a href="{% url 'admin_dashboard:claim-detail' claim.pk %}" class="font-semibold text-slate-900 hover:text-blue-600">
+                Claim #{{ claim.id }} by {{ claim.claimant.username }}
+              </a>
+              <span class="text-xs text-slate-500 block">Filed on {{ claim.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+            <span class="px-2.5 py-0.5 rounded text-xs font-semibold
+              {% if claim.status == 'PENDING' %}bg-amber-100 text-amber-800
+              {% elif claim.status == 'APPROVED' %}bg-emerald-100 text-emerald-800
+              {% else %}bg-slate-100 text-slate-600{% endif %}">
+              {{ claim.status }}
+            </span>
+          </div>
+          {% empty %}
+          <p class="text-xs text-slate-400 text-center py-4">No claims submitted for this item report.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Col: Moderation Controls Form -->
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Administrative Moderation</h3>
+        <p class="text-xs text-slate-500">Update report visibility or moderation status. Any changes will be audited and the user notified.</p>
+
+        <form method="POST" class="space-y-4">
+          {% csrf_token %}
+          <input type="hidden" name="update_moderation" value="1">
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Moderation Status</label>
+            {{ form.moderation_status }}
+          </div>
+
+          <div class="flex items-center space-x-2 pt-1">
+            {{ form.is_hidden }}
+            <label class="text-xs font-semibold text-slate-700">Hide from Public Catalog</label>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Internal Staff Notes</label>
+            {{ form.moderation_notes }}
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Reason for Action (Required)</label>
+            {{ form.reason }}
+          </div>
+
+          <button type="submit" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition">
+            Save Moderation Decision
+          </button>
+        </form>
+      </div>
+
+      <!-- Moderation Audit History -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Moderation Audit History</h4>
+        <div class="text-xs space-y-3">
+          {% for a in audits %}
+          <div class="pb-2 border-b border-slate-100 last:border-0">
+            <div class="flex items-center justify-between font-semibold text-slate-800">
+              <span>{{ a.actor.username|default:"System" }}</span>
+              <span class="text-slate-400 font-normal">{{ a.timestamp|timesince }} ago</span>
+            </div>
+            <p class="text-slate-600 mt-0.5">{{ a.reason }}</p>
+          </div>
+          {% empty %}
+          <p class="text-slate-400">No moderation changes logged.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

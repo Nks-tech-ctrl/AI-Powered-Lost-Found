@@ -7,6 +7,8 @@ from django.utils import timezone
 from items.models import Item
 from .models import Claim
 from .forms import ClaimForm, RejectClaimForm
+from notifications.services import create_notification
+from notifications.models import Notification
 
 
 @login_required
@@ -98,6 +100,16 @@ def submit_claim(request, pk):
                     claim.claimant = request.user
                     claim.status = Claim.Status.PENDING
                     claim.save()
+
+                    # Notify the item reporter
+                    create_notification(
+                        recipient=current_item.user,
+                        notification_type=Notification.NotificationType.CLAIM_SUBMITTED,
+                        title="New Ownership Claim",
+                        message=f"{request.user.first_name or request.user.username} submitted an ownership claim for your found item '{current_item.title}'.",
+                        item=current_item,
+                        claim=claim
+                    )
 
                 messages.success(request, "Your claim has been submitted and is waiting for verification.")
                 return redirect('my-claims')
@@ -279,7 +291,12 @@ def approve_claim(request, pk):
         c.reviewed_at = now
         c.save()
 
-        # 2. Reject other pending claims for this item
+        # 2. Collect other pending claims before rejecting to notify them
+        other_pending_claims = list(Claim.objects.filter(
+            item=item,
+            status=Claim.Status.PENDING
+        ).exclude(pk=c.pk).select_related('claimant'))
+
         rejection_note = (
             "Another ownership claim was approved for this item by site administration."
             if is_admin
@@ -298,6 +315,27 @@ def approve_claim(request, pk):
         # 3. Update item status to CLAIMED
         item.status = Item.ItemStatus.CLAIMED
         item.save()
+
+        # 4. Notify approved claimant
+        create_notification(
+            recipient=c.claimant,
+            notification_type=Notification.NotificationType.CLAIM_APPROVED,
+            title="Ownership Claim Approved",
+            message=f"Congratulations! Your ownership claim for '{item.title}' has been approved.",
+            item=item,
+            claim=c
+        )
+
+        # 5. Notify superseded claimants
+        for other_claim in other_pending_claims:
+            create_notification(
+                recipient=other_claim.claimant,
+                notification_type=Notification.NotificationType.CLAIM_SUPERSEDED,
+                title="Claim Update",
+                message=f"Another ownership claim was verified and approved for '{item.title}'. Your pending claim has been closed.",
+                item=item,
+                claim=other_claim
+            )
 
     success_msg = "Claim approved successfully as administrator." if is_admin else "Claim approved successfully."
     messages.success(request, success_msg)
@@ -336,6 +374,19 @@ def reject_claim(request, pk):
     claim.reviewer_note = reviewer_note
     claim.save()
 
+    # Notify claimant
+    reject_msg = f"Your claim for '{claim.item.title}' was reviewed and not approved."
+    if reviewer_note:
+        reject_msg += f" Note: {reviewer_note}"
+    create_notification(
+        recipient=claim.claimant,
+        notification_type=Notification.NotificationType.CLAIM_REJECTED,
+        title="Ownership Claim Rejected",
+        message=reject_msg,
+        item=claim.item,
+        claim=claim
+    )
+
     success_msg = "Claim rejected by administrator." if is_admin else "Claim rejected."
     messages.success(request, success_msg)
     return redirect('review-claim', pk=claim.pk)
@@ -367,6 +418,16 @@ def cancel_claim(request, pk):
 
     claim.status = Claim.Status.CANCELLED
     claim.save()
+
+    # Notify reporter
+    create_notification(
+        recipient=claim.item.user,
+        notification_type=Notification.NotificationType.CLAIM_CANCELLED,
+        title="Claim Cancelled",
+        message=f"The pending claim for '{claim.item.title}' was cancelled by {request.user.first_name or request.user.username}.",
+        item=claim.item,
+        claim=claim
+    )
 
     messages.success(request, "Your claim has been cancelled.")
     return redirect('my-claims')
