@@ -16,6 +16,12 @@ class ItemModerationForm(forms.Form):
         choices=Item.ModerationStatus.choices,
         widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
     )
+    item_status = forms.ChoiceField(
+        choices=Item.ItemStatus.choices,
+        required=False,
+        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'}),
+        help_text="Update business lifecycle status (e.g., Close report when authorized)."
+    )
     is_hidden = forms.BooleanField(
         required=False,
         widget=forms.CheckboxInput(attrs={'class': 'rounded text-blue-600 focus:ring-blue-500 h-4 w-4'})

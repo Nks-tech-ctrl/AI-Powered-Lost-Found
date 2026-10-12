@@ -2,10 +2,11 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q
-from django.http import JsonResponse, HttpResponseForbidden, Http404
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
@@ -86,6 +87,7 @@ def overview(request):
     recent_audits = AuditLog.objects.select_related('actor')[:8]
     recent_items = Item.objects.select_related('user')[:5]
     recent_claims = Claim.objects.select_related('item', 'claimant')[:5]
+    recent_users = User.objects.select_related('profile').order_by('-date_joined')[:5]
 
     context = {
         'total_users': total_users,
@@ -108,6 +110,7 @@ def overview(request):
         'recent_audits': recent_audits,
         'recent_items': recent_items,
         'recent_claims': recent_claims,
+        'recent_users': recent_users,
         'filter_date': filter_date,
     }
     return render(request, 'admin_dashboard/dashboard.html', context)
@@ -179,7 +182,7 @@ def user_detail(request, pk):
 
     if request.method == 'POST' and 'toggle_status' in request.POST:
         if not has_admin_permission(request.user, 'manage_users'):
-            raise HttpResponseForbidden("You do not have permission to manage user accounts.")
+            raise PermissionDenied("You do not have permission to manage user accounts.")
 
         form = UserStatusForm(request.POST)
         if form.is_valid():
@@ -253,6 +256,7 @@ def items_list(request):
             Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(location__icontains=query) |
+            Q(category__icontains=query) |
             Q(id__iexact=query)
         )
 
@@ -307,57 +311,65 @@ def item_detail(request, pk):
 
     form = ItemModerationForm(initial={
         'moderation_status': item.moderation_status,
+        'item_status': item.status,
         'is_hidden': item.is_hidden,
         'moderation_notes': item.moderation_notes,
     })
 
     if request.method == 'POST' and 'update_moderation' in request.POST:
         if not has_admin_permission(request.user, 'moderate_items'):
-            raise HttpResponseForbidden("You do not have permission to moderate item reports.")
+            raise PermissionDenied("You do not have permission to moderate item reports.")
 
         form = ItemModerationForm(request.POST)
         if form.is_valid():
             new_status = form.cleaned_data['moderation_status']
+            new_item_status = form.cleaned_data.get('item_status') or item.status
             new_hidden = form.cleaned_data['is_hidden']
             reason = form.cleaned_data['reason']
             notes = form.cleaned_data['moderation_notes']
 
             prev_state = {
                 'moderation_status': item.moderation_status,
+                'status': item.status,
                 'is_hidden': item.is_hidden,
             }
 
             with transaction.atomic():
-                item.moderation_status = new_status
-                item.is_hidden = new_hidden
-                item.moderation_notes = notes
-                item.moderated_by = request.user
-                item.moderated_at = timezone.now()
-                item.save(update_fields=['moderation_status', 'is_hidden', 'moderation_notes', 'moderated_by', 'moderated_at'])
+                locked_item = Item.objects.select_for_update().get(pk=item.pk)
+                locked_item.moderation_status = new_status
+                locked_item.status = new_item_status
+                locked_item.is_hidden = new_hidden
+                locked_item.moderation_notes = notes
+                locked_item.moderated_by = request.user
+                locked_item.moderated_at = timezone.now()
+                locked_item.save(update_fields=['moderation_status', 'status', 'is_hidden', 'moderation_notes', 'moderated_by', 'moderated_at'])
+
+                action_type = AuditLog.ActionType.ITEM_CLOSED if (new_item_status == Item.ItemStatus.CLOSED and prev_state['status'] != Item.ItemStatus.CLOSED) else AuditLog.ActionType.ITEM_MODERATED
 
                 record_audit_log(
                     actor=request.user,
-                    action_type=AuditLog.ActionType.ITEM_MODERATED,
-                    target=item,
+                    action_type=action_type,
+                    target=locked_item,
                     reason=reason,
                     previous_state=prev_state,
-                    new_state={'moderation_status': new_status, 'is_hidden': new_hidden},
+                    new_state={'moderation_status': new_status, 'status': new_item_status, 'is_hidden': new_hidden},
                     request=request
                 )
 
                 # If visibility changed or item was rejected/flagged, notify report owner
-                if prev_state['is_hidden'] != new_hidden or new_status in [Item.ModerationStatus.FLAGGED, Item.ModerationStatus.REJECTED]:
-                    notif_msg = f"Your report '{item.title}' was reviewed by platform moderation. Status: {item.get_moderation_status_display()}. Note: {reason}"
+                if prev_state['is_hidden'] != new_hidden or new_status in [Item.ModerationStatus.FLAGGED, Item.ModerationStatus.REJECTED] or prev_state['status'] != new_item_status:
+                    notif_msg = f"Your report '{locked_item.title}' was reviewed by platform moderation. Status: {locked_item.get_status_display()}, Moderation: {locked_item.get_moderation_status_display()}. Note: {reason}"
                     create_notification(
-                        recipient=item.user,
+                        recipient=locked_item.user,
                         notification_type=Notification.NotificationType.MODERATION_ACTION,
                         title="Report Moderation Notice",
                         message=notif_msg,
-                        item=item
+                        item=locked_item
                     )
-                    publish_user_event(item.user.id, 'report_updated', {
-                        'item_id': item.id,
+                    publish_user_event(locked_item.user.id, 'report_updated', {
+                        'item_id': locked_item.id,
                         'is_hidden': new_hidden,
+                        'status': new_item_status,
                         'moderation_status': new_status,
                     })
 
@@ -445,37 +457,40 @@ def claim_detail(request, pk):
 
     if request.method == 'POST' and 'claim_intervention' in request.POST:
         if not has_admin_permission(request.user, 'manage_claims'):
-            raise HttpResponseForbidden("You do not have permission to execute claim interventions.")
+            raise PermissionDenied("You do not have permission to execute claim interventions.")
 
         form = AdminClaimInterventionForm(request.POST)
         if form.is_valid():
             action = form.cleaned_data['action']
             reason = form.cleaned_data['reason']
 
-            if claim.status != Claim.Status.PENDING:
-                messages.error(request, f"Intervention denied: Claim is already in status {claim.get_status_display()}.")
-                return redirect('admin_dashboard:claim-detail', pk=pk)
-
             with transaction.atomic():
-                prev_claim_status = claim.status
-                prev_item_status = item.status
+                locked_claim = Claim.objects.select_for_update().select_related('item').get(pk=claim.pk)
+                locked_item = Item.objects.select_for_update().get(pk=locked_claim.item_id)
+
+                if locked_claim.status != Claim.Status.PENDING:
+                    messages.error(request, f"Intervention denied: Claim is already in status {locked_claim.get_status_display()}.")
+                    return redirect('admin_dashboard:claim-detail', pk=pk)
+
+                prev_claim_status = locked_claim.status
+                prev_item_status = locked_item.status
 
                 if action == 'APPROVE':
-                    claim.status = Claim.Status.APPROVED
-                    claim.reviewed_by = request.user
-                    claim.reviewed_at = timezone.now()
-                    claim.reviewer_note = f"[Admin Intervention] {reason}"
-                    claim.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'reviewer_note'])
+                    locked_claim.status = Claim.Status.APPROVED
+                    locked_claim.reviewed_by = request.user
+                    locked_claim.reviewed_at = timezone.now()
+                    locked_claim.reviewer_note = f"[Admin Intervention] {reason}"
+                    locked_claim.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'reviewer_note'])
 
                     # Mark item CLAIMED
-                    item.status = Item.ItemStatus.CLAIMED
-                    item.save(update_fields=['status'])
+                    locked_item.status = Item.ItemStatus.CLAIMED
+                    locked_item.save(update_fields=['status'])
 
                     # Auto-reject other pending claims on this item
-                    superseded_claims = Claim.objects.filter(
-                        item=item,
+                    superseded_claims = Claim.objects.select_for_update().filter(
+                        item=locked_item,
                         status=Claim.Status.PENDING
-                    ).exclude(pk=claim.pk)
+                    ).exclude(pk=locked_claim.pk)
 
                     superseded_count = 0
                     for sup_claim in superseded_claims:
@@ -489,85 +504,85 @@ def claim_detail(request, pk):
                             recipient=sup_claim.claimant,
                             notification_type=Notification.NotificationType.CLAIM_SUPERSEDED,
                             title="Notice Regarding Your Claim",
-                            message=f"Another ownership claim for '{item.title}' has been approved.",
-                            item=item,
+                            message=f"Another ownership claim for '{locked_item.title}' has been approved.",
+                            item=locked_item,
                             claim=sup_claim
                         )
                         publish_user_event(sup_claim.claimant.id, 'claim_status', {
                             'claim_id': sup_claim.id,
                             'status': 'REJECTED',
-                            'item_id': item.id,
+                            'item_id': locked_item.id,
                         })
                         superseded_count += 1
 
                     # Notify approved claimant
                     create_notification(
-                        recipient=claim.claimant,
+                        recipient=locked_claim.claimant,
                         notification_type=Notification.NotificationType.CLAIM_APPROVED,
                         title="Your Claim Has Been Approved by Administration",
-                        message=f"Your claim for '{item.title}' was approved by platform administration.",
-                        item=item,
-                        claim=claim
+                        message=f"Your claim for '{locked_item.title}' was approved by platform administration.",
+                        item=locked_item,
+                        claim=locked_claim
                     )
-                    publish_user_event(claim.claimant.id, 'claim_status', {
-                        'claim_id': claim.id,
+                    publish_user_event(locked_claim.claimant.id, 'claim_status', {
+                        'claim_id': locked_claim.id,
                         'status': 'APPROVED',
-                        'item_id': item.id,
+                        'item_id': locked_item.id,
                     })
 
                     # Notify item reporter
                     create_notification(
-                        recipient=item.user,
+                        recipient=locked_item.user,
                         notification_type=Notification.NotificationType.ITEM_STATUS_CHANGED,
                         title="Item Claimed by Admin Intervention",
-                        message=f"A claim for your found item '{item.title}' was approved by administration.",
-                        item=item,
-                        claim=claim
+                        message=f"A claim for your found item '{locked_item.title}' was approved by administration.",
+                        item=locked_item,
+                        claim=locked_claim
                     )
 
                     record_audit_log(
                         actor=request.user,
                         action_type=AuditLog.ActionType.CLAIM_APPROVED_ADMIN,
-                        target=claim,
+                        target=locked_claim,
                         reason=reason,
                         previous_state={'claim_status': prev_claim_status, 'item_status': prev_item_status},
                         new_state={'claim_status': 'APPROVED', 'item_status': 'CLAIMED', 'superseded_count': superseded_count},
                         request=request
                     )
-                    messages.success(request, f"Claim #{claim.id} approved by admin intervention. Item status updated to Claimed.")
+                    messages.success(request, f"Claim #{locked_claim.id} approved by admin intervention. Item status updated to Claimed.")
 
                 elif action == 'REJECT':
-                    claim.status = Claim.Status.REJECTED
-                    claim.reviewed_by = request.user
-                    claim.reviewed_at = timezone.now()
-                    claim.reviewer_note = f"[Admin Intervention] {reason}"
-                    claim.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'reviewer_note'])
+                    locked_claim.status = Claim.Status.REJECTED
+                    locked_claim.reviewed_by = request.user
+                    locked_claim.reviewed_at = timezone.now()
+                    locked_claim.reviewer_note = f"[Admin Intervention] {reason}"
+                    locked_claim.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'reviewer_note'])
 
                     # Notify claimant
                     create_notification(
-                        recipient=claim.claimant,
+                        recipient=locked_claim.claimant,
                         notification_type=Notification.NotificationType.CLAIM_REJECTED,
                         title="Ownership Claim Update",
-                        message=f"Your claim for '{item.title}' was reviewed and rejected by administration. Note: {reason}",
-                        item=item,
-                        claim=claim
+                        message=f"Your claim for '{locked_item.title}' was reviewed and rejected by administration. Note: {reason}",
+                        item=locked_item,
+                        claim=locked_claim
                     )
-                    publish_user_event(claim.claimant.id, 'claim_status', {
-                        'claim_id': claim.id,
+                    publish_user_event(locked_claim.claimant.id, 'claim_status', {
+                        'claim_id': locked_claim.id,
                         'status': 'REJECTED',
-                        'item_id': item.id,
+                        'item_id': locked_item.id,
                     })
 
                     record_audit_log(
                         actor=request.user,
                         action_type=AuditLog.ActionType.CLAIM_REJECTED_ADMIN,
-                        target=claim,
+                        target=locked_claim,
                         reason=reason,
                         previous_state={'claim_status': prev_claim_status},
                         new_state={'claim_status': 'REJECTED'},
                         request=request
                     )
-                    messages.success(request, f"Claim #{claim.id} rejected by admin intervention.")
+                    messages.success(request, f"Claim #{locked_claim.id} rejected by admin intervention.")
 
             return redirect('admin_dashboard:claim-detail', pk=pk)
 
@@ -631,7 +646,7 @@ def email_deliveries_list(request):
     # Retry single email action
     if request.method == 'POST' and 'retry_email_id' in request.POST:
         if not has_admin_permission(request.user, 'view_email_logs'):
-            raise HttpResponseForbidden("Missing permission to retry email deliveries.")
+            raise PermissionDenied("Missing permission to retry email deliveries.")
 
         delivery_id = request.POST.get('retry_email_id')
         delivery_to_retry = get_object_or_404(EmailDelivery, pk=delivery_id)
@@ -698,6 +713,8 @@ def audit_logs_list(request):
     """
     Searchable, filterable audit log ledger for all sensitive administrative actions.
     """
+    if not has_admin_permission(request.user, 'view_audit_logs'):
+        raise PermissionDenied("You do not have permission to view audit logs.")
     action_filter = request.GET.get('action', '').strip().upper()
     query = request.GET.get('q', '').strip()
 
@@ -738,6 +755,8 @@ def settings_view(request):
     """
     Platform configurations, system metrics, and diagnostic information.
     """
+    if not has_admin_permission(request.user, 'manage_settings'):
+        raise PermissionDenied("You do not have permission to view platform diagnostics and settings.")
     channel_layer_name = settings.CHANNEL_LAYERS.get('default', {}).get('BACKEND', 'Not Configured')
 
     diagnostics = {

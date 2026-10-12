@@ -413,3 +413,226 @@ class RealTimeWebSocketTest(TestCase):
         # Test helper functions execute without exception
         publish_user_event(self.user.id, 'test_event', {'message': 'Hello'})
         publish_admin_event('admin_event', {'metric': 42})
+
+
+class StaffGranularPermissionsTest(TestCase):
+    """
+    Validates that staff users without specific permissions are blocked with HTTP 403,
+    and staff users granted specific permissions can perform the operations.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.staff_no_perms = User.objects.create_user(
+            username='staff_basic',
+            password='Password123!',
+            email='basic@findback.local',
+            is_staff=True
+        )
+        self.staff_with_perms = User.objects.create_user(
+            username='staff_empowered',
+            password='Password123!',
+            email='empowered@findback.local',
+            is_staff=True
+        )
+        self.target_user = User.objects.create_user(
+            username='target_citizen',
+            password='Password123!',
+            email='citizen@example.com'
+        )
+        self.item = Item.objects.create(
+            user=self.target_user,
+            title='Staff Test Laptop',
+            description='Lost inside library room.',
+            category=Item.ItemCategory.LAPTOP,
+            item_type=Item.ItemType.FOUND,
+            location='Library Room 1',
+            date_occurred=datetime.date.today(),
+            identification_details='Private sticker'
+        )
+        self.claimant = User.objects.create_user(
+            username='staff_test_claimant',
+            password='Password123!',
+            email='claimant@example.com'
+        )
+        self.claim = Claim.objects.create(
+            item=self.item,
+            claimant=self.claimant,
+            reason='My laptop',
+            verification_answer='Sticker match'
+        )
+
+    def test_staff_without_manage_users_cannot_deactivate_user(self):
+        self.client.login(username='staff_basic', password='Password123!')
+        url = f'/admin-dashboard/users/{self.target_user.pk}/'
+        response = self.client.post(url, {
+            'toggle_status': '1',
+            'reason': 'Attempt by unauthorized staff.'
+        })
+        self.assertEqual(response.status_code, 403)
+        self.target_user.refresh_from_db()
+        self.assertTrue(self.target_user.is_active)
+
+    def test_staff_with_manage_users_can_deactivate_user(self):
+        perm = Permission.objects.get(codename='manage_users')
+        self.staff_with_perms.user_permissions.add(perm)
+
+        self.client.login(username='staff_empowered', password='Password123!')
+        url = f'/admin-dashboard/users/{self.target_user.pk}/'
+        response = self.client.post(url, {
+            'toggle_status': '1',
+            'reason': 'Authorized suspension by staff with manage_users permission.'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.target_user.refresh_from_db()
+        self.assertFalse(self.target_user.is_active)
+
+    def test_staff_without_moderate_items_cannot_moderate(self):
+        self.client.login(username='staff_basic', password='Password123!')
+        url = f'/admin-dashboard/items/{self.item.pk}/'
+        response = self.client.post(url, {
+            'update_moderation': '1',
+            'moderation_status': Item.ModerationStatus.FLAGGED,
+            'is_hidden': 'on',
+            'reason': 'Unauthorized moderation attempt.'
+        })
+        self.assertEqual(response.status_code, 403)
+        self.item.refresh_from_db()
+        self.assertFalse(self.item.is_hidden)
+
+    def test_staff_with_moderate_items_can_moderate_and_close(self):
+        perm = Permission.objects.get(codename='moderate_items')
+        self.staff_with_perms.user_permissions.add(perm)
+
+        self.client.login(username='staff_empowered', password='Password123!')
+        url = f'/admin-dashboard/items/{self.item.pk}/'
+        response = self.client.post(url, {
+            'update_moderation': '1',
+            'item_status': Item.ItemStatus.CLOSED,
+            'moderation_status': Item.ModerationStatus.APPROVED,
+            'is_hidden': 'off',
+            'reason': 'Closing report per owner request.'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.status, Item.ItemStatus.CLOSED)
+
+        # Verify audit log recorded ITEM_CLOSED
+        audit = AuditLog.objects.filter(
+            target_model__iexact='item',
+            target_object_id=str(self.item.pk),
+            action_type=AuditLog.ActionType.ITEM_CLOSED
+        ).first()
+        self.assertIsNotNone(audit)
+
+    def test_staff_without_manage_claims_cannot_intervene(self):
+        self.client.login(username='staff_basic', password='Password123!')
+        url = f'/admin-dashboard/claims/{self.claim.pk}/'
+        response = self.client.post(url, {
+            'claim_intervention': '1',
+            'action': 'APPROVE',
+            'reason': 'Unauthorized intervention attempt.'
+        })
+        self.assertEqual(response.status_code, 403)
+        self.claim.refresh_from_db()
+        self.assertEqual(self.claim.status, Claim.Status.PENDING)
+
+    def test_staff_with_manage_claims_can_intervene(self):
+        perm = Permission.objects.get(codename='manage_claims')
+        self.staff_with_perms.user_permissions.add(perm)
+
+        self.client.login(username='staff_empowered', password='Password123!')
+        url = f'/admin-dashboard/claims/{self.claim.pk}/'
+        response = self.client.post(url, {
+            'claim_intervention': '1',
+            'action': 'REJECT',
+            'reason': 'Proof did not match item specifics.'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.claim.refresh_from_db()
+        self.assertEqual(self.claim.status, Claim.Status.REJECTED)
+
+    def test_staff_without_view_audit_logs_denied_access(self):
+        self.client.login(username='staff_basic', password='Password123!')
+        response = self.client.get('/admin-dashboard/audit-logs/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_with_view_audit_logs_granted_access(self):
+        perm = Permission.objects.get(codename='view_audit_logs')
+        self.staff_with_perms.user_permissions.add(perm)
+
+        self.client.login(username='staff_empowered', password='Password123!')
+        response = self.client.get('/admin-dashboard/audit-logs/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Administrative Audit Ledger")
+
+
+class SearchAndPaginationTest(TestCase):
+    """
+    Validates user and item search queries and pagination handling.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.admin = User.objects.create_superuser(
+            username='search_super_admin',
+            password='Password123!',
+            email='search_admin@findback.local'
+        )
+        # Create users for pagination test
+        for i in range(20):
+            User.objects.create_user(
+                username=f'pagination_user_{i:02d}',
+                password='Password123!',
+                email=f'user_{i:02d}@example.com',
+                first_name='SearchName' if i < 3 else 'OtherName'
+            )
+
+        # Create items for search test
+        for i in range(18):
+            Item.objects.create(
+                user=self.admin,
+                title=f'Test Phone Unit {i}' if i < 5 else f'Regular Wallet {i}',
+                description='Black color lost in station.',
+                category=Item.ItemCategory.ELECTRONICS if i < 5 else Item.ItemCategory.WALLET,
+                item_type=Item.ItemType.LOST if i % 2 == 0 else Item.ItemType.FOUND,
+                location='Central Station Zone B' if i < 3 else 'Subway Terminal',
+                date_occurred=datetime.date.today(),
+            )
+
+    def test_user_search_and_pagination(self):
+        self.client.login(username='search_super_admin', password='Password123!')
+
+        # 1. Search by name query
+        response = self.client.get('/admin-dashboard/users/?q=SearchName')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'SearchName')
+
+        # 2. Search by email query
+        response = self.client.get('/admin-dashboard/users/?q=user_05@example.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'pagination_user_05')
+
+        # 3. Pagination page 2
+        response_p2 = self.client.get('/admin-dashboard/users/?page=2')
+        self.assertEqual(response_p2.status_code, 200)
+        self.assertTrue(response_p2.context['page_obj'].has_previous())
+
+    def test_item_search_by_category_and_location(self):
+        self.client.login(username='search_super_admin', password='Password123!')
+
+        # 1. Search by category name
+        response = self.client.get('/admin-dashboard/items/?q=ELECTRONICS')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Phone Unit')
+
+        # 2. Search by location
+        response = self.client.get('/admin-dashboard/items/?q=Zone+B')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Central Station Zone B')
+
+        # 3. Item pagination page 2
+        response_p2 = self.client.get('/admin-dashboard/items/?page=2')
+        self.assertEqual(response_p2.status_code, 200)
+        self.assertTrue(response_p2.context['page_obj'].has_previous())
+

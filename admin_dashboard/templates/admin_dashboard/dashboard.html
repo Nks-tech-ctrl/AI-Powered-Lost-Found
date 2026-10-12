@@ -177,25 +177,25 @@
     </div>
   </div>
 
-  <!-- Recent Items & Claims Tables -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Recent Activity Tables: Reports, Claims, and Users -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Latest Reports -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-base font-bold font-heading text-slate-900">Newly Reported Items</h3>
-        <a href="{% url 'admin_dashboard:items-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All Items &rarr;</a>
+        <a href="{% url 'admin_dashboard:items-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All &rarr;</a>
       </div>
       <div class="divide-y divide-slate-100 text-sm">
         {% for item in recent_items %}
         <div class="py-3 flex items-center justify-between">
-          <div>
-            <a href="{% url 'admin_dashboard:item-detail' item.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition">{{ item.title }}</a>
+          <div class="truncate max-w-[170px]">
+            <a href="{% url 'admin_dashboard:item-detail' item.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition block truncate">{{ item.title }}</a>
             <div class="text-xs text-slate-500 flex items-center space-x-2 mt-0.5">
               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {% if item.item_type == 'LOST' %}bg-rose-50 text-rose-700{% else %}bg-emerald-50 text-emerald-700{% endif %}">{{ item.item_type }}</span>
-              <span>{{ item.location }}</span>
+              <span class="truncate">{{ item.location }}</span>
             </div>
           </div>
-          <span class="text-xs text-slate-400">{{ item.created_at|date:"M d" }}</span>
+          <span class="text-xs text-slate-400 flex-shrink-0">{{ item.created_at|date:"M d" }}</span>
         </div>
         {% empty %}
         <p class="text-xs text-slate-400 text-center py-4">No recent reports.</p>
@@ -206,16 +206,16 @@
     <!-- Latest Claims -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-base font-bold font-heading text-slate-900">Recent Ownership Claims</h3>
-        <a href="{% url 'admin_dashboard:claims-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All Claims &rarr;</a>
+        <h3 class="text-base font-bold font-heading text-slate-900">Recent Claims</h3>
+        <a href="{% url 'admin_dashboard:claims-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All &rarr;</a>
       </div>
       <div class="divide-y divide-slate-100 text-sm">
         {% for claim in recent_claims %}
         <div class="py-3 flex items-center justify-between">
-          <div>
-            <a href="{% url 'admin_dashboard:claim-detail' claim.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition">{{ claim.item.title }}</a>
+          <div class="truncate max-w-[170px]">
+            <a href="{% url 'admin_dashboard:claim-detail' claim.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition block truncate">{{ claim.item.title }}</a>
             <div class="text-xs text-slate-500 flex items-center space-x-2 mt-0.5">
-              <span>By: <strong>{{ claim.claimant.username }}</strong></span>
+              <span>By: <strong class="truncate">{{ claim.claimant.username }}</strong></span>
               <span>&bull;</span>
               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold
                 {% if claim.status == 'PENDING' %}bg-amber-50 text-amber-700
@@ -223,10 +223,41 @@
                 {% else %}bg-slate-100 text-slate-600{% endif %}">{{ claim.status }}</span>
             </div>
           </div>
-          <span class="text-xs text-slate-400">{{ claim.created_at|date:"M d" }}</span>
+          <span class="text-xs text-slate-400 flex-shrink-0">{{ claim.created_at|date:"M d" }}</span>
         </div>
         {% empty %}
         <p class="text-xs text-slate-400 text-center py-4">No claims recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Latest User Registrations -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm md:col-span-2 lg:col-span-1">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold font-heading text-slate-900">Recent Registrations</h3>
+        <a href="{% url 'admin_dashboard:users-list' %}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">All Users &rarr;</a>
+      </div>
+      <div class="divide-y divide-slate-100 text-sm">
+        {% for u in recent_users %}
+        <div class="py-3 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5 truncate max-w-[170px]">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs flex-shrink-0">
+              {{ u.username|make_list|first|upper }}
+            </div>
+            <div class="truncate">
+              <a href="{% url 'admin_dashboard:user-detail' u.pk %}" class="font-semibold text-slate-800 hover:text-blue-600 transition block truncate">{{ u.username }}</a>
+              <span class="text-[11px] text-slate-400 truncate block">{{ u.email|default:"No email" }}</span>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <span class="text-xs text-slate-400 block">{{ u.date_joined|date:"M d" }}</span>
+            <span class="text-[10px] font-semibold {% if u.is_active %}text-emerald-600{% else %}text-rose-600{% endif %}">
+              {{ u.is_active|yesno:"Active,Inactive" }}
+            </span>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-400 text-center py-4">No recent user registrations.</p>
         {% endfor %}
       </div>
     </div>

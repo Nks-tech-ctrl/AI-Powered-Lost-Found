@@ -79,7 +79,7 @@
                             <i class="fa-solid fa-chevron-down text-[9px] opacity-75 ml-0.5 transition-transform duration-200" id="nav-report-chevron"></i>
                         </button>
 
-                        <div id="nav-report-menu" class="hidden absolute right-0 mt-2 w-56 bg-white/98 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/80 py-2 z-50 transform origin-top-right transition-all">
+                        <div id="nav-report-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 transform origin-top-right transition-all">
                             <div class="px-3.5 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">File a Report</div>
                             <a href="/items/report-lost/" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors">
                                 <div class="w-8 h-8 rounded-xl bg-rose-50 border border-rose-200/80 flex items-center justify-center text-rose-500 text-xs shrink-0 shadow-xs">
@@ -133,9 +133,9 @@
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-primary transition-transform duration-200" id="nav-user-chevron"></i>
                         </button>
 
-                        <div id="nav-user-menu" class="hidden absolute right-0 mt-2 w-64 bg-white/98 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/80 py-2 z-50 transform origin-top-right transition-all">
+                        <div id="nav-user-menu" class="hidden absolute right-0 mt-2 w-64 xl:w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 pb-2 overflow-hidden z-50 transform origin-top-right transition-all">
                             <!-- User Identity Card -->
-                            <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50 rounded-t-2xl">
+                            <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3 bg-slate-50 rounded-t-2xl">
                                 {% if user.profile.profile_picture %}
                                     <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0">
                                 {% else %}
@@ -255,7 +255,7 @@
     </div>
 
     <!-- Mobile Menu Drawer -->
-    <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-3 shadow-xl">
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3 shadow-2xl">
         {% if user.is_authenticated %}
             <!-- Authenticated Mobile User Header -->
             <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
