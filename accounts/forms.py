@@ -245,7 +245,7 @@ class ProfileUpdateForm(forms.ModelForm):
         }
     )
     phone = forms.CharField(
-        max_length=10,
+        max_length=20,
         required=False,
         widget=forms.TextInput(attrs={
             'id': 'id_phone',

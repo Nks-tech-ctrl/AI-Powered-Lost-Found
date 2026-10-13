@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}400 — Bad Request — FindBack{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+
+  <!-- Ambient Glows -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-slate-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-xl w-full text-center relative z-10 space-y-7">
+
+    <!-- Visual Warning Hub -->
+    <div class="relative mx-auto w-28 h-28 flex items-center justify-center">
+      <div class="w-24 h-24 rounded-3xl bg-slate-100 text-slate-700 flex flex-col items-center justify-center shadow-lg border border-slate-300">
+        <i class="fa-solid fa-triangle-exclamation text-3xl text-slate-700"></i>
+        <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-600 mt-1">400 Error</span>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="space-y-2.5">
+      <h1 class="text-3xl sm:text-4xl font-black font-heading text-navy tracking-tight">
+        Invalid <span class="text-slate-700">Request</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
+        {% if exception %}
+          {{ exception }}
+        {% else %}
+          The server could not understand or validate your request. Please check the URL and try again.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='/';"
+              class="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all inline-flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left text-xs text-slate-500"></i>
+        <span>Go Back</span>
+      </button>
+
+      <a href="{% url 'home' %}"
+         class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+        <i class="fa-solid fa-house text-xs"></i>
+        <span>Homepage</span>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

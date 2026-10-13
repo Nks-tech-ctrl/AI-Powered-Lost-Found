@@ -6,7 +6,7 @@ def claims_context(request):
     """
     Supplies claims badge counts and report ownership flags for navigation.
     """
-    if request.user.is_authenticated:
+    if hasattr(request, 'user') and request.user.is_authenticated:
         has_found_reports = Item.objects.filter(
             user=request.user,
             item_type=Item.ItemType.FOUND

@@ -5,8 +5,21 @@ from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from items import views as item_views
 from admin_dashboard import views as admin_views
+from core import views as core_views
+
+# Custom Error Handlers
+handler404 = 'core.views.custom_404_view'
+handler500 = 'core.views.custom_500_view'
+handler403 = 'core.views.custom_403_view'
+handler400 = 'core.views.custom_400_view'
 
 urlpatterns = [
+    # Error page previews
+    path('error/404/', core_views.preview_404, name='preview-404'),
+    path('error/500/', core_views.preview_500, name='preview-500'),
+    path('error/403/', core_views.preview_403, name='preview-403'),
+    path('error/400/', core_views.preview_400, name='preview-400'),
+
     # Universal wildcard redirects for any relative or legacy .html paths (checked first)
     re_path(r'.*login\.html$', RedirectView.as_view(url='/accounts/login/', permanent=False)),
     re_path(r'.*register\.html$', RedirectView.as_view(url='/accounts/register/', permanent=False)),

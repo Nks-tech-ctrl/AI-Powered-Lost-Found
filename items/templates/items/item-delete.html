@@ -76,18 +76,42 @@
       </div>
 
       <!-- Form Actions (POST required) -->
-      <form method="POST" class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <form method="POST" action="{% url 'item-delete' item.pk %}" id="delete-report-form" class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
         {% csrf_token %}
         <a href="{% url 'item-detail' item.pk %}"
            class="w-full sm:w-auto px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs transition-colors text-center order-2 sm:order-1">
           Cancel
         </a>
-        <button type="submit"
+        <button type="submit" id="delete-submit-btn"
                 class="w-full sm:w-auto px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 order-1 sm:order-2">
-          <i class="fa-regular fa-trash-can text-xs"></i>
-          <span>Delete Report</span>
+          <i class="fa-regular fa-trash-can text-xs" id="delete-btn-icon"></i>
+          <span id="delete-btn-text">Delete Report</span>
         </button>
       </form>
+
+      <script>
+        (function() {
+          const form = document.getElementById('delete-report-form');
+          const btn = document.getElementById('delete-submit-btn');
+          const icon = document.getElementById('delete-btn-icon');
+          const text = document.getElementById('delete-btn-text');
+          let submitted = false;
+
+          if (form && btn) {
+            form.addEventListener('submit', function(e) {
+              if (submitted) {
+                e.preventDefault();
+                return false;
+              }
+              submitted = true;
+              btn.disabled = true;
+              btn.classList.add('opacity-75', 'cursor-not-allowed');
+              if (icon) icon.className = 'fa-solid fa-spinner fa-spin text-xs';
+              if (text) text.textContent = 'Deleting Report...';
+            });
+          }
+        })();
+      </script>
 
     </div>
 

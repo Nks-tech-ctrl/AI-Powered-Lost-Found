@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}403 — Access Restricted — FindBack{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+
+  <!-- Ambient Glows -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-xl w-full text-center relative z-10 space-y-7">
+
+    <!-- Visual Shield Hub -->
+    <div class="relative mx-auto w-28 h-28 flex items-center justify-center">
+      <div class="w-24 h-24 rounded-3xl bg-amber-50 text-amber-600 flex flex-col items-center justify-center shadow-lg border border-amber-200">
+        <i class="fa-solid fa-shield-halved text-3xl text-amber-600"></i>
+        <span class="text-[9px] uppercase tracking-wider font-extrabold text-amber-700 mt-1">403 Restricted</span>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="space-y-2.5">
+      <h1 class="text-3xl sm:text-4xl font-black font-heading text-navy tracking-tight">
+        Access <span class="text-amber-600">Restricted</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
+        {% if exception %}
+          {{ exception }}
+        {% else %}
+          You do not have permission to view, edit, or delete this report or administrative area. Only the report owner or authorized staff may perform this action.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <button onclick="window.history.length > 1 ? window.history.back() : window.location.href='{% url 'my-reports' %}';"
+              class="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all inline-flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left text-xs text-slate-500"></i>
+        <span>Go Back</span>
+      </button>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'my-reports' %}"
+           class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-xs"></i>
+          <span>My Reports</span>
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}"
+           class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span>Log In</span>
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

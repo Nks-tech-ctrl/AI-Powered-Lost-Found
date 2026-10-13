@@ -1,6 +1,7 @@
 import os
 import datetime
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -173,22 +174,32 @@ def item_delete(request, pk):
     Deletes an item report owned by the authenticated user.
     Requires POST to execute deletion; GET displays confirmation UI.
     Cleans up associated media image safely.
+    Handles already-deleted or nonexistent items gracefully without crashing or showing error.
     """
-    item = get_object_or_404(Item, pk=pk, user=request.user)
+    existing_item = Item.objects.filter(pk=pk).first()
+
+    # If the item does not exist (already deleted, double-click, or browser Back button)
+    if not existing_item:
+        messages.info(request, "This report has already been deleted or does not exist.")
+        return redirect('my-reports')
+
+    # Strict IDOR protection: User B cannot delete User A's report
+    if existing_item.user != request.user:
+        raise Http404("No Item matches the given query.")
 
     if request.method == 'POST':
         # Safely clean up associated image file if it exists
-        if item.image:
+        if existing_item.image:
             try:
-                item.image.delete(save=False)
+                existing_item.image.delete(save=False)
             except Exception:
                 pass
 
-        item.delete()
+        existing_item.delete()
         messages.success(request, "Your item report has been deleted.")
         return redirect('my-reports')
 
-    return render(request, 'items/item-delete.html', {'item': item})
+    return render(request, 'items/item-delete.html', {'item': existing_item})
 
 
 @login_required

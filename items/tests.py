@@ -719,6 +719,29 @@ class ItemDeleteViewTest(TestCase):
         self.assertRedirects(response, reverse('my-reports'))
         self.assertFalse(os.path.exists(img_path))
 
+    def test_delete_post_already_deleted_redirects_gracefully(self):
+        """Verify POST to delete an item that was already deleted redirects gracefully to my-reports instead of 404."""
+        self.client.force_login(self.user)
+        item_pk = self.item.pk
+        # Delete first time
+        response1 = self.client.post(reverse('item-delete', kwargs={'pk': item_pk}))
+        self.assertRedirects(response1, reverse('my-reports'))
+        # Delete second time (simulating double-click or replay)
+        response2 = self.client.post(reverse('item-delete', kwargs={'pk': item_pk}))
+        self.assertRedirects(response2, reverse('my-reports'))
+        messages_list = list(get_messages(response2.wsgi_request))
+        self.assertTrue(any("already been deleted" in m.message for m in messages_list))
+
+    def test_delete_get_already_deleted_redirects_gracefully(self):
+        """Verify GET to delete URL of an already-deleted item (e.g. browser back button) redirects gracefully to my-reports."""
+        self.client.force_login(self.user)
+        item_pk = self.item.pk
+        self.item.delete()
+        response = self.client.get(reverse('item-delete', kwargs={'pk': item_pk}))
+        self.assertRedirects(response, reverse('my-reports'))
+        messages_list = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("already been deleted" in m.message for m in messages_list))
+
 
 class PublicSearchAndBrowseViewTest(TestCase):
     """Test suite for public browsing, search filters, sorting, and pagination."""
